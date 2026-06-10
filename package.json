@@ -1,0 +1,43 @@
+{
+  "name": "vespera-ui-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vespera — a deep-space, weightless design system. Monorepo root.",
+  "license": "Apache-2.0",
+  "author": "Williams Gunawan",
+  "homepage": "https://github.com/forgialabs/vespera-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/forgialabs/vespera-ui/issues"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm -r --if-present run test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "@eslint/js": "^9.16.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
+  }
+}

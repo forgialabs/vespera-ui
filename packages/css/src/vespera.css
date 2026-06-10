@@ -1,0 +1,16 @@
+/* ============================================================
+   @vespera-ui/css — Vespera design system stylesheet (bundle entry)
+   Deep-space navy + electric cornflower accent.
+
+   Usage: import this file once, then wrap your app (or a subtree) in
+   an element with class `vsp-root` and the theming data-attributes:
+
+     <div class="vsp-root" data-theme="dark" data-density="comfortable">…</div>
+
+   Phase 1 ports the prototype's `styles.css` + `ui.css` here, split into
+   tokens / base / shell / components, with `.ag-` → `.vsp-`.
+   ============================================================ */
+
+@import './tokens.css';
+
+/* TODO(phase-1): base.css, shell.css (.vsp-*), components.css (.ui-* / .vsp-*). */

@@ -1,0 +1,33 @@
+{
+  "name": "@vespera-ui/css",
+  "version": "0.0.0",
+  "description": "Vespera design system — framework-agnostic CSS (tokens, base, shell, components).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": "./src/vespera.css",
+    "./vespera.css": "./src/vespera.css",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git",
+    "directory": "packages/css"
+  },
+  "keywords": [
+    "vespera",
+    "css",
+    "design-system",
+    "design-tokens",
+    "ui"
+  ]
+}

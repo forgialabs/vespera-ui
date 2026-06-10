@@ -1,0 +1,22 @@
+/* ============================================================
+   @vespera-ui/css — design tokens
+   Phase 1 will port the prototype's token layer (styles.css :root +
+   [data-theme] blocks) here, rebranding the `.ag-` prefix to `.vsp-`.
+   Theming is driven by data-attributes and CSS variables on `.vsp-root`.
+   ============================================================ */
+
+.vsp-root {
+  /* accent — overridden inline by host */
+  --accent: #4a7cff;
+
+  /* corners */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+
+  /* density */
+  --pad: 22px;
+  --gap: 18px;
+}
+
+/* TODO(phase-1): full token set, dark/light theme blocks, density/corners variants. */
