@@ -1,5 +1,13 @@
 # @vespera-ui/svelte
 
+## 0.5.0
+
+### Minor Changes
+
+- bcc25ab: Add charts to the Vue and Svelte wrappers: `Sparkline`, `Donut`, and `StatCard` (with embedded
+  sparkline). (Angular gains the same — `vsp-sparkline`, `vsp-donut`, `vsp-stat-card` — published
+  separately.) The responsive `AreaChart`/`BarChart` (with hover) remain React-only for now.
+
 ## 0.4.0
 
 ### Minor Changes
