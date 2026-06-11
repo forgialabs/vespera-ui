@@ -28,3 +28,7 @@ export * from './Accordion';
 export * from './Banner';
 export * from './DataDisplay';
 export * from './SideNav';
+export * from './Tree';
+export * from './Avatar';
+export * from './Segmented';
+export * from './FormExtras';

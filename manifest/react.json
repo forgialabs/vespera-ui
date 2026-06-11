@@ -93,6 +93,51 @@
       ]
     },
     {
+      "name": "Avatar",
+      "props": [
+        {
+          "name": "hue",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0",
+          "description": "Hue (0–360) for the generated gradient."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "defaultValue": "34"
+        }
+      ]
+    },
+    {
+      "name": "AvatarGroup",
+      "props": [
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "defaultValue": "4"
+        },
+        {
+          "name": "people",
+          "type": "AvatarPerson[]",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "defaultValue": "32"
+        }
+      ]
+    },
+    {
       "name": "Badge",
       "props": [
         {
@@ -354,6 +399,31 @@
       ]
     },
     {
+      "name": "CopyButton",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false,
+          "defaultValue": "Copy"
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm"
+          ],
+          "required": false,
+          "defaultValue": "sm"
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "DescriptionList",
       "props": [
         {
@@ -526,6 +596,33 @@
       ]
     },
     {
+      "name": "FileDropzone",
+      "props": [
+        {
+          "name": "accept",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "hint",
+          "type": "ReactNode",
+          "required": false,
+          "defaultValue": "PNG, JPG or PDF up to 10MB"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true"
+        },
+        {
+          "name": "onFiles",
+          "type": "((files: File[]) => void)",
+          "required": false
+        }
+      ]
+    },
+    {
       "name": "IconButton",
       "props": [
         {
@@ -543,6 +640,28 @@
           "type": "string",
           "required": true,
           "description": "Accessible label (also the tooltip)."
+        }
+      ]
+    },
+    {
+      "name": "InlineEdit",
+      "props": [
+        {
+          "name": "onSave",
+          "type": "((value: string) => void)",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Empty"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "defaultValue": ""
         }
       ]
     },
@@ -691,6 +810,65 @@
       ]
     },
     {
+      "name": "NumberStepper",
+      "props": [
+        {
+          "name": "max",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((value: number) => void)",
+          "required": false
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "defaultValue": "1"
+        },
+        {
+          "name": "unit",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0"
+        }
+      ]
+    },
+    {
+      "name": "OTPInput",
+      "props": [
+        {
+          "name": "length",
+          "type": "number",
+          "required": false,
+          "defaultValue": "6"
+        },
+        {
+          "name": "onChange",
+          "type": "((value: string) => void)",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "defaultValue": ""
+        }
+      ]
+    },
+    {
       "name": "Pagination",
       "props": [
         {
@@ -801,6 +979,26 @@
           "name": "style",
           "type": "CSSProperties",
           "required": false
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Segmented",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": true
+        },
+        {
+          "name": "options",
+          "type": "string[]",
+          "required": true
         },
         {
           "name": "value",
@@ -1173,6 +1371,22 @@
           ],
           "required": false,
           "defaultValue": "top"
+        }
+      ]
+    },
+    {
+      "name": "Tree",
+      "props": [
+        {
+          "name": "data",
+          "type": "TreeNodeData[]",
+          "required": true
+        },
+        {
+          "name": "defaultExpanded",
+          "type": "string[]",
+          "required": false,
+          "defaultValue": "[]"
         }
       ]
     },
