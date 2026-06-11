@@ -1,24 +1,54 @@
 name: Release
 
-# Create a GitHub Release whenever a version tag (e.g. v0.1.0) is pushed.
-# Versions + changelogs are managed by Changesets (`pnpm version-packages`);
-# npm publishing is a separate, opt-in step (needs an NPM_TOKEN secret).
+# Changesets-driven releases. On push to main:
+#  - if there are unreleased changesets → opens/updates a "Version Packages" PR
+#    (bumps versions + writes CHANGELOGs from the changeset summaries).
+#  - once that PR is merged (no changesets left) → publishes the changed packages
+#    to npm and creates a GitHub Release per package with the changelog as notes.
+#
+# Requires:
+#  - repo setting: Settings → Actions → General → "Allow GitHub Actions to create
+#    and approve pull requests" (so the bot can open the Version PR).
+#  - an NPM_TOKEN secret with publish rights to @vespera-ui.
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: write # version commit, tags, GitHub Releases
+  pull-requests: write # open the Version Packages PR
+  id-token: write # reserved for npm provenance / trusted publishing
 
 jobs:
-  github-release:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - name: Create GitHub Release
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build packages
+        run: pnpm build
+      - name: Configure npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --title "Vespera $GITHUB_REF_NAME" --generate-notes
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create Release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm version-packages
+          publish: pnpm changeset publish
+          title: 'chore: release — version packages'
+          commit: 'chore: release — version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -50,6 +50,13 @@ pnpm changeset
 Choose the bump (patch / minor / major) and write a one-line summary. Commit the generated
 file with your change.
 
+## Releases
+
+Releases are automated with Changesets. When changesets land on `main`, a bot opens a
+**"Version Packages"** PR that bumps versions and writes the changelogs. Merging that PR
+publishes the changed packages to npm and creates a GitHub Release (with the changelog as the
+notes) for each. You don't tag or publish by hand.
+
 ## Developer Certificate of Origin
 
 This project uses the **Developer Certificate of Origin (DCO)** instead of a CLA. The DCO
