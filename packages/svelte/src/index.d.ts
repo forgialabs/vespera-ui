@@ -94,3 +94,27 @@ export interface TimelineItem {
 }
 export const Timeline: Component<{ items?: TimelineItem[] }>;
 export const DescriptionList: Component<{ items?: [string, string][] }>;
+export const Banner: Component<{
+  tone?: 'info' | 'warn' | 'accent';
+  dismissible?: boolean;
+  icon?: unknown;
+  action?: unknown;
+  children?: unknown;
+  ondismiss?: () => void;
+}>;
+export const EmptyState: Component<{
+  title?: string;
+  desc?: string;
+  compact?: boolean;
+  icon?: unknown;
+  action?: unknown;
+}>;
+export interface AccordionItem {
+  title: string;
+  body: string;
+}
+export const Accordion: Component<{
+  items?: AccordionItem[];
+  multiple?: boolean;
+  defaultOpen?: number[];
+}>;

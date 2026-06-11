@@ -10,3 +10,4 @@ export * from './toggle.component';
 export * from './forms.component';
 export * from './nav.component';
 export * from './data.component';
+export * from './structure.component';
