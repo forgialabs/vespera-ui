@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
@@ -5,12 +6,17 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
   site: 'https://forgialabs.github.io',
   base: '/vespera-ui',
-  // Force-bundle postcss/nanoid into the SSR build so Vite resolves
-  // postcss's `require('nanoid/non-secure')` via CommonJS interop instead of
-  // emitting a broken `default` import (nanoid/non-secure is ESM, named-only).
   vite: {
+    // Force-bundle postcss/nanoid into the SSR build so Vite resolves
+    // postcss's `require('nanoid/non-secure')` via CommonJS interop instead of
+    // emitting a broken `default` import (nanoid/non-secure is ESM, named-only).
     ssr: {
       noExternal: ['postcss', 'nanoid'],
+    },
+    resolve: {
+      alias: {
+        '@manifest': fileURLToPath(new URL('../../manifest', import.meta.url)),
+      },
     },
   },
   integrations: [
@@ -33,6 +39,10 @@ export default defineConfig({
             { label: 'Theming', link: '/guides/theming/' },
             { label: 'Components', link: '/guides/components/' },
           ],
+        },
+        {
+          label: 'Reference',
+          items: [{ label: 'React components API', link: '/reference/react/' }],
         },
       ],
     }),

@@ -1,0 +1,49 @@
+---
+import manifest from '@manifest/react.json';
+const { components } = manifest;
+---
+
+<p>
+  <strong>{components.length} components</strong> in <code>{manifest.package}</code>. Generated
+  from the TypeScript source — props marked <code>*</code> are required.
+</p>
+
+{
+  components.map((c) => (
+    <section>
+      <h2 id={c.name}>{c.name}</h2>
+      {c.description && <p>{c.description}</p>}
+      {c.props.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            {c.props.map((p) => (
+              <tr>
+                <td>
+                  <code>
+                    {p.name}
+                    {p.required ? ' *' : ''}
+                  </code>
+                </td>
+                <td>
+                  <code>{p.values && p.values.length ? p.values.join(' | ') : (p.type ?? '—')}</code>
+                </td>
+                <td>{p.defaultValue ? <code>{p.defaultValue}</code> : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>
+          <em>No public props.</em>
+        </p>
+      )}
+    </section>
+  ))
+}

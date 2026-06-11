@@ -37,5 +37,34 @@ set the theming data-attributes:
 </div>
 ```
 
+## React components
+
+Prefer typed components over raw classes? Add the React package (and the CSS, which it
+relies on for styling):
+
+```bash
+npm install @vespera-ui/react @vespera-ui/css @vespera-ui/icons
+```
+
+```tsx
+import '@vespera-ui/css';
+import { Button, Badge } from '@vespera-ui/react';
+
+export function App() {
+  return (
+    <div className="vsp-root" data-theme="dark">
+      <Button variant="primary">Get started</Button>
+      <Badge tone="pos" dot>
+        Active
+      </Badge>
+    </div>
+  );
+}
+```
+
+See the [React components API](/vespera-ui/reference/react/) for every component and its props.
+
+---
+
 That's it — see [Quick start](/vespera-ui/guides/quick-start/) to build something, or
 [Theming](/vespera-ui/guides/theming/) to make it yours.

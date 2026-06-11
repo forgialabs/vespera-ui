@@ -42,9 +42,16 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 
 ### Iteration 3 — Wire components into the docs
 
-- [ ] Live React examples in docs (MDX + React islands)
-- [ ] Per-component API / props tables (auto-generated where possible)
-- [ ] Expand Storybook coverage to all primitives
+- [x] Per-component API / props tables — auto-generated from `manifest/react.json`
+      (`/reference/react/`, build-time, no drift)
+- [x] Update docs content for React availability (install, intro, components guide)
+- [ ] Live React examples as MDX islands — deferred: Vespera's `base.css` styles `body`,
+      which would bleed into Starlight's chrome. The isolated `/demo` page + Storybook serve
+      as the live playground for now; revisit with scoped styles or a standalone React page.
+- [~] Expand Storybook coverage — stories exist for Button, Badge, Alert, Field, Select
+  family, and overlays; remaining primitives still to get stories.
+
+✅ **Iteration 3 core complete** (API reference + React docs); two polish items remain above.
 
 ## 🔭 Later (per roadmap)
 
