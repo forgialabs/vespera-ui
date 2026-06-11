@@ -57,7 +57,10 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 
 ## 🔭 Later (per roadmap)
 
-- [ ] Extras: `Accordion`, `Tree`, `Timeline`, `OTPInput`, `FileDropzone`, etc.
+- [~] Extras: done — `Accordion`, `Banner`, `EmptyState`, `CircularProgress`, `Stat`,
+  `Timeline`, `DescriptionList`, `SettingRow`, `VerticalTabs`, `NavItem`, `NavGroup`;
+  still to port — `Tree`, `OTPInput`, `InlineEdit`, `NumberStepper`, `CopyButton`,
+  `FileDropzone`, `AvatarGroup`
 - [ ] `DatePicker` / `Calendar` / `DateRangePicker`
 - [ ] Charts (`AreaChart`, `BarChart`, `Donut`, `Sparkline`, `StatCard`)
 - [ ] Pro blocks / screen templates

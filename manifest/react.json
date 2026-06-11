@@ -1,10 +1,32 @@
 {
   "$schema": "https://forgialabs.github.io/vespera-ui/manifest.schema.json",
   "package": "@vespera-ui/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "framework": "react",
   "note": "Auto-generated from packages/react/src by scripts/build-manifest.mjs. Components render inside a themed `.vsp-root` element and consume @vespera-ui/css classes. Icon props accept any ReactNode (use @vespera-ui/icons).",
   "components": [
+    {
+      "name": "Accordion",
+      "props": [
+        {
+          "name": "defaultOpen",
+          "type": "number[]",
+          "required": false,
+          "defaultValue": "[]"
+        },
+        {
+          "name": "items",
+          "type": "AccordionItem[]",
+          "required": true
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "required": false,
+          "description": "Allow multiple panels open at once."
+        }
+      ]
+    },
     {
       "name": "Alert",
       "props": [
@@ -95,6 +117,37 @@
           ],
           "required": false,
           "defaultValue": "muted"
+        }
+      ]
+    },
+    {
+      "name": "Banner",
+      "props": [
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "onDismiss",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": "enum",
+          "values": [
+            "info",
+            "warn",
+            "accent"
+          ],
+          "required": false,
+          "defaultValue": "info"
         }
       ]
     },
@@ -211,6 +264,40 @@
       ]
     },
     {
+      "name": "CircularProgress",
+      "props": [
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent)"
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "defaultValue": "76"
+        },
+        {
+          "name": "thickness",
+          "type": "number",
+          "required": false,
+          "defaultValue": "7"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0"
+        }
+      ]
+    },
+    {
       "name": "Combobox",
       "props": [
         {
@@ -262,6 +349,16 @@
         {
           "name": "open",
           "type": "boolean",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "DescriptionList",
+      "props": [
+        {
+          "name": "items",
+          "type": "[ReactNode, ReactNode][]",
           "required": true
         }
       ]
@@ -359,6 +456,36 @@
         {
           "name": "width",
           "type": "number",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "props": [
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "compact",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
           "required": false
         }
       ]
@@ -504,6 +631,62 @@
           "type": "NativeSelectOption[]",
           "required": false,
           "defaultValue": "[]"
+        }
+      ]
+    },
+    {
+      "name": "NavGroup",
+      "props": [
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "NavItem",
+      "props": [
+        {
+          "name": "active",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "badge",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "onClick",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "sub",
+          "type": "boolean",
+          "required": false,
+          "description": "Set when nested under a `NavGroup`."
         }
       ]
     },
@@ -679,6 +862,26 @@
       ]
     },
     {
+      "name": "SettingRow",
+      "props": [
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "last",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
       "name": "Sheet",
       "props": [
         {
@@ -793,6 +996,48 @@
       ]
     },
     {
+      "name": "Stat",
+      "props": [
+        {
+          "name": "delta",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "deltaDir",
+          "type": "enum",
+          "values": [
+            "up",
+            "down"
+          ],
+          "required": false,
+          "defaultValue": "up"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent)",
+          "description": "Accent color for the icon tile."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
       "name": "Stepper",
       "props": [
         {
@@ -880,6 +1125,16 @@
       "props": []
     },
     {
+      "name": "Timeline",
+      "props": [
+        {
+          "name": "items",
+          "type": "TimelineItem[]",
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "TokenInput",
       "props": [
         {
@@ -918,6 +1173,26 @@
           ],
           "required": false,
           "defaultValue": "top"
+        }
+      ]
+    },
+    {
+      "name": "VerticalTabs",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": true
+        },
+        {
+          "name": "tabs",
+          "type": "VerticalTabItem[]",
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
         }
       ]
     }
