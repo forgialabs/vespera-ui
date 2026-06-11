@@ -1,0 +1,35 @@
+name: Publish to npm
+
+# Publishes the public packages to npm. Runs automatically when a version tag
+# (e.g. v0.2.0) is pushed, and can be run manually from the Actions tab.
+# Requires an `NPM_TOKEN` repository secret with publish rights to @vespera-ui.
+# pnpm skips any package version that is already on the registry, so re-running
+# is safe.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build packages
+        run: pnpm build
+      - name: Publish to npm
+        run: pnpm -r publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
