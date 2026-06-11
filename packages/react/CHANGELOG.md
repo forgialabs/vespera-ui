@@ -1,5 +1,18 @@
 # @vespera-ui/react
 
+## 0.3.0
+
+### Minor Changes
+
+- ff0328a: Add composed **blocks** — ready-to-use, prop-driven sections built from Vespera primitives, all
+  open source: `OrdersBlock` (filterable table with bulk select + row menu), `KanbanBlock`
+  (drag-to-reorder board), `ApiKeysBlock` (reveal/copy/revoke), `AuditLogBlock` (activity
+  timeline), `SystemStatusBlock` (uptime bars), `TeamRolesBlock` (inline role selects), plus a
+  shared `Block` frame. Each accepts its data via props with sensible defaults.
+- 7bf540d: Add `EventCalendar` — a month / week / agenda calendar with click-and-drag day selection and an
+  inline "new event" dialog. Events live in local state and `onChange` reports every change. This
+  completes the date family (`DatePicker`, `DateRangePicker`, `EventCalendar`).
+
 ## 0.2.0
 
 ### Minor Changes

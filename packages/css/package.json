@@ -1,6 +1,6 @@
 {
   "name": "@vespera-ui/css",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vespera design system — framework-agnostic CSS (tokens, base, shell, components).",
   "license": "Apache-2.0",
   "type": "module",
