@@ -23,6 +23,9 @@ importers:
       prettier:
         specifier: ^3.4.2
         version: 3.8.4
+      react-docgen-typescript:
+        specifier: ^2.2.2
+        version: 2.4.0(typescript@5.9.3)
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)

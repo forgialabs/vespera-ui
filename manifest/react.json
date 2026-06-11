@@ -1,0 +1,925 @@
+{
+  "$schema": "https://forgialabs.github.io/vespera-ui/manifest.schema.json",
+  "package": "@vespera-ui/react",
+  "version": "0.0.0",
+  "framework": "react",
+  "note": "Auto-generated from packages/react/src by scripts/build-manifest.mjs. Components render inside a themed `.vsp-root` element and consume @vespera-ui/css classes. Icon props accept any ReactNode (use @vespera-ui/icons).",
+  "components": [
+    {
+      "name": "Alert",
+      "props": [
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Override the default tone icon."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": "enum",
+          "values": [
+            "info",
+            "pos",
+            "warn",
+            "neg"
+          ],
+          "required": false,
+          "defaultValue": "info"
+        }
+      ]
+    },
+    {
+      "name": "Anchored",
+      "description": "Positioning base for menus and popovers: anchors a portaled layer to a trigger.",
+      "props": [
+        {
+          "name": "align",
+          "type": "enum",
+          "values": [
+            "start",
+            "end"
+          ],
+          "required": false,
+          "defaultValue": "start"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "required": false,
+          "defaultValue": "ui-menu"
+        },
+        {
+          "name": "trigger",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Badge",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "dot",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": "enum",
+          "values": [
+            "info",
+            "pos",
+            "warn",
+            "neg",
+            "muted"
+          ],
+          "required": false,
+          "defaultValue": "muted"
+        }
+      ]
+    },
+    {
+      "name": "Breadcrumb",
+      "props": [
+        {
+          "name": "items",
+          "type": "ReactNode[]",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "props": [
+        {
+          "name": "leadingIcon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm"
+          ],
+          "required": false
+        },
+        {
+          "name": "trailingIcon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "primary",
+            "ghost",
+            "subtle",
+            "outline",
+            "danger"
+          ],
+          "required": false,
+          "defaultValue": "ghost"
+        }
+      ]
+    },
+    {
+      "name": "Card",
+      "props": [
+        {
+          "name": "pad",
+          "type": "boolean",
+          "required": false,
+          "description": "Apply the standard content padding."
+        }
+      ]
+    },
+    {
+      "name": "CardHead",
+      "props": [
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "right",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Checkbox",
+      "props": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((checked: boolean) => void)",
+          "required": false
+        },
+        {
+          "name": "sub",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Combobox",
+      "props": [
+        {
+          "name": "clearable",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((value: SelectValue | null) => void)",
+          "required": false
+        },
+        {
+          "name": "options",
+          "type": "SelectOptionInput[]",
+          "required": true
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Select…"
+        },
+        {
+          "name": "searchPlaceholder",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "SelectValue | null",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CommandPalette",
+      "props": [
+        {
+          "name": "groups",
+          "type": "CommandGroup[]",
+          "required": true
+        },
+        {
+          "name": "onClose",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Dialog",
+      "props": [
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "maxWidth",
+          "type": "number",
+          "required": false,
+          "defaultValue": "460"
+        },
+        {
+          "name": "onClose",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": "enum",
+          "values": [
+            "info",
+            "pos",
+            "warn",
+            "neg"
+          ],
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Divider",
+      "props": [
+        {
+          "name": "style",
+          "type": "CSSProperties",
+          "required": false
+        },
+        {
+          "name": "vertical",
+          "type": "boolean",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "DropdownMenu",
+      "props": [
+        {
+          "name": "align",
+          "type": "enum",
+          "values": [
+            "start",
+            "end"
+          ],
+          "required": false,
+          "defaultValue": "end"
+        },
+        {
+          "name": "items",
+          "type": "MenuItem[]",
+          "required": true
+        },
+        {
+          "name": "trigger",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Field",
+      "props": [
+        {
+          "name": "action",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "hint",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "htmlFor",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "IconButton",
+      "props": [
+        {
+          "name": "dot",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true,
+          "description": "Accessible label (also the tooltip)."
+        }
+      ]
+    },
+    {
+      "name": "Input",
+      "props": [
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "InputAffix",
+      "props": [
+        {
+          "name": "leadingIcon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "prefix",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "unit",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "wrapClassName",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Kbd",
+      "props": []
+    },
+    {
+      "name": "MultiSelect",
+      "props": [
+        {
+          "name": "max",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((value: SelectValue[]) => void)",
+          "required": false
+        },
+        {
+          "name": "options",
+          "type": "SelectOptionInput[]",
+          "required": true
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Select…"
+        },
+        {
+          "name": "searchPlaceholder",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "SelectValue[]",
+          "required": false,
+          "defaultValue": "[]"
+        }
+      ]
+    },
+    {
+      "name": "NativeSelect",
+      "description": "A styled real `<select>` element. For the richer searchable dropdown, use the\nthemed `Select` from `./Select`.",
+      "props": [
+        {
+          "name": "options",
+          "type": "NativeSelectOption[]",
+          "required": false,
+          "defaultValue": "[]"
+        }
+      ]
+    },
+    {
+      "name": "Pagination",
+      "props": [
+        {
+          "name": "onPage",
+          "type": "(page: number) => void",
+          "required": true
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "pages",
+          "type": "number",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Popover",
+      "props": [
+        {
+          "name": "align",
+          "type": "enum",
+          "values": [
+            "start",
+            "end"
+          ],
+          "required": false,
+          "defaultValue": "start"
+        },
+        {
+          "name": "trigger",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "width",
+          "type": "number",
+          "required": false,
+          "defaultValue": "260"
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "props": [
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "defaultValue": "6"
+        },
+        {
+          "name": "tone",
+          "type": "string",
+          "required": false,
+          "description": "Bar color (defaults to the accent)."
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0"
+        }
+      ]
+    },
+    {
+      "name": "Radio",
+      "props": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "sub",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "RadioGroup",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": true
+        },
+        {
+          "name": "options",
+          "type": "RadioOption[]",
+          "required": true
+        },
+        {
+          "name": "style",
+          "type": "CSSProperties",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Select",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "defaultValue",
+          "type": "SelectValue",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((value: SelectValue) => void)",
+          "required": false
+        },
+        {
+          "name": "options",
+          "type": "SelectOptionInput[]",
+          "required": true
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Select…"
+        },
+        {
+          "name": "searchable",
+          "type": "boolean",
+          "required": false,
+          "description": "Force the search box on/off (defaults to on at ≥8 options)."
+        },
+        {
+          "name": "style",
+          "type": "CSSProperties",
+          "required": false
+        },
+        {
+          "name": "value",
+          "type": "SelectValue",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Sheet",
+      "props": [
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "footer",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "onClose",
+          "type": "(() => void)",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "props": [
+        {
+          "name": "h",
+          "type": "string | number",
+          "required": false,
+          "defaultValue": "12"
+        },
+        {
+          "name": "r",
+          "type": "string | number",
+          "required": false,
+          "defaultValue": "7"
+        },
+        {
+          "name": "style",
+          "type": "CSSProperties",
+          "required": false
+        },
+        {
+          "name": "w",
+          "type": "string | number",
+          "required": false,
+          "defaultValue": "100%"
+        }
+      ]
+    },
+    {
+      "name": "Slider",
+      "props": [
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "defaultValue": "100"
+        },
+        {
+          "name": "min",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0"
+        },
+        {
+          "name": "onChange",
+          "type": "((value: number) => void)",
+          "required": false
+        },
+        {
+          "name": "step",
+          "type": "number",
+          "required": false,
+          "defaultValue": "1"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Spinner",
+      "props": [
+        {
+          "name": "className",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "lg"
+          ],
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Stepper",
+      "props": [
+        {
+          "name": "current",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "steps",
+          "type": "ReactNode[]",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Switch",
+      "props": [
+        {
+          "name": "aria-label",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "checked",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "onChange",
+          "type": "((checked: boolean) => void)",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm"
+          ],
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Tabs",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "(value: string) => void",
+          "required": true
+        },
+        {
+          "name": "right",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "tabs",
+          "type": "TabItem[]",
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Tag",
+      "props": [
+        {
+          "name": "onRemove",
+          "type": "(() => void)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Textarea",
+      "props": []
+    },
+    {
+      "name": "TokenInput",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "((value: string[]) => void)",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Type and press Enter…"
+        },
+        {
+          "name": "value",
+          "type": "string[]",
+          "required": false,
+          "defaultValue": "[]"
+        }
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "props": [
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": true
+        },
+        {
+          "name": "side",
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom"
+          ],
+          "required": false,
+          "defaultValue": "top"
+        }
+      ]
+    }
+  ]
+}

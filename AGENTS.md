@@ -13,15 +13,16 @@ Kreatif. The full plan lives in [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
 ## Layout
 
-| Path              | Role                                                                                                       |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- |
-| `packages/css`    | `@vespera-ui/css` — framework-agnostic tokens + component CSS. **The single source of truth for styling.** |
-| `packages/icons`  | `@vespera-ui/icons` — framework-neutral SVG icons.                                                         |
-| `packages/react`  | `@vespera-ui/react` — React components (flagship).                                                         |
-| `prototype/`      | The original design build (HTML + in-browser Babel JSX). Design source of truth — do not ship from here.   |
-| `apps/docs`       | Docs site (later).                                                                                         |
-| `skills/`         | AI skills (later).                                                                                         |
-| `docs/ROADMAP.md` | Phased plan + locked decisions.                                                                            |
+| Path                               | Role                                                                                                       |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `packages/css`                     | `@vespera-ui/css` — framework-agnostic tokens + component CSS. **The single source of truth for styling.** |
+| `packages/icons`                   | `@vespera-ui/icons` — framework-neutral SVG icons.                                                         |
+| `packages/react`                   | `@vespera-ui/react` — React components (flagship).                                                         |
+| `prototype/`                       | The original design build (HTML + in-browser Babel JSX). Design source of truth — do not ship from here.   |
+| `apps/docs`                        | Docs site (Astro + Starlight) → GitHub Pages.                                                              |
+| `manifest/react.json`              | Machine-readable component API (props, types, defaults). Regenerate: `pnpm manifest`.                      |
+| `.claude/skills/`                  | AI skills: `vespera-component` (authoring), `vespera-theming` (theming).                                   |
+| `docs/ROADMAP.md` · `docs/TODO.md` | Phased plan + decisions · granular progress tracker.                                                       |
 
 ## Core rules
 

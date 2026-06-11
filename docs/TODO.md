@@ -33,10 +33,12 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 
 ### Iteration 2 — AI-consumable layer (Phase 3)
 
-- [ ] Component manifest (`manifest/*.json`: props, classes used, deps, framework availability)
-- [ ] Generate manifest from TS types where possible
-- [ ] Skills: `vespera-component` (authoring), `vespera-theming`
-- [ ] Cross-link manifest from root `AGENTS.md`
+- [x] Component manifest (`manifest/react.json`: props, types, enum values, defaults)
+- [x] Generate manifest from TS types (`pnpm manifest`, react-docgen-typescript)
+- [x] Skills: `vespera-component` (authoring), `vespera-theming` (in `.claude/skills/`)
+- [x] Cross-link manifest + skills from root `AGENTS.md`
+
+✅ **Iteration 2 complete.**
 
 ### Iteration 3 — Wire components into the docs
 
