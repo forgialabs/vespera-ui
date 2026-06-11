@@ -720,3 +720,241 @@ export const Stepper = defineComponent({
       );
   },
 });
+
+export const CircularProgress = defineComponent({
+  name: 'VspCircularProgress',
+  props: {
+    value: { type: Number, default: 0 },
+    size: { type: Number, default: 76 },
+    thickness: { type: Number, default: 7 },
+    color: { type: String, default: 'var(--accent)' },
+    label: { type: String, default: undefined },
+  },
+  setup(props) {
+    return () => {
+      const r = (props.size - props.thickness) / 2;
+      const circ = 2 * Math.PI * r;
+      return h(
+        'div',
+        { style: { position: 'relative', width: px(props.size), height: px(props.size) } },
+        [
+          h(
+            'svg',
+            { width: props.size, height: props.size, style: { transform: 'rotate(-90deg)' } },
+            [
+              h('circle', {
+                cx: props.size / 2,
+                cy: props.size / 2,
+                r,
+                fill: 'none',
+                stroke: 'var(--surface-3)',
+                'stroke-width': props.thickness,
+              }),
+              h('circle', {
+                cx: props.size / 2,
+                cy: props.size / 2,
+                r,
+                fill: 'none',
+                stroke: props.color,
+                'stroke-width': props.thickness,
+                'stroke-linecap': 'round',
+                'stroke-dasharray': circ,
+                'stroke-dashoffset': circ * (1 - Math.min(100, props.value) / 100),
+                style: { transition: 'stroke-dashoffset .5s cubic-bezier(.3,.7,.3,1)' },
+              }),
+            ],
+          ),
+          h(
+            'div',
+            {
+              class: 'tnum',
+              style: {
+                position: 'absolute',
+                inset: 0,
+                display: 'grid',
+                placeItems: 'center',
+                fontWeight: 800,
+                fontSize: px(props.size * 0.24),
+              },
+            },
+            props.label ?? `${Math.round(props.value)}%`,
+          ),
+        ],
+      );
+    };
+  },
+});
+
+export const Stat = defineComponent({
+  name: 'VspStat',
+  props: {
+    label: { type: String, default: undefined },
+    value: { type: String, default: undefined },
+    delta: { type: String, default: undefined },
+    deltaDir: { type: String as PropType<'up' | 'down'>, default: 'up' },
+    tone: { type: String, default: 'var(--accent)' },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        'div',
+        { class: 'card card-pad', style: { display: 'flex', alignItems: 'center', gap: '13px' } },
+        [
+          slots.icon
+            ? h(
+                'span',
+                {
+                  style: {
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: 'var(--r-sm)',
+                    flexShrink: 0,
+                    display: 'grid',
+                    placeItems: 'center',
+                    background: `color-mix(in oklab, ${props.tone} 14%, transparent)`,
+                    color: props.tone,
+                  },
+                },
+                slots.icon(),
+              )
+            : null,
+          h('div', { style: { minWidth: 0 } }, [
+            h('div', { class: 'eyebrow' }, props.label),
+            h(
+              'div',
+              { style: { display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '3px' } },
+              [
+                h(
+                  'span',
+                  {
+                    class: 'tnum',
+                    style: { fontSize: '22px', fontWeight: 800, letterSpacing: '-.02em' },
+                  },
+                  props.value,
+                ),
+                props.delta != null
+                  ? h(
+                      'span',
+                      {
+                        class: cx('badge', props.deltaDir === 'up' ? 'badge-pos' : 'badge-neg'),
+                        style: { padding: '1px 6px' },
+                      },
+                      [
+                        svgIcon(
+                          props.deltaDir === 'up'
+                            ? 'M12 19V5M5 12l7-7 7 7'
+                            : 'M12 5v14M5 12l7 7 7-7',
+                          10,
+                        ),
+                        props.delta,
+                      ],
+                    )
+                  : null,
+              ],
+            ),
+          ]),
+        ],
+      );
+  },
+});
+
+const clockSvg = (size = 14) =>
+  h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    },
+    [h('circle', { cx: 12, cy: 12, r: 9 }), h('path', { d: 'M12 7v5l3 2' })],
+  );
+
+const TL_TONE: Record<string, string> = {
+  pos: 'var(--success)',
+  neg: 'var(--danger)',
+  warn: 'var(--warning)',
+  info: 'var(--accent)',
+};
+
+export interface TimelineItem {
+  title: string;
+  time?: string;
+  body?: string;
+  tone?: 'pos' | 'neg' | 'warn' | 'info';
+}
+
+export const Timeline = defineComponent({
+  name: 'VspTimeline',
+  props: { items: { type: Array as PropType<TimelineItem[]>, default: () => [] } },
+  setup(props) {
+    return () =>
+      h(
+        'div',
+        { class: 'ui-tl' },
+        props.items.map((it, i) => {
+          const c = it.tone ? TL_TONE[it.tone] : undefined;
+          return h('div', { key: i, class: 'ui-tl-item' }, [
+            h(
+              'span',
+              {
+                class: 'ui-tl-dot',
+                style: c
+                  ? {
+                      background: `color-mix(in oklab, ${c} 14%, transparent)`,
+                      color: c,
+                      borderColor: `color-mix(in oklab, ${c} 30%, transparent)`,
+                    }
+                  : undefined,
+              },
+              [clockSvg()],
+            ),
+            h('div', { class: 'ui-tl-body' }, [
+              h(
+                'div',
+                {
+                  style: { display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' },
+                },
+                [
+                  h('span', { style: { fontWeight: 600, fontSize: '13.5px' } }, it.title),
+                  it.time
+                    ? h('span', { class: 'eyebrow', style: { marginLeft: 'auto' } }, it.time)
+                    : null,
+                ],
+              ),
+              it.body
+                ? h(
+                    'div',
+                    { style: { fontSize: '12.5px', color: 'var(--text-dim)', marginTop: '3px' } },
+                    it.body,
+                  )
+                : null,
+            ]),
+          ]);
+        }),
+      );
+  },
+});
+
+export const DescriptionList = defineComponent({
+  name: 'VspDescriptionList',
+  props: { items: { type: Array as PropType<[string, string][]>, default: () => [] } },
+  setup(props) {
+    return () =>
+      h(
+        'dl',
+        { class: 'ui-dl' },
+        props.items.flatMap(([k, v], i) => {
+          const last = i === props.items.length - 1 ? 'last' : '';
+          return [
+            h('dt', { key: `k${i}`, class: last }, k),
+            h('dd', { key: `v${i}`, class: last }, v),
+          ];
+        }),
+      );
+  },
+});
