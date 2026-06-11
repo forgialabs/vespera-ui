@@ -63,7 +63,10 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
       `AvatarGroup`, `Segmented` (57 components total)
 - [x] `Calendar` / `DatePicker` / `DateRangePicker` / `EventCalendar` (month + week + agenda)
 - [x] Charts: `Sparkline`, `AreaChart`, `BarChart`, `Donut`, `StatCard` (66 components total)
-- [ ] Pro blocks / screen templates
-- [ ] `@vespera-ui/tokens` (JSON) + `@vespera-ui/tailwind` preset
+- [x] Blocks (open source) — `OrdersBlock`, `KanbanBlock`, `ApiKeysBlock`, `AuditLogBlock`,
+      `SystemStatusBlock`, `TeamRolesBlock` + shared `Block` frame (prop-driven, default data)
+- [x] `@vespera-ui/tokens` (TS + tokens.json) + `@vespera-ui/tailwind` preset
+- [ ] Live admin/library screen templates rebuilt on the real packages (dashboard done)
 - [ ] Additional frameworks (Angular first)
-- [ ] Pro tier (separate private repo)
+
+> Vespera is **fully open source** (Apache-2.0) — no Pro/closed tier.

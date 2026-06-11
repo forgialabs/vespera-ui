@@ -1,17 +1,48 @@
 import { useState } from 'react';
 import { Icon } from '@vespera-ui/icons';
 import {
+  ApiKeysBlock,
   AreaChart,
+  AuditLogBlock,
   Avatar,
   Badge,
   Button,
   Card,
   CardHead,
   Donut,
+  KanbanBlock,
+  OrdersBlock,
   Segmented,
   StatCard,
+  SystemStatusBlock,
+  TeamRolesBlock,
+  ToastHost,
   type BadgeTone,
 } from '@vespera-ui/react';
+
+export function OrdersBlockExample() {
+  return <OrdersBlock />;
+}
+export function KanbanBlockExample() {
+  return <KanbanBlock />;
+}
+export function ApiKeysBlockExample() {
+  return (
+    <>
+      <ApiKeysBlock />
+      <ToastHost />
+    </>
+  );
+}
+export function AuditLogBlockExample() {
+  return <AuditLogBlock />;
+}
+export function SystemStatusBlockExample() {
+  return <SystemStatusBlock />;
+}
+export function TeamRolesBlockExample() {
+  return <TeamRolesBlock />;
+}
 
 const revenue = [
   [12, 18, 15, 22, 19, 26, 24, 31, 28, 35, 33, 42],

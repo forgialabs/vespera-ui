@@ -5,7 +5,15 @@ description: Full, real-world UIs built with Vespera — a complete component li
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 import Preview from '../../components/Preview.astro';
-import { DashboardTemplate } from '../../components/templates';
+import {
+  DashboardTemplate,
+  OrdersBlockExample,
+  KanbanBlockExample,
+  ApiKeysBlockExample,
+  AuditLogBlockExample,
+  SystemStatusBlockExample,
+  TeamRolesBlockExample,
+} from '../../components/templates';
 
 ## Admin dashboard
 
@@ -23,6 +31,50 @@ import { Icon } from '@vespera-ui/icons';
 // full source at apps/docs/src/components/templates.tsx`}
 >
   <DashboardTemplate client:visible />
+</Preview>
+
+## Blocks
+
+Composed, ready-to-use sections — each a single component from `@vespera-ui/react`, all
+open source. Every block takes its data via props (with the sensible defaults shown here) and
+is fully interactive below.
+
+### Orders table
+
+<Preview code={`import { OrdersBlock } from '@vespera-ui/react';\n\n<OrdersBlock orders={orders} />`}>
+  <OrdersBlockExample client:visible />
+</Preview>
+
+### Operations board (kanban)
+
+Drag a card to reorder it or move it between columns.
+
+<Preview code={`import { KanbanBlock } from '@vespera-ui/react';\n\n<KanbanBlock onChange={(cols) => save(cols)} />`}>
+  <KanbanBlockExample client:visible />
+</Preview>
+
+### API keys
+
+<Preview code={`import { ApiKeysBlock } from '@vespera-ui/react';\n\n<ApiKeysBlock keys={keys} />`}>
+  <ApiKeysBlockExample client:visible />
+</Preview>
+
+### Audit log
+
+<Preview code={`import { AuditLogBlock } from '@vespera-ui/react';\n\n<AuditLogBlock entries={entries} />`}>
+  <AuditLogBlockExample client:visible />
+</Preview>
+
+### System status
+
+<Preview code={`import { SystemStatusBlock } from '@vespera-ui/react';\n\n<SystemStatusBlock services={services} />`}>
+  <SystemStatusBlockExample client:visible />
+</Preview>
+
+### Team & roles
+
+<Preview code={`import { TeamRolesBlock } from '@vespera-ui/react';\n\n<TeamRolesBlock members={members} />`}>
+  <TeamRolesBlockExample client:visible />
 </Preview>
 
 ## Full showcases
