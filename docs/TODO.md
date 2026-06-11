@@ -50,9 +50,8 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
       live theme/accent/density/corners controls. Verified hydrated + interactive.
 - [x] Theme the docs to feel like Vespera — Starlight tokens mapped to the Vespera palette +
       typefaces, deep-space glow background, brand logo + favicon (`src/styles/vespera.css`).
-- [~] Expand Storybook coverage — stories for Button, Badge, Alert, Field, Select family,
-  overlays, **all six blocks, EventCalendar, charts, and date pickers**; remaining primitives
-  (toggles, nav, data display) still to get stories.
+- [x] Expand Storybook coverage — stories for Button, Badge, Alert, Field, Select family,
+      overlays, all six blocks, EventCalendar, charts, date pickers, toggles, nav, and data display.
 
 ✅ **Iteration 3 complete** (API reference, React docs, interactive playground, Vespera theme).
 
@@ -67,6 +66,7 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 - [x] Blocks (open source) — `OrdersBlock`, `KanbanBlock`, `ApiKeysBlock`, `AuditLogBlock`,
       `SystemStatusBlock`, `TeamRolesBlock` + shared `Block` frame (prop-driven, default data)
 - [x] `@vespera-ui/tokens` (TS + tokens.json) + `@vespera-ui/tailwind` preset
+- [x] `@vespera-ui/cli` — copy-in components (`npx vespera add`), registry generated from react source
 - [ ] Live admin/library screen templates rebuilt on the real packages (dashboard done)
 - [ ] Additional frameworks (Angular first)
 
