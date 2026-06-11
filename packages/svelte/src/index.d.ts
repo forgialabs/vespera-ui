@@ -36,6 +36,9 @@ export const Field: Component<{
 }>;
 export const Input: Component<{ value?: string; invalid?: boolean }>;
 export const Textarea: Component<{ value?: string }>;
+
+export type SelectOption = string | { value: string; label: string; sub?: string };
+export const NativeSelect: Component<{ value?: string; options?: SelectOption[] }>;
 export const Switch: Component<{ checked?: boolean; size?: 'sm'; disabled?: boolean }>;
 export const Checkbox: Component<{
   checked?: boolean;
@@ -43,3 +46,13 @@ export const Checkbox: Component<{
   sub?: string;
   disabled?: boolean;
 }>;
+export const Radio: Component<{
+  checked?: boolean;
+  label?: string;
+  sub?: string;
+  name?: string;
+  value?: string;
+  onselect?: () => void;
+}>;
+export const RadioGroup: Component<{ value?: string; options?: SelectOption[]; name?: string }>;
+export const Slider: Component<{ value?: number; min?: number; max?: number; step?: number }>;

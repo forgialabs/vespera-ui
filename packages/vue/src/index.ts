@@ -260,3 +260,110 @@ export const Checkbox = defineComponent({
       );
   },
 });
+
+export type SelectOption = string | { value: string; label: string; sub?: string };
+const optValue = (o: SelectOption) => (typeof o === 'string' ? o : o.value);
+const optLabel = (o: SelectOption) => (typeof o === 'string' ? o : o.label);
+
+export const Radio = defineComponent({
+  name: 'VspRadio',
+  props: {
+    checked: Boolean,
+    label: { type: String, default: undefined },
+    sub: { type: String, default: undefined },
+  },
+  emits: ['select'],
+  setup(props, { emit }) {
+    return () =>
+      h(
+        'label',
+        {
+          class: 'ui-opt',
+          onClick: (e: Event) => {
+            e.preventDefault();
+            emit('select');
+          },
+        },
+        [
+          h('span', { class: cx('ui-radio-dot', props.checked && 'on') }),
+          h('span', null, [
+            h('span', null, props.label),
+            props.sub ? h('span', { class: 'ui-opt-sub' }, props.sub) : null,
+          ]),
+        ],
+      );
+  },
+});
+
+export const RadioGroup = defineComponent({
+  name: 'VspRadioGroup',
+  props: {
+    modelValue: { type: String, default: undefined },
+    options: { type: Array as PropType<SelectOption[]>, default: () => [] },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () =>
+      h(
+        'div',
+        { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+        props.options.map((o) =>
+          h(Radio, {
+            key: optValue(o),
+            label: optLabel(o),
+            sub: typeof o === 'object' ? o.sub : undefined,
+            checked: props.modelValue === optValue(o),
+            onSelect: () => emit('update:modelValue', optValue(o)),
+          }),
+        ),
+      );
+  },
+});
+
+export const Slider = defineComponent({
+  name: 'VspSlider',
+  props: {
+    modelValue: { type: Number, default: 0 },
+    min: { type: Number, default: 0 },
+    max: { type: Number, default: 100 },
+    step: { type: Number, default: 1 },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () =>
+      h('input', {
+        type: 'range',
+        class: 'ui-slider',
+        value: props.modelValue,
+        min: props.min,
+        max: props.max,
+        step: props.step,
+        onInput: (e: Event) =>
+          emit('update:modelValue', Number((e.target as HTMLInputElement).value)),
+      });
+  },
+});
+
+export const NativeSelect = defineComponent({
+  name: 'VspNativeSelect',
+  props: {
+    modelValue: { type: String, default: undefined },
+    options: { type: Array as PropType<SelectOption[]>, default: () => [] },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit, attrs }) {
+    return () =>
+      h(
+        'select',
+        {
+          class: 'ui-select',
+          value: props.modelValue,
+          onChange: (e: Event) => emit('update:modelValue', (e.target as HTMLSelectElement).value),
+          ...attrs,
+        },
+        props.options.map((o) =>
+          h('option', { key: optValue(o), value: optValue(o) }, optLabel(o)),
+        ),
+      );
+  },
+});
