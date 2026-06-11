@@ -35,6 +35,7 @@ export default defineConfig({
             { label: 'Introduction', link: '/' },
             { label: 'Installation', link: '/guides/installation/' },
             { label: 'Quick start', link: '/guides/quick-start/' },
+            { label: 'Concepts', link: '/guides/concepts/' },
           ],
         },
         {
@@ -42,6 +43,7 @@ export default defineConfig({
           items: [
             { label: 'Theming', link: '/guides/theming/' },
             { label: 'Components', link: '/guides/components/' },
+            { label: 'Recipes', link: '/guides/recipes/' },
             { label: 'Examples & templates', link: '/examples/' },
           ],
         },
