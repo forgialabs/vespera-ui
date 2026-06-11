@@ -62,7 +62,7 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
       `OTPInput`, `InlineEdit`, `NumberStepper`, `CopyButton`, `FileDropzone`, `Avatar`,
       `AvatarGroup`, `Segmented` (57 components total)
 - [x] `Calendar` / `DatePicker` / `DateRangePicker` (EventCalendar still to port)
-- [ ] Charts (`AreaChart`, `BarChart`, `Donut`, `Sparkline`, `StatCard`)
+- [x] Charts: `Sparkline`, `AreaChart`, `BarChart`, `Donut`, `StatCard` (65 components total)
 - [ ] Pro blocks / screen templates
 - [ ] `@vespera-ui/tokens` (JSON) + `@vespera-ui/tailwind` preset
 - [ ] Additional frameworks (Angular first)

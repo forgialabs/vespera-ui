@@ -93,6 +93,46 @@
       ]
     },
     {
+      "name": "AreaChart",
+      "props": [
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent)"
+        },
+        {
+          "name": "color2",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent-2)"
+        },
+        {
+          "name": "dual",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "false"
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "defaultValue": "260"
+        },
+        {
+          "name": "labels",
+          "type": "string[]",
+          "required": false
+        },
+        {
+          "name": "series",
+          "type": "number[][]",
+          "required": true,
+          "description": "One series (`[data]`) or two when `dual`."
+        }
+      ]
+    },
+    {
       "name": "Avatar",
       "props": [
         {
@@ -193,6 +233,33 @@
           ],
           "required": false,
           "defaultValue": "info"
+        }
+      ]
+    },
+    {
+      "name": "BarChart",
+      "props": [
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent)"
+        },
+        {
+          "name": "data",
+          "type": "number[]",
+          "required": true
+        },
+        {
+          "name": "height",
+          "type": "number",
+          "required": false,
+          "defaultValue": "240"
+        },
+        {
+          "name": "labels",
+          "type": "string[]",
+          "required": false
         }
       ]
     },
@@ -576,6 +643,28 @@
           "name": "vertical",
           "type": "boolean",
           "required": false
+        }
+      ]
+    },
+    {
+      "name": "Donut",
+      "props": [
+        {
+          "name": "data",
+          "type": "DonutDatum[]",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "required": false,
+          "defaultValue": "168"
+        },
+        {
+          "name": "thickness",
+          "type": "number",
+          "required": false,
+          "defaultValue": "22"
         }
       ]
     },
@@ -1255,6 +1344,40 @@
       ]
     },
     {
+      "name": "Sparkline",
+      "props": [
+        {
+          "name": "color",
+          "type": "string",
+          "required": false,
+          "defaultValue": "var(--accent)"
+        },
+        {
+          "name": "data",
+          "type": "number[]",
+          "required": true
+        },
+        {
+          "name": "fill",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true"
+        },
+        {
+          "name": "h",
+          "type": "number",
+          "required": false,
+          "defaultValue": "34"
+        },
+        {
+          "name": "w",
+          "type": "number",
+          "required": false,
+          "defaultValue": "110"
+        }
+      ]
+    },
+    {
       "name": "Spinner",
       "props": [
         {
@@ -1306,6 +1429,51 @@
           "required": false,
           "defaultValue": "var(--accent)",
           "description": "Accent color for the icon tile."
+        },
+        {
+          "name": "value",
+          "type": "ReactNode",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "StatCard",
+      "props": [
+        {
+          "name": "delta",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "deltaDir",
+          "type": "enum",
+          "values": [
+            "up",
+            "down"
+          ],
+          "required": false,
+          "defaultValue": "up"
+        },
+        {
+          "name": "icon",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "label",
+          "type": "ReactNode",
+          "required": false
+        },
+        {
+          "name": "spark",
+          "type": "number[]",
+          "required": false
+        },
+        {
+          "name": "sparkColor",
+          "type": "string",
+          "required": false
         },
         {
           "name": "value",

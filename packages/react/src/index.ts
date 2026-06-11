@@ -33,3 +33,4 @@ export * from './Avatar';
 export * from './Segmented';
 export * from './FormExtras';
 export * from './DatePicker';
+export * from './Charts';
