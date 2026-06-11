@@ -1,0 +1,29 @@
+---
+// Full-page admin console built entirely from @vespera-ui/react — the real,
+// published components, not a browser-compiled prototype.
+import '@vespera-ui/css';
+import { AdminConsole } from '../components/AdminConsole';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vespera · admin console</title>
+    <link rel="icon" href="/vespera-ui/favicon.svg" type="image/svg+xml" />
+    <style is:global>
+      body {
+        margin: 0;
+      }
+      .vsp-root {
+        min-height: 100dvh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vsp-root" data-theme="dark" data-density="comfortable" data-corners="round">
+      <AdminConsole client:load />
+    </div>
+  </body>
+</html>

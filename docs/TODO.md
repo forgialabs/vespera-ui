@@ -67,7 +67,8 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
       `SystemStatusBlock`, `TeamRolesBlock` + shared `Block` frame (prop-driven, default data)
 - [x] `@vespera-ui/tokens` (TS + tokens.json) + `@vespera-ui/tailwind` preset
 - [x] `@vespera-ui/cli` — copy-in components (`npx vespera add`), registry generated from react source
-- [ ] Live admin/library screen templates rebuilt on the real packages (dashboard done)
+- [x] Live admin console rebuilt on the real packages — navigable `/admin` (sidebar + views:
+      dashboard, orders, kanban, team, API keys, audit, system), all `@vespera-ui/react`
 - [x] Additional frameworks — `@vespera-ui/vue` (Vue 3), `@vespera-ui/svelte` (Svelte 5),
       `@vespera-ui/angular` (Angular 20, ng-packagr). Core component set each; all emit the same
       `.vsp-`/`ui-` classes as React.
