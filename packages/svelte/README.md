@@ -36,8 +36,8 @@ Form components support `bind:` (`Input`, `Switch`, `Checkbox`). `Alert`, `CardH
 
 ## Components
 
-`Button`, `IconButton`, `Badge`, `Spinner`, `Card`, `CardHead`, `Alert`, `Field`, `Input`,
-`Switch`, `Checkbox`. More are being ported — the CSS layer already supports every Vespera
-component, so wrappers are thin.
+`Button`, `IconButton`, `Badge`, `Tag`, `Kbd`, `Divider`, `Spinner`, `Card`, `CardHead`,
+`Alert`, `Field`, `Input`, `Textarea`, `Switch`, `Checkbox`. More are being ported — the CSS
+layer already supports every Vespera component, so wrappers are thin.
 
 License: Apache-2.0
