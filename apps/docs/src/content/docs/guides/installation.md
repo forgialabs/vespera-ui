@@ -64,6 +64,26 @@ export function App() {
 
 See the [React components API](/vespera-ui/reference/react/) for every component and its props.
 
+## Other frameworks
+
+Vespera ships typed component wrappers for **Vue**, **Svelte**, and **Angular** too — each is a
+thin layer over the same `@vespera-ui/css`, so they render identical markup and theme the same
+way. See the [Frameworks guide](/vespera-ui/guides/frameworks/) for install and usage in each.
+
+## The package family
+
+| Package                | What it is                                              |
+| ---------------------- | ------------------------------------------------------ |
+| `@vespera-ui/css`      | Framework-agnostic CSS — the source of truth           |
+| `@vespera-ui/react`    | React components                                        |
+| `@vespera-ui/vue`      | Vue 3 components                                        |
+| `@vespera-ui/svelte`   | Svelte 5 components                                     |
+| `@vespera-ui/angular`  | Angular 20 components                                   |
+| `@vespera-ui/icons`    | Framework-neutral SVG icon set                          |
+| `@vespera-ui/tokens`   | Design tokens as data (TS + `tokens.json`)             |
+| `@vespera-ui/tailwind` | Tailwind CSS preset                                     |
+| `@vespera-ui/cli`      | Copy components into your project (`npx vespera add`)   |
+
 ---
 
 That's it — see [Quick start](/vespera-ui/guides/quick-start/) to build something, or

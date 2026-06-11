@@ -42,10 +42,12 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { label: 'Theming', link: '/guides/theming/' },
+            { label: 'Frameworks', link: '/guides/frameworks/' },
             { label: 'Components', link: '/guides/components/' },
             { label: 'CLI', link: '/guides/cli/' },
             { label: 'Recipes', link: '/guides/recipes/' },
             { label: 'Examples & templates', link: '/examples/' },
+            { label: 'Changelog', link: '/guides/changelog/' },
           ],
         },
         {
