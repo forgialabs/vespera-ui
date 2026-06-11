@@ -6,6 +6,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/node_modules/**',
+      '**/storybook-static/**',
       'prototype/**',
       'apps/docs/**',
       '_preview-server.cjs',

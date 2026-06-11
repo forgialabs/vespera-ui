@@ -8,6 +8,10 @@ dist/
 # astro generated types
 .astro/
 
+# storybook
+storybook-static/
+*storybook.log
+
 # logs
 *.log
 npm-debug.log*
