@@ -1,0 +1,51 @@
+---
+title: Examples & templates
+description: Full, real-world UIs built with Vespera — a complete component library showcase and a flagship admin console.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+Two complete, interactive UIs that show what you can build with Vespera. Open either
+full-screen and try the live theming, density, and corner controls.
+
+<CardGrid>
+  <Card title="Component library" icon="open-book">
+    Every component, block, and pattern in one place — forms, overlays, tables, charts,
+    calendars, command palette — with live theming and copy-paste code.
+
+    <p><a href="/vespera-ui/examples/library.html" target="_blank" rel="noopener">Open the library showcase →</a></p>
+  </Card>
+
+  <Card title="Admin console" icon="laptop">
+    A flagship operational template: dashboard, analytics, data tables, approvals, audit log,
+    insights, notifications, settings, and login — all wired up.
+
+    <p><a href="/vespera-ui/examples/admin.html" target="_blank" rel="noopener">Open the admin demo →</a></p>
+  </Card>
+</CardGrid>
+
+## Build it with the packages
+
+The two demos above are the original showcase builds (they compile in the browser, so give
+them a second on first load). They demonstrate the full design language — and you reproduce
+the exact same UI with the productized packages:
+
+```tsx
+import '@vespera-ui/css';
+import { Card, CardHead, Button, Badge, Tabs } from '@vespera-ui/react';
+
+function DashboardCard() {
+  return (
+    <div className="vsp-root" data-theme="dark">
+      <Card>
+        <CardHead title="Revenue" desc="Last 30 days" right={<Badge tone="pos" dot>+12%</Badge>} />
+        <div className="card-pad">{/* charts, stats, tables… */}</div>
+      </Card>
+    </div>
+  );
+}
+```
+
+See [Installation](/vespera-ui/guides/installation/) to get started, the
+[React components API](/vespera-ui/reference/react/) for every component, and the
+[interactive playground](/vespera-ui/demo) to experiment live.

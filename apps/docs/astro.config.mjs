@@ -42,6 +42,7 @@ export default defineConfig({
           items: [
             { label: 'Theming', link: '/guides/theming/' },
             { label: 'Components', link: '/guides/components/' },
+            { label: 'Examples & templates', link: '/examples/' },
           ],
         },
         {
