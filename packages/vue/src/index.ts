@@ -5,7 +5,7 @@
  * as `@vespera-ui/react`, so theming via `.vsp-root` data-attributes works
  * identically. Import the CSS once and wrap your app in a themed root.
  */
-import { defineComponent, h, ref, type PropType } from 'vue';
+import { defineComponent, h, ref, useId, type PropType } from 'vue';
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -1120,6 +1120,259 @@ export const Accordion = defineComponent({
             ]),
           ]),
         ),
+      );
+  },
+});
+
+type Pt = [number, number];
+/** Smooth (cubic) SVG path through points. */
+export function smoothPath(pts: Pt[]): string {
+  if (pts.length < 2) return '';
+  let d = `M ${pts[0]![0]} ${pts[0]![1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i]!;
+    const [x1, y1] = pts[i + 1]!;
+    const cx = (x0 + x1) / 2;
+    d += ` C ${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`;
+  }
+  return d;
+}
+
+export const Sparkline = defineComponent({
+  name: 'VspSparkline',
+  props: {
+    data: { type: Array as PropType<number[]>, default: () => [] },
+    color: { type: String, default: 'var(--accent)' },
+    w: { type: Number, default: 110 },
+    h: { type: Number, default: 34 },
+    fill: { type: Boolean, default: true },
+  },
+  setup(props) {
+    const gid = 'spk' + useId().replace(/[^a-zA-Z0-9]/g, '');
+    return () => {
+      const data = props.data;
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      const rng = max - min || 1;
+      const pts: Pt[] = data.map((v, i) => [
+        (i / (data.length - 1)) * props.w,
+        props.h - 3 - ((v - min) / rng) * (props.h - 6),
+      ]);
+      const d = smoothPath(pts);
+      const last = pts[pts.length - 1] ?? [0, 0];
+      return h(
+        'svg',
+        {
+          width: props.w,
+          height: props.h,
+          viewBox: `0 0 ${props.w} ${props.h}`,
+          style: { display: 'block', overflow: 'visible' },
+        },
+        [
+          props.fill
+            ? h('defs', null, [
+                h('linearGradient', { id: gid, x1: '0', x2: '0', y1: '0', y2: '1' }, [
+                  h('stop', { offset: '0', 'stop-color': props.color, 'stop-opacity': '0.28' }),
+                  h('stop', { offset: '1', 'stop-color': props.color, 'stop-opacity': '0' }),
+                ]),
+              ])
+            : null,
+          props.fill
+            ? h('path', {
+                d: `${d} L ${props.w} ${props.h} L 0 ${props.h} Z`,
+                fill: `url(#${gid})`,
+              })
+            : null,
+          h('path', {
+            d,
+            fill: 'none',
+            stroke: props.color,
+            'stroke-width': '2',
+            'stroke-linecap': 'round',
+          }),
+          h('circle', { cx: last[0], cy: last[1], r: '2.6', fill: props.color }),
+        ],
+      );
+    };
+  },
+});
+
+export interface DonutDatum {
+  label: string;
+  value: number;
+  color: string;
+}
+
+export const Donut = defineComponent({
+  name: 'VspDonut',
+  props: {
+    data: { type: Array as PropType<DonutDatum[]>, default: () => [] },
+    size: { type: Number, default: 168 },
+    thickness: { type: Number, default: 22 },
+  },
+  setup(props) {
+    return () => {
+      const total = props.data.reduce((s, d) => s + d.value, 0) || 1;
+      const r = (props.size - props.thickness) / 2;
+      const c = props.size / 2;
+      const circ = 2 * Math.PI * r;
+      let acc = 0;
+      const segs = props.data.map((d, i) => {
+        const len = (d.value / total) * circ;
+        const seg = h('circle', {
+          key: i,
+          cx: c,
+          cy: c,
+          r,
+          fill: 'none',
+          stroke: d.color,
+          'stroke-width': props.thickness,
+          'stroke-dasharray': `${len - 2.5} ${circ - len + 2.5}`,
+          'stroke-dashoffset': -acc,
+          'stroke-linecap': 'round',
+        });
+        acc += len;
+        return seg;
+      });
+      return h('div', { style: { display: 'flex', alignItems: 'center', gap: '22px' } }, [
+        h(
+          'svg',
+          {
+            width: props.size,
+            height: props.size,
+            style: { transform: 'rotate(-90deg)', flexShrink: 0 },
+          },
+          [
+            h('circle', {
+              cx: c,
+              cy: c,
+              r,
+              fill: 'none',
+              stroke: 'var(--surface-3)',
+              'stroke-width': props.thickness,
+            }),
+            ...segs,
+          ],
+        ),
+        h(
+          'div',
+          { style: { display: 'flex', flexDirection: 'column', gap: '9px', flex: 1 } },
+          props.data.map((d, i) =>
+            h(
+              'div',
+              {
+                key: i,
+                style: { display: 'flex', alignItems: 'center', gap: '9px', fontSize: '12.5px' },
+              },
+              [
+                h('i', {
+                  style: {
+                    width: '9px',
+                    height: '9px',
+                    borderRadius: '3px',
+                    background: d.color,
+                    flexShrink: 0,
+                  },
+                }),
+                h('span', { style: { color: 'var(--text-dim)', flex: 1 } }, d.label),
+                h(
+                  'span',
+                  { class: 'mono tnum', style: { fontWeight: 600 } },
+                  `${Math.round((d.value / total) * 100)}%`,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ]);
+    };
+  },
+});
+
+export const StatCard = defineComponent({
+  name: 'VspStatCard',
+  props: {
+    label: { type: String, default: undefined },
+    value: { type: String, default: undefined },
+    delta: { type: String, default: undefined },
+    deltaDir: { type: String as PropType<'up' | 'down'>, default: 'up' },
+    spark: { type: Array as PropType<number[]>, default: undefined },
+    sparkColor: { type: String, default: 'var(--accent)' },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        'div',
+        {
+          class: 'card card-pad vsp-rise',
+          style: { display: 'flex', flexDirection: 'column', gap: '14px' },
+        },
+        [
+          h(
+            'div',
+            { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+            [
+              h('div', { style: { display: 'flex', alignItems: 'center', gap: '10px' } }, [
+                h(
+                  'span',
+                  {
+                    style: {
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: 'var(--r-sm)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      background: 'color-mix(in oklab, var(--accent) 13%, transparent)',
+                      color: 'var(--accent)',
+                    },
+                  },
+                  slots.icon?.(),
+                ),
+                h('span', { class: 'eyebrow' }, props.label),
+              ]),
+              props.delta != null
+                ? h(
+                    'span',
+                    { class: cx('badge', props.deltaDir === 'up' ? 'badge-pos' : 'badge-neg') },
+                    [
+                      svgIcon(
+                        props.deltaDir === 'up' ? 'M12 19V5M5 12l7-7 7 7' : 'M12 5v14M5 12l7 7 7-7',
+                        11,
+                      ),
+                      props.delta,
+                    ],
+                  )
+                : null,
+            ],
+          ),
+          h(
+            'div',
+            {
+              style: {
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                gap: '12px',
+              },
+            },
+            [
+              h(
+                'div',
+                {
+                  class: 'tnum',
+                  style: {
+                    fontSize: '30px',
+                    fontWeight: 800,
+                    letterSpacing: '-.02em',
+                    lineHeight: 1,
+                  },
+                },
+                props.value,
+              ),
+              props.spark ? h(Sparkline, { data: props.spark, color: props.sparkColor }) : null,
+            ],
+          ),
+        ],
       );
   },
 });

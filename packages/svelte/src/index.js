@@ -37,3 +37,6 @@ export { default as Checkbox } from './Checkbox.svelte';
 export { default as Radio } from './Radio.svelte';
 export { default as RadioGroup } from './RadioGroup.svelte';
 export { default as Slider } from './Slider.svelte';
+export { default as Sparkline } from './Sparkline.svelte';
+export { default as Donut } from './Donut.svelte';
+export { default as StatCard } from './StatCard.svelte';

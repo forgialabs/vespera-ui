@@ -118,3 +118,25 @@ export const Accordion: Component<{
   multiple?: boolean;
   defaultOpen?: number[];
 }>;
+export const Sparkline: Component<{
+  data?: number[];
+  color?: string;
+  w?: number;
+  h?: number;
+  fill?: boolean;
+}>;
+export interface DonutDatum {
+  label: string;
+  value: number;
+  color: string;
+}
+export const Donut: Component<{ data?: DonutDatum[]; size?: number; thickness?: number }>;
+export const StatCard: Component<{
+  label?: string;
+  value?: string;
+  delta?: string;
+  deltaDir?: 'up' | 'down';
+  spark?: number[];
+  sparkColor?: string;
+  icon?: unknown;
+}>;
