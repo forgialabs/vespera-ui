@@ -15,6 +15,7 @@ import {
   DateRangePicker,
   Donut,
   EmptyState,
+  EventCalendar,
   InlineEdit,
   NumberStepper,
   OTPInput,
@@ -25,6 +26,7 @@ import {
   Sparkline,
   Spinner,
   Stepper,
+  ToastHost,
   Tree,
   useCmdK,
   type DateRange,
@@ -172,6 +174,15 @@ export function DateRangeExample() {
   return (
     <div style={{ width: 300 }}>
       <DateRangePicker value={range} onChange={setRange} />
+    </div>
+  );
+}
+
+export function EventCalendarExample() {
+  return (
+    <div style={{ width: '100%' }}>
+      <EventCalendar />
+      <ToastHost />
     </div>
   );
 }

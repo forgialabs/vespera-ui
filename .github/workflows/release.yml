@@ -1,15 +1,18 @@
 name: Release
 
-# Changesets-driven releases. On push to main:
+# Changesets-driven releases with npm Trusted Publishing (OIDC — no token).
+# On push to main:
 #  - if there are unreleased changesets → opens/updates a "Version Packages" PR
 #    (bumps versions + writes CHANGELOGs from the changeset summaries).
 #  - once that PR is merged (no changesets left) → publishes the changed packages
-#    to npm and creates a GitHub Release per package with the changelog as notes.
+#    to npm via OIDC and creates a GitHub Release per package with the changelog.
 #
 # Requires:
 #  - repo setting: Settings → Actions → General → "Allow GitHub Actions to create
 #    and approve pull requests" (so the bot can open the Version PR).
-#  - an NPM_TOKEN secret with publish rights to @vespera-ui.
+#  - a Trusted Publisher configured on npmjs.com for EACH package, pointing at
+#    this repo + this workflow file (release.yml). No NPM_TOKEN needed.
+#  - pnpm 10 (pnpm 11 currently has an OIDC regression) and Node ≥ 22.14.
 on:
   push:
     branches: [main]
@@ -21,26 +24,22 @@ concurrency:
 permissions:
   contents: write # version commit, tags, GitHub Releases
   pull-requests: write # open the Version Packages PR
-  id-token: write # reserved for npm provenance / trusted publishing
+  id-token: write # OIDC trusted publishing + provenance
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4 # version resolved from packageManager (pnpm 10)
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build packages
         run: pnpm build
-      - name: Configure npm auth
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create Release PR or publish
         uses: changesets/action@v1
         with:
@@ -50,5 +49,4 @@ jobs:
           commit: 'chore: release — version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true' # attach build provenance to each publish

@@ -22,6 +22,7 @@ import {
   CommandExample,
   SheetExample,
   DateRangeExample,
+  EventCalendarExample,
   NavExample,
   MessagingExample,
   MoreFormsExample,
@@ -251,6 +252,19 @@ useCmdK(setOpen); // ⌘K / Ctrl+K
 <DateRangePicker value={range} onChange={setRange} />`}
 >
   <DateRangeExample client:visible />
+</Preview>
+
+## Event calendar
+
+Month, week and agenda views in one component. Drag across days in the month grid to add an
+event across a range; click an empty week slot to add one at that hour.
+
+<Preview
+  code={`import { EventCalendar } from '@vespera-ui/react';
+
+<EventCalendar onChange={(events) => console.log(events)} />`}
+>
+  <EventCalendarExample client:visible />
 </Preview>
 
 ## Breadcrumb & pagination

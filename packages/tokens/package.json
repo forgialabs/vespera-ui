@@ -1,0 +1,40 @@
+{
+  "name": "@vespera-ui/tokens",
+  "version": "0.1.0",
+  "description": "Vespera design system — design tokens as data (TS/ESM/CJS + tokens.json).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./tokens.json": "./dist/tokens.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/emit-json.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git",
+    "directory": "packages/tokens"
+  },
+  "keywords": [
+    "vespera",
+    "design-tokens",
+    "tokens",
+    "design-system",
+    "ui"
+  ]
+}

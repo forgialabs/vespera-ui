@@ -1,7 +1,7 @@
 {
   "$schema": "https://forgialabs.github.io/vespera-ui/manifest.schema.json",
   "package": "@vespera-ui/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "framework": "react",
   "note": "Auto-generated from packages/react/src by scripts/build-manifest.mjs. Components render inside a themed `.vsp-root` element and consume @vespera-ui/css classes. Icon props accept any ReactNode (use @vespera-ui/icons).",
   "components": [
@@ -93,6 +93,18 @@
       ]
     },
     {
+      "name": "ApiKeysBlock",
+      "description": "Reveal, copy, and revoke API credentials; secrets stay masked by default.",
+      "props": [
+        {
+          "name": "keys",
+          "type": "ApiKey[]",
+          "required": false,
+          "defaultValue": "[\n  { id: 1, name: 'Production', token: 'vsp_live_8f2a…d91c', secret: 'vsp_live_8f2a39c4e7b1d91c', created: 'Jan 14, 2026', last: '2m ago' },\n  { id: 2, name: 'Staging', token: 'vsp_test_4b7e…02fa', secret: 'vsp_test_4b7e1d9a55c302fa', created: 'Mar 02, 2026', last: '3d ago' },\n  { id: 3, name: 'CI / CD', token: 'vsp_live_19cc…7a4b', secret: 'vsp_live_19cc8e2f0b6d7a4b', created: 'Apr 21, 2026', last: '12h ago' },\n]"
+        }
+      ]
+    },
+    {
       "name": "AreaChart",
       "props": [
         {
@@ -129,6 +141,18 @@
           "type": "number[][]",
           "required": true,
           "description": "One series (`[data]`) or two when `dual`."
+        }
+      ]
+    },
+    {
+      "name": "AuditLogBlock",
+      "description": "A chronological trail of privileged actions, as a timeline.",
+      "props": [
+        {
+          "name": "entries",
+          "type": "AuditEntry[]",
+          "required": false,
+          "defaultValue": "[\n  { who: 'Avery Quinn', action: 'updated billing settings', tag: 'Settings', time: '2 min ago', icon: <Icon.settings /> },\n  { who: 'Maya Okafor', action: 'upgraded to Enterprise', tag: 'Billing', time: '38 min ago', icon: <Icon.arrowUp /> },\n  { who: 'System', action: 'rotated production API key', tag: 'Security', time: '1 hr ago', icon: <Icon.shield /> },\n  { who: 'Leo Vega', action: 'invited 4 members', tag: 'Team', time: '3 hr ago', icon: <Icon.users /> },\n  { who: 'Billing', action: 'flagged failed payment · Cobalt', tag: 'Billing', time: '5 hr ago', icon: <Icon.bell /> },\n]"
         }
       ]
     },
@@ -260,6 +284,24 @@
           "name": "labels",
           "type": "string[]",
           "required": false
+        }
+      ]
+    },
+    {
+      "name": "Block",
+      "description": "A titled section wrapping its content in a Vespera `card`.",
+      "props": [
+        {
+          "name": "desc",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Optional sub-heading under the title."
+        },
+        {
+          "name": "title",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Optional heading shown above the card."
         }
       ]
     },
@@ -729,6 +771,25 @@
       ]
     },
     {
+      "name": "EventCalendar",
+      "description": "A month / week / agenda calendar with click-and-drag day selection and an\ninline \"new event\" dialog. Events are kept in local state; `onChange` reports\nevery change so a host can persist them.",
+      "props": [
+        {
+          "name": "initialEvents",
+          "type": "CalendarEvent[]",
+          "required": false,
+          "defaultValue": "[\n  { d: 2, title: 'Q2 board review', tone: 'info', time: '10:00' },\n  { d: 5, title: 'Northwind renewal', tone: 'success', time: '09:30' },\n  { d: 5, title: 'Webhook deploy', tone: 'warning', time: '14:00' },\n  { d: 9, title: 'Payment retry · Cobalt', tone: 'danger', time: '08:00' },\n  { d: 12, title: 'Onboarding · Halcyon', tone: 'violet', time: '11:00' },\n  { d: 12, title: 'Team sync', tone: 'info', time: '15:30' },\n  { d: 12, title: 'Invoice run', tone: 'success', time: '17:00' },\n  { d: 18, title: 'Security audit', tone: 'warning', time: '13:00' },\n  { d: 21, title: 'Expansion call · Vertex', tone: 'success', time: '10:30' },\n  { d: 24, title: 'Quarterly close', tone: 'info', time: 'All day' },\n  { d: 24, title: 'Roadmap review', tone: 'violet', time: '16:00' },\n  { d: 28, title: 'SLA report due', tone: 'danger', time: '12:00' },\n]",
+          "description": "Events to seed the calendar with."
+        },
+        {
+          "name": "onChange",
+          "type": "((events: CalendarEvent[]) => void)",
+          "required": false,
+          "description": "Called with the full event list whenever events are added."
+        }
+      ]
+    },
+    {
       "name": "Field",
       "props": [
         {
@@ -865,6 +926,24 @@
           "name": "wrapClassName",
           "type": "string",
           "required": false
+        }
+      ]
+    },
+    {
+      "name": "KanbanBlock",
+      "description": "A lightweight kanban — drag cards to reorder or move between columns.",
+      "props": [
+        {
+          "name": "columns",
+          "type": "KanbanColumn[]",
+          "required": false,
+          "defaultValue": "[\n  {\n    name: 'Triage',\n    tone: 'var(--text-faint)',\n    cards: [\n      { id: 'k1', title: 'Cobalt payment failed', tag: 'Billing', tone: 'neg' },\n      { id: 'k2', title: 'Verify SSO config', tag: 'Security', tone: 'warn' },\n    ],\n  },\n  {\n    name: 'In progress',\n    tone: 'var(--accent)',\n    cards: [\n      { id: 'k3', title: 'Migrate Halcyon seats', tag: 'Accounts', tone: 'info' },\n      { id: 'k4', title: 'Q2 expansion review', tag: 'Revenue', tone: 'info' },\n      { id: 'k5', title: 'Webhook retry logic', tag: 'Product', tone: 'warn' },\n    ],\n  },\n  {\n    name: 'Done',\n    tone: 'var(--success)',\n    cards: [\n      { id: 'k6', title: 'Ship usage billing', tag: 'Product', tone: 'pos' },\n      { id: 'k7', title: 'Reconcile invoices', tag: 'Finance', tone: 'pos' },\n    ],\n  },\n]"
+        },
+        {
+          "name": "onChange",
+          "type": "((columns: KanbanColumn[]) => void)",
+          "required": false,
+          "description": "Called with the full column set after a card is moved."
         }
       ]
     },
@@ -1011,6 +1090,18 @@
           "type": "number",
           "required": false,
           "defaultValue": "0"
+        }
+      ]
+    },
+    {
+      "name": "OrdersBlock",
+      "description": "Operational table: tab filters, bulk selection, status badges, row menu.",
+      "props": [
+        {
+          "name": "orders",
+          "type": "Order[]",
+          "required": false,
+          "defaultValue": "[\n  { id: 'ORD-90210', company: 'Northwind', hue: 220, item: 'Annual license', state: 'fulfilled', amount: 2400 },\n  { id: 'ORD-90211', company: 'Halcyon', hue: 150, item: 'Seat add-on', state: 'processing', amount: 320 },\n  { id: 'ORD-90212', company: 'Vertex', hue: 280, item: 'Pro upgrade', state: 'pending', amount: 980 },\n  { id: 'ORD-90213', company: 'Cobalt', hue: 12, item: 'API overage', state: 'refunded', amount: 140 },\n  { id: 'ORD-90214', company: 'Beacon', hue: 95, item: 'Support plan', state: 'fulfilled', amount: 3120 },\n  { id: 'ORD-90215', company: 'Lumen', hue: 320, item: 'Onboarding', state: 'processing', amount: 1500 },\n]"
         }
       ]
     },
@@ -1531,6 +1622,18 @@
       ]
     },
     {
+      "name": "SystemStatusBlock",
+      "description": "Live service health with 30-day uptime bars.",
+      "props": [
+        {
+          "name": "services",
+          "type": "Service[]",
+          "required": false,
+          "defaultValue": "[\n  { name: 'API gateway', status: 'operational', uptime: 99.98 },\n  { name: 'Database', status: 'operational', uptime: 99.95 },\n  { name: 'Webhooks', status: 'degraded', uptime: 98.2 },\n  { name: 'Auth service', status: 'operational', uptime: 100 },\n  { name: 'Billing', status: 'maintenance', uptime: 99.8 },\n]"
+        }
+      ]
+    },
+    {
       "name": "Tabs",
       "props": [
         {
@@ -1562,6 +1665,18 @@
           "name": "onRemove",
           "type": "(() => void)",
           "required": false
+        }
+      ]
+    },
+    {
+      "name": "TeamRolesBlock",
+      "description": "Member list with inline role selects and a per-row action menu.",
+      "props": [
+        {
+          "name": "members",
+          "type": "TeamMember[]",
+          "required": false,
+          "defaultValue": "[\n  { id: 0, name: 'Avery Quinn', email: 'avery@vespera.dev', hue: 250, role: 'Owner' },\n  { id: 1, name: 'Maya Okafor', email: 'maya@northwind.com', hue: 220, role: 'Admin' },\n  { id: 2, name: 'Leo Vega', email: 'leo@halcyon.com', hue: 150, role: 'Editor' },\n  { id: 3, name: 'Noor Haddad', email: 'noor@beacon.com', hue: 40, role: 'Viewer' },\n]"
         }
       ]
     },
