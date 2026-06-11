@@ -1376,3 +1376,146 @@ export const StatCard = defineComponent({
       );
   },
 });
+
+const ICON_CHECK = 'M20 6L9 17l-5-5';
+const ICON_DOC = 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6';
+const ICON_PENCIL = 'M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z';
+
+export const NumberStepper = defineComponent({
+  name: 'VspNumberStepper',
+  props: {
+    modelValue: { type: Number, default: 0 },
+    min: { type: Number, default: undefined },
+    max: { type: Number, default: undefined },
+    step: { type: Number, default: 1 },
+    unit: { type: String, default: undefined },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const set = (v: number) => {
+      let n = v;
+      if (props.min != null && n < props.min) n = props.min;
+      if (props.max != null && n > props.max) n = props.max;
+      emit('update:modelValue', n);
+    };
+    return () =>
+      h('div', { class: 'ui-stepper' }, [
+        h(
+          'button',
+          {
+            type: 'button',
+            'aria-label': 'Decrease',
+            disabled: props.min != null && props.modelValue <= props.min,
+            onClick: () => set(props.modelValue - props.step),
+          },
+          '−',
+        ),
+        h('span', { class: 'val' }, [
+          props.modelValue,
+          props.unit ? h('i', null, props.unit) : null,
+        ]),
+        h(
+          'button',
+          {
+            type: 'button',
+            'aria-label': 'Increase',
+            disabled: props.max != null && props.modelValue >= props.max,
+            onClick: () => set(props.modelValue + props.step),
+          },
+          '+',
+        ),
+      ]);
+  },
+});
+
+export const CopyButton = defineComponent({
+  name: 'VspCopyButton',
+  props: {
+    text: { type: String, required: true },
+    label: { type: String, default: 'Copy' },
+    size: { type: String as PropType<'sm'>, default: 'sm' },
+  },
+  setup(props) {
+    const done = ref(false);
+    const copy = async () => {
+      try {
+        await navigator.clipboard?.writeText(props.text);
+      } catch {
+        /* clipboard unavailable */
+      }
+      done.value = true;
+      setTimeout(() => (done.value = false), 1400);
+    };
+    return () =>
+      h(
+        'button',
+        {
+          type: 'button',
+          class: cx('btn', 'btn-ghost', props.size === 'sm' && 'btn-sm'),
+          onClick: copy,
+        },
+        [
+          done.value
+            ? h('span', { style: { color: 'var(--success)', display: 'inline-flex' } }, [
+                svgIcon(ICON_CHECK, 15),
+              ])
+            : svgIcon(ICON_DOC, 15),
+          done.value ? 'Copied' : props.label,
+        ],
+      );
+  },
+});
+
+export const InlineEdit = defineComponent({
+  name: 'VspInlineEdit',
+  props: {
+    value: { type: String, default: '' },
+    placeholder: { type: String, default: 'Empty' },
+  },
+  emits: ['save'],
+  setup(props, { emit }) {
+    const editing = ref(false);
+    const draft = ref(props.value);
+    const commit = () => {
+      editing.value = false;
+      if (draft.value !== props.value) emit('save', draft.value);
+    };
+    return () =>
+      editing.value
+        ? h('input', {
+            class: 'ui-input',
+            value: draft.value,
+            style: { height: '32px', maxWidth: '240px' },
+            onVnodeMounted: (vn: { el: unknown }) => (vn.el as HTMLInputElement)?.focus(),
+            onInput: (e: Event) => (draft.value = (e.target as HTMLInputElement).value),
+            onBlur: commit,
+            onKeydown: (e: KeyboardEvent) => {
+              if (e.key === 'Enter') commit();
+              if (e.key === 'Escape') {
+                draft.value = props.value;
+                editing.value = false;
+              }
+            },
+          })
+        : h(
+            'span',
+            {
+              class: 'ui-inline',
+              onClick: () => {
+                draft.value = props.value;
+                editing.value = true;
+              },
+            },
+            [
+              h(
+                'span',
+                { style: { color: props.value ? 'var(--text)' : 'var(--text-faint)' } },
+                props.value || props.placeholder,
+              ),
+              h('span', { class: 'pen', style: { display: 'inline-flex' } }, [
+                svgIcon(ICON_PENCIL, 14),
+              ]),
+            ],
+          );
+  },
+});

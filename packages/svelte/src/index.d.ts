@@ -140,3 +140,16 @@ export const StatCard: Component<{
   sparkColor?: string;
   icon?: unknown;
 }>;
+export const NumberStepper: Component<{
+  value?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+}>;
+export const CopyButton: Component<{ text: string; label?: string; size?: 'sm' }>;
+export const InlineEdit: Component<{
+  value?: string;
+  placeholder?: string;
+  onsave?: (value: string) => void;
+}>;

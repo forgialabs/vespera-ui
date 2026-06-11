@@ -40,3 +40,6 @@ export { default as Slider } from './Slider.svelte';
 export { default as Sparkline } from './Sparkline.svelte';
 export { default as Donut } from './Donut.svelte';
 export { default as StatCard } from './StatCard.svelte';
+export { default as NumberStepper } from './NumberStepper.svelte';
+export { default as CopyButton } from './CopyButton.svelte';
+export { default as InlineEdit } from './InlineEdit.svelte';
