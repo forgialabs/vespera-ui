@@ -47,8 +47,12 @@ Form components support two-way binding (`[(value)]` on `vsp-input`, `[(checked)
 ## Components
 
 `vsp-button`, `vsp-icon-button`, `vsp-badge`, `vsp-tag`, `vsp-kbd`, `vsp-divider`, `vsp-spinner`,
-`vsp-card`, `vsp-card-head`, `vsp-alert`, `vsp-field`, `vsp-input`, `vsp-textarea`, `vsp-switch`,
-`vsp-checkbox`. More are being ported — the CSS layer already supports every Vespera component,
-so wrappers are thin.
+`vsp-card`, `vsp-card-head`, `vsp-alert`, `vsp-field`, `vsp-input`, `vsp-textarea`,
+`vsp-native-select`, `vsp-switch`, `vsp-checkbox`, `vsp-radio`, `vsp-radio-group`, `vsp-slider`,
+`vsp-progress`, `vsp-skeleton`, `vsp-avatar`, `vsp-avatar-group`, `vsp-segmented`, `vsp-tabs`,
+`vsp-breadcrumb`, `vsp-pagination`, `vsp-stepper`, `vsp-circular-progress`, `vsp-stat`,
+`vsp-timeline`, `vsp-description-list`, `vsp-banner`, `vsp-empty-state`, `vsp-accordion`. The
+overlay/portal components (dialogs, menus, toasts, the themed select, date pickers) are
+React-only for now — use the raw classes for those.
 
 License: Apache-2.0
