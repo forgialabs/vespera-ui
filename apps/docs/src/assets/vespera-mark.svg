@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vsp-g" x1="3" y1="3" x2="29" y2="29" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4a7cff" />
+      <stop offset="1" stop-color="#b16cff" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#vsp-g)" />
+  <path
+    d="M16 7.5l1.7 6.8L24.5 16l-6.8 1.7L16 24.5l-1.7-6.8L7.5 16l6.8-1.7z"
+    fill="#fff"
+    fill-opacity="0.92"
+  />
+</svg>

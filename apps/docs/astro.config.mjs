@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import react from '@astrojs/react';
 
 // Project site hosted at https://forgialabs.github.io/vespera-ui/
 export default defineConfig({
@@ -20,9 +21,12 @@ export default defineConfig({
     },
   },
   integrations: [
+    react(),
     starlight({
       title: 'Vespera',
       description: 'A deep-space, weightless design system.',
+      logo: { src: './src/assets/vespera-mark.svg' },
+      customCss: ['./src/styles/vespera.css'],
       social: { github: 'https://github.com/forgialabs/vespera-ui' },
       sidebar: [
         {

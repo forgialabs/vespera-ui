@@ -45,13 +45,15 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 - [x] Per-component API / props tables — auto-generated from `manifest/react.json`
       (`/reference/react/`, build-time, no drift)
 - [x] Update docs content for React availability (install, intro, components guide)
-- [ ] Live React examples as MDX islands — deferred: Vespera's `base.css` styles `body`,
-      which would bleed into Starlight's chrome. The isolated `/demo` page + Storybook serve
-      as the live playground for now; revisit with scoped styles or a standalone React page.
+- [x] Live interactive playground — `/demo` is now a real `@vespera-ui/react` island
+      (`@astrojs/react`): buttons fire toasts; switches, selects, dropdowns, dialog all work;
+      live theme/accent/density/corners controls. Verified hydrated + interactive.
+- [x] Theme the docs to feel like Vespera — Starlight tokens mapped to the Vespera palette +
+      typefaces, deep-space glow background, brand logo + favicon (`src/styles/vespera.css`).
 - [~] Expand Storybook coverage — stories exist for Button, Badge, Alert, Field, Select
   family, and overlays; remaining primitives still to get stories.
 
-✅ **Iteration 3 core complete** (API reference + React docs); two polish items remain above.
+✅ **Iteration 3 complete** (API reference, React docs, interactive playground, Vespera theme).
 
 ## 🔭 Later (per roadmap)
 

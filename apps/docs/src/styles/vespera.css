@@ -1,0 +1,90 @@
+/* ============================================================
+   Vespera theme for the Starlight docs — maps Starlight's tokens to the
+   Vespera palette (deep-space navy + electric cornflower) and typefaces, so
+   the docs site looks like the design system it documents.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --sl-font: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* accent — electric cornflower */
+  --sl-color-accent-low: #16244a;
+  --sl-color-accent: #4a7cff;
+  --sl-color-accent-high: #c2d2ff;
+
+  /* dark palette (default) */
+  --sl-color-white: #f3f6fc;
+  --sl-color-gray-1: #e8ecf4;
+  --sl-color-gray-2: #c3cad9;
+  --sl-color-gray-3: #97a1b6;
+  --sl-color-gray-4: #5d6479;
+  --sl-color-gray-5: #283044;
+  --sl-color-gray-6: #141a28;
+  --sl-color-black: #080b14;
+
+  --sl-color-bg-sidebar: #0b1019;
+  --sl-color-bg-inline-code: #141a28;
+  --sl-color-hairline-shade: rgba(255, 255, 255, 0.07);
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #dde6ff;
+  --sl-color-accent: #2f5fe0;
+  --sl-color-accent-high: #16244a;
+
+  --sl-color-white: #0d1424;
+  --sl-color-gray-1: #1b2334;
+  --sl-color-gray-2: #3a4255;
+  --sl-color-gray-3: #5a637a;
+  --sl-color-gray-4: #8a93a8;
+  --sl-color-gray-5: #c9d2e3;
+  --sl-color-gray-6: #eef2f9;
+  --sl-color-gray-7: #f4f6fb;
+  --sl-color-black: #ffffff;
+
+  --sl-color-bg-sidebar: #f4f6fb;
+  --sl-color-bg-inline-code: #eef2f9;
+  --sl-color-hairline-shade: rgba(13, 18, 32, 0.08);
+}
+
+/* deep-space glow behind everything (Vespera signature) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 620px at 84% -10%, color-mix(in oklab, #4a7cff 14%, transparent), transparent 60%),
+    radial-gradient(720px 520px at -8% 108%, color-mix(in oklab, #b16cff 10%, transparent), transparent 55%);
+}
+:root[data-theme='light'] body::before {
+  opacity: 0.6;
+}
+
+/* glassy, hairline-bordered top nav */
+.header {
+  background: color-mix(in oklab, var(--sl-color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+}
+
+/* gradient site title (the "Vespera" wordmark feel) */
+.site-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* accent glow on the hero call-to-action */
+.hero .actions a[data-variant='primary'] {
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--sl-color-accent) 38%, transparent);
+}
+
+/* mono micro-labels feel, like Vespera eyebrows */
+.sl-markdown-content h2 {
+  letter-spacing: -0.01em;
+}
