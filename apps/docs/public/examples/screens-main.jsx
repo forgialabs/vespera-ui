@@ -19,7 +19,7 @@ function DateRange() {
 /* ============================= DASHBOARD ============================= */
 function DashboardScreen() {
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <PageToolbar
         right={<>
           <button className="btn btn-ghost btn-sm"><Icon.download />Export</button>
@@ -37,13 +37,13 @@ function DashboardScreen() {
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1.62fr 1fr', marginBottom: 'var(--gap)', alignItems: 'stretch' }}>
-        <div className="card ag-rise">
+        <div className="card vsp-rise">
           <div className="card-head">
             <div>
               <h3>Revenue</h3>
               <div className="eyebrow" style={{ marginTop: 2 }}>Gross MRR · last 30 days</div>
             </div>
-            <div className="ag-top-spacer" />
+            <div className="vsp-top-spacer" />
             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
               <Legend color="var(--accent)" label="This period" />
               <Legend color="var(--text-faint)" label="Previous" dashed />
@@ -54,8 +54,8 @@ function DashboardScreen() {
           </div>
         </div>
 
-        <div className="card ag-rise">
-          <div className="card-head"><h3>Acquisition</h3><div className="ag-top-spacer" /><span className="badge badge-info">4 channels</span></div>
+        <div className="card vsp-rise">
+          <div className="card-head"><h3>Acquisition</h3><div className="vsp-top-spacer" /><span className="badge badge-info">4 channels</span></div>
           <div className="card-pad">
             <Donut data={channelDonut} />
             <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
@@ -86,8 +86,8 @@ function Legend({ color, label, dashed }) {
 function ActivityCard() {
   const toneColor = { pos: 'var(--success)', neg: 'var(--danger)', warn: 'var(--warning)', info: 'var(--accent)' };
   return (
-    <div className="card ag-rise">
-      <div className="card-head"><h3>Activity</h3><div className="ag-top-spacer" /><button className="btn btn-subtle btn-sm">View all<Icon.chevRight style={{ width: 13, height: 13 }} /></button></div>
+    <div className="card vsp-rise">
+      <div className="card-head"><h3>Activity</h3><div className="vsp-top-spacer" /><button className="btn btn-subtle btn-sm">View all<Icon.chevRight style={{ width: 13, height: 13 }} /></button></div>
       <div style={{ padding: '6px var(--pad) 12px' }}>
         {ACTIVITY.map((a, i) => {
           const I = Icon[a.icon];
@@ -116,8 +116,8 @@ function TasksCard() {
   const toggle = (i) => setTasks(t => t.map((x, j) => j === i ? { ...x, done: !x.done } : x));
   const done = tasks.filter(t => t.done).length;
   return (
-    <div className="card ag-rise">
-      <div className="card-head"><h3>My tasks</h3><div className="ag-top-spacer" /><span className="mono" style={{ fontSize: 11, color: 'var(--text-faint)' }}>{done}/{tasks.length}</span></div>
+    <div className="card vsp-rise">
+      <div className="card-head"><h3>My tasks</h3><div className="vsp-top-spacer" /><span className="mono" style={{ fontSize: 11, color: 'var(--text-faint)' }}>{done}/{tasks.length}</span></div>
       <div className="card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div className="meter" style={{ marginBottom: 12 }}><i style={{ width: `${done/tasks.length*100}%`, transition: 'width .3s' }} /></div>
         {tasks.map((t, i) => (
@@ -140,8 +140,8 @@ function TopAccountsCard() {
   const top = [...CUSTOMERS].sort((a, b) => b.mrr - a.mrr).slice(0, 5);
   const maxM = top[0].mrr;
   return (
-    <div className="card ag-rise">
-      <div className="card-head"><h3>Top accounts</h3><div className="ag-top-spacer" /><Icon.trend style={{ width: 16, height: 16, color: 'var(--accent)' }} /></div>
+    <div className="card vsp-rise">
+      <div className="card-head"><h3>Top accounts</h3><div className="vsp-top-spacer" /><Icon.trend style={{ width: 16, height: 16, color: 'var(--accent)' }} /></div>
       <div className="card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
         {top.map((c, i) => (
           <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
@@ -162,7 +162,7 @@ function TopAccountsCard() {
 function AnalyticsScreen() {
   const [metric, setMetric] = useStateM('Revenue');
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <PageToolbar right={<button className="btn btn-ghost btn-sm"><Icon.refresh />Refresh</button>}>
         <DateRange />
         <Segmented options={['Revenue','Signups','Sessions']} value={metric} onChange={setMetric} />
@@ -175,21 +175,21 @@ function AnalyticsScreen() {
         <StatCard icon="trend" label="Bounce rate" value="32.4%" delta="1.2%" deltaDir="down" spark={[40,39,38,37,36,35,34,34,33,32]} sparkColor="#fb7185" />
       </div>
 
-      <div className="card ag-rise" style={{ marginBottom: 'var(--gap)' }}>
-        <div className="card-head"><h3>{metric} over time</h3><div className="ag-top-spacer" /><span className="badge badge-info">Live</span></div>
+      <div className="card vsp-rise" style={{ marginBottom: 'var(--gap)' }}>
+        <div className="card-head"><h3>{metric} over time</h3><div className="vsp-top-spacer" /><span className="badge badge-info">Live</span></div>
         <div className="card-pad"><AreaChart series={[revenue30]} labels={dayLabels} height={300} /></div>
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-        <div className="card ag-rise">
+        <div className="card vsp-rise">
           <div className="card-head"><h3>Monthly sessions</h3></div>
           <div className="card-pad"><BarChart data={trafficBars} labels={monthLabels} height={220} /></div>
         </div>
-        <div className="card ag-rise">
+        <div className="card vsp-rise">
           <div className="card-head"><h3>By channel</h3></div>
           <div className="card-pad"><Donut data={channelDonut} size={150} /></div>
         </div>
-        <div className="card ag-rise">
+        <div className="card vsp-rise">
           <div className="card-head"><h3>Top pages</h3></div>
           <div className="card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[['/dashboard',4280,42],['/pricing',3120,30],['/docs/api',1980,19],['/changelog',1240,12],['/login',860,8]].map(([p,v,pct],i)=>(

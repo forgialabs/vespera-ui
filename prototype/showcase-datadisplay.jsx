@@ -29,7 +29,7 @@ function DataDisplaySection({ sub = 'essentials', onSub }) {
     <>
       <h1 className="dx-h1">Data Display</h1>
       <p className="dx-lede">The vocabulary for status and identity, plus the patterns that carry real operational data — tables, search, nested orders, every pagination strategy, and charts.</p>
-      <div key={sub} className="ag-rise" style={{ marginTop: 28 }}>
+      <div key={sub} className="vsp-rise" style={{ marginTop: 28 }}>
         {sub === 'essentials' && <DDEssentials />}
         {sub === 'tables' && <DDTables />}
         {sub === 'pagination' && <DDPagination />}
@@ -309,7 +309,7 @@ function StickyTable() {
         <span className="eyebrow">Freeze</span>
         <Segmented options={['1', '2', '3']} value={String(freeze)} onChange={v => setFreeze(Number(v))} />
       </div>
-      <div className="ui-sticky-wrap ag-scroll">
+      <div className="ui-sticky-wrap vsp-scroll">
         <table className="ui-sticky" style={{ minWidth: totalW }}>
           <colgroup>{ST_COLS.map(c => <col key={c.key} style={{ width: c.w }} />)}</colgroup>
           <thead><tr>

@@ -14,13 +14,13 @@ const SRC_TONE = { UI: 'info', API: 'warn', System: 'muted' };
 function AuditScreen() {
   const [restoring, setRestoring] = useOps2(null);
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <OpsHead title="Audit & restore" desc="A tamper-evident history of every change to this record — who, what, where from, and one-click rollback."
         right={<><Button variant="ghost" size="sm" leadingIcon="download">Export trail</Button><Button variant="ghost" size="sm" leadingIcon="eye">Compare</Button></>} />
 
       <div className="grid" style={{ gridTemplateColumns: '1.5fr 1fr', alignItems: 'start' }}>
         <div className="card">
-          <div className="card-head"><h3>Change history</h3><div className="ag-top-spacer" /><span className="eyebrow">Northwind · ATG-4810</span></div>
+          <div className="card-head"><h3>Change history</h3><div className="vsp-top-spacer" /><span className="eyebrow">Northwind · ATG-4810</span></div>
           <div className="card-pad">
             {AUDIT.map((e, i) => (
               <div key={e.v} style={{ display: 'flex', gap: 14, paddingBottom: i < AUDIT.length - 1 ? 18 : 0, position: 'relative' }}>
@@ -85,7 +85,7 @@ function InsightsScreen() {
   const [dismissed, setDismissed] = useOps2([]);
   const visible = SUGGESTIONS.filter((_, i) => !dismissed.includes(i));
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <OpsHead title="Insights" desc="AI-surfaced suggestions, anomalies and hints across your workspace."
         right={<Button variant="ghost" size="sm" leadingIcon="refresh">Refresh signals</Button>} />
 
@@ -114,7 +114,7 @@ function InsightsScreen() {
 
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <div className="card">
-          <div className="card-head"><h3>Anomaly alerts</h3><div className="ag-top-spacer" /><Badge tone="neg" dot>live</Badge></div>
+          <div className="card-head"><h3>Anomaly alerts</h3><div className="vsp-top-spacer" /><Badge tone="neg" dot>live</Badge></div>
           <div className="card-pad" style={{ paddingTop: 6, paddingBottom: 6 }}>
             {ALERTS.map((a, i) => (
               <div key={i} className="ui-row" style={{ alignItems: 'flex-start' }}>
@@ -129,7 +129,7 @@ function InsightsScreen() {
           </div>
         </div>
         <div className="card">
-          <div className="card-head"><h3>Hints &amp; tips</h3><div className="ag-top-spacer" /><Icon.sparkle style={{ width: 16, height: 16, color: 'var(--accent)' }} /></div>
+          <div className="card-head"><h3>Hints &amp; tips</h3><div className="vsp-top-spacer" /><Icon.sparkle style={{ width: 16, height: 16, color: 'var(--accent)' }} /></div>
           <div className="card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[['Use ⌘K to jump anywhere', 'Press the command palette to navigate or run quick actions.'], ['Set auto-approval rules', 'Cut review time by automating low-risk approvals.'], ['Pin key accounts', 'Star accounts to keep them at the top of your dashboard.']].map(([t2, d], i) => (
               <div key={i} style={{ display: 'flex', gap: 11, padding: 12, borderRadius: 'var(--r-sm)', background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
@@ -162,7 +162,7 @@ function NotificationsScreen() {
   const markAll = () => setNotifs(x => x.map(n => ({ ...n, unread: false })));
   const toneVar = { neg: 'var(--danger)', pos: 'var(--success)', warn: 'var(--warning)', info: 'var(--accent)' };
   return (
-    <div className="ag-content-inner" style={{ maxWidth: 860 }}>
+    <div className="vsp-content-inner" style={{ maxWidth: 860 }}>
       <OpsHead title="Notifications" desc="Everything happening across your workspace, in one place."
         right={<><Button variant="ghost" size="sm" leadingIcon="settings">Preferences</Button><Button variant="ghost" size="sm" leadingIcon="check" onClick={markAll}>Mark all read</Button></>} />
 
@@ -174,7 +174,7 @@ function NotificationsScreen() {
           <div key={g}>
             <div className="eyebrow" style={{ padding: '12px var(--pad) 6px' }}>{g}</div>
             {shown.filter(n => n.group === g).map((n, i) => { const I = Icon[n.icon]; return (
-              <div key={i} className="ag-trow" style={{ display: 'flex', gap: 13, padding: 'var(--row-py) var(--pad)', borderTop: '1px solid var(--border)', cursor: 'pointer', background: n.unread ? 'color-mix(in oklab, var(--accent) 5%, transparent)' : 'transparent' }}
+              <div key={i} className="vsp-trow" style={{ display: 'flex', gap: 13, padding: 'var(--row-py) var(--pad)', borderTop: '1px solid var(--border)', cursor: 'pointer', background: n.unread ? 'color-mix(in oklab, var(--accent) 5%, transparent)' : 'transparent' }}
                 onClick={() => setNotifs(x => x.map(m => m === n ? { ...m, unread: false } : m))}>
                 <span style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, display: 'grid', placeItems: 'center', background: `color-mix(in oklab, ${toneVar[n.tone]} 14%, transparent)`, color: toneVar[n.tone] }}><I style={{ width: 16, height: 16 }} /></span>
                 <div style={{ flex: 1, minWidth: 0 }}>

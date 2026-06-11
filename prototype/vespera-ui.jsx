@@ -1,8 +1,8 @@
-// aether-ui.jsx — core primitives. Depends on window.Icon and ui.css/styles.css.
-// Composable, prop-driven components — the copy-paste-friendly heart of Aether.
+// vespera-ui.jsx — core primitives. Depends on window.Icon and ui.css/styles.css.
+// Composable, prop-driven components — the copy-paste-friendly heart of Vespera.
 const { useState: useUI, useRef: useUIRef, useEffect: useUIEffect, useId } = React;
 const cx = (...a) => a.filter(Boolean).join(' ');
-const agPortal = () => document.querySelector('.ag-root') || document.body;
+const agPortal = () => document.querySelector('.vsp-root') || document.body;
 
 /* ---------------- Button ---------------- */
 function Button({ variant = 'ghost', size, leadingIcon, trailingIcon, loading, children, className, disabled, ...rest }) {
@@ -16,7 +16,7 @@ function Button({ variant = 'ghost', size, leadingIcon, trailingIcon, loading, c
 }
 function IconButton({ icon, label, dot, className, ...rest }) {
   const I = window.Icon[icon];
-  return <button className={cx('ag-icon-btn', className)} title={label} aria-label={label} {...rest}>{I && <I />}{dot && <span className="ag-dot" />}</button>;
+  return <button className={cx('vsp-icon-btn', className)} title={label} aria-label={label} {...rest}>{I && <I />}{dot && <span className="vsp-dot" />}</button>;
 }
 
 /* ---------------- Field wrapper ---------------- */
@@ -214,7 +214,7 @@ function CardHead({ title, desc, right }) {
         <h3>{title}</h3>
         {desc && <div className="eyebrow" style={{ marginTop: 3 }}>{desc}</div>}
       </div>
-      {right && <><div className="ag-top-spacer" />{right}</>}
+      {right && <><div className="vsp-top-spacer" />{right}</>}
     </div>
   );
 }

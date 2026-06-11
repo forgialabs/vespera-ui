@@ -77,7 +77,7 @@ function FoundationsSection({ t, setTweak }) {
   return (
     <>
       <h1 className="dx-h1">Foundations</h1>
-      <p className="dx-lede">The Aether design language: a deep-space palette with an electric accent, geometric sans paired with a technical mono, and tokens that flex across light, dark, and three densities — all driven by CSS variables you can re-theme in one place.</p>
+      <p className="dx-lede">The Vespera design language: a deep-space palette with an electric accent, geometric sans paired with a technical mono, and tokens that flex across light, dark, and three densities — all driven by CSS variables you can re-theme in one place.</p>
 
       <h2 className="dx-h2">Customize the system</h2>
       {t && <CustomizePanel t={t} setTweak={setTweak} />}
@@ -250,7 +250,7 @@ function FormsSection() {
       <h2 className="dx-h2">Text fields</h2>
       <Demo col>
         <div className="dx-grid two" style={{ width: '100%' }}>
-          <Field label="Workspace name" required hint="Shown to your whole team."><Input placeholder="Acme Inc." defaultValue="Aether Labs" /></Field>
+          <Field label="Workspace name" required hint="Shown to your whole team."><Input placeholder="Acme Inc." defaultValue="Vespera Labs" /></Field>
           <Field label="Billing email" required><Input type="email" placeholder="billing@acme.com" /></Field>
           <Field label="Seats"><InputAffix type="number" defaultValue={24} leadingIcon="users" /></Field>
           <Field label="Monthly budget"><InputAffix type="number" prefix="$" unit="USD" defaultValue={2400} /></Field>

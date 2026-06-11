@@ -1,4 +1,4 @@
-// aether-extras.jsx — Spinner, CircularProgress, Accordion, FileDropzone, EmptyState,
+// vespera-extras.jsx — Spinner, CircularProgress, Accordion, FileDropzone, EmptyState,
 // Banner, OTPInput, CopyButton, AvatarGroup. Depends on window.Icon, cx, Button.
 const { useState: useX, useRef: useXRef } = React;
 
@@ -65,7 +65,7 @@ function FileDropzone({ hint = 'PNG, JPG or PDF up to 10MB' }) {
           <window.Icon.doc style={{ width: 18, height: 18, color: 'var(--accent)', flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{f.name}</div><div className="mono" style={{ fontSize: 11, color: 'var(--text-faint)' }}>{f.size} · uploaded</div></div>
           <window.Icon.checkCircle style={{ width: 17, height: 17, color: 'var(--success)' }} />
-          <button className="ag-icon-btn" style={{ width: 28, height: 28, border: 0, background: 'transparent' }} onClick={() => setFiles(x => x.filter((_, j) => j !== i))}><window.Icon.x style={{ width: 15, height: 15 }} /></button>
+          <button className="vsp-icon-btn" style={{ width: 28, height: 28, border: 0, background: 'transparent' }} onClick={() => setFiles(x => x.filter((_, j) => j !== i))}><window.Icon.x style={{ width: 15, height: 15 }} /></button>
         </div>
       ))}
     </div>
@@ -358,8 +358,8 @@ function EventCalendar({ initialEvents = CB_EVENTS, onChange }) {
     <div className="ui-cb">
       <div className="ui-cb-head">
         <div style={{ display: 'flex', gap: 4 }}>
-          <button className="ag-icon-btn" style={{ width: 32, height: 32 }} onClick={() => nav(-1)}><window.Icon.chevLeft /></button>
-          <button className="ag-icon-btn" style={{ width: 32, height: 32 }} onClick={() => nav(1)}><window.Icon.chevRight /></button>
+          <button className="vsp-icon-btn" style={{ width: 32, height: 32 }} onClick={() => nav(-1)}><window.Icon.chevLeft /></button>
+          <button className="vsp-icon-btn" style={{ width: 32, height: 32 }} onClick={() => nav(1)}><window.Icon.chevRight /></button>
         </div>
         <div className="ui-cb-title">{CB_MONTHS[vm.m]} {vm.y}</div>
         <button className="btn btn-ghost btn-sm" onClick={() => setVm({ m: today.getMonth(), y: today.getFullYear() })}>Today</button>

@@ -48,7 +48,7 @@ const NAV = [
     { id: 'settings', label: 'Settings', icon: 'settings' },
   ]},
   { group: 'Resources', items: [
-    { id: 'library', label: 'Design system', icon: 'database', href: 'Aether UI.html' },
+    { id: 'library', label: 'Design system', icon: 'database', href: 'Vespera UI.html' },
   ]},
 ];
 
@@ -79,8 +79,8 @@ function App() {
 
   if (!authed) {
     return (
-      <div className="ag-root" data-theme={t.dark ? 'dark' : 'light'} data-corners={t.corners} data-bganim={t.bgAnim ? 'on' : 'off'} style={rootStyle}>
-        {t.bgAnim && <div className="ag-bg" aria-hidden="true"><b /><b /><b /></div>}
+      <div className="vsp-root" data-theme={t.dark ? 'dark' : 'light'} data-corners={t.corners} data-bganim={t.bgAnim ? 'on' : 'off'} style={rootStyle}>
+        {t.bgAnim && <div className="vsp-bg" aria-hidden="true"><b /><b /><b /></div>}
         <LoginScreen onSignIn={() => setAuthed(true)} />
         <TweaksUI t={t} setTweak={setTweak} />
       </div>
@@ -88,7 +88,7 @@ function App() {
   }
 
   const [title, crumb] = TITLES[screen] || ['', ''];
-  const go = (id) => { setScreen(id); document.querySelector('.ag-content')?.scrollTo(0, 0); };
+  const go = (id) => { setScreen(id); document.querySelector('.vsp-content')?.scrollTo(0, 0); };
   const openAccount = (c) => { setSelected(c); go('detail'); };
 
   const cmdGroups = [
@@ -101,7 +101,7 @@ function App() {
       { label: 'Audit & restore', icon: 'shield', onRun: () => go('audit') },
       { label: 'Notifications', icon: 'bell', onRun: () => go('notifications') },
       { label: 'Settings', icon: 'settings', meta: 'G S', onRun: () => go('settings') },
-      { label: 'Open design system library', icon: 'database', onRun: () => { window.location.href = 'Aether UI.html'; } },
+      { label: 'Open design system library', icon: 'database', onRun: () => { window.location.href = 'Vespera UI.html'; } },
     ]},
     { label: 'Quick actions', items: [
       { label: 'Add account', icon: 'plus', onRun: () => { setCreateOpen(true); } },
@@ -119,16 +119,16 @@ function App() {
   ];
 
   return (
-    <div className="ag-root" data-theme={t.dark ? 'dark' : 'light'} data-sidebar={t.sidebar}
+    <div className="vsp-root" data-theme={t.dark ? 'dark' : 'light'} data-sidebar={t.sidebar}
          data-corners={t.corners} data-density={t.density} data-bganim={t.bgAnim ? 'on' : 'off'} style={rootStyle}>
-      {t.bgAnim && <div className="ag-bg" aria-hidden="true"><b /><b /><b /></div>}
-      <div className="ag-app">
+      {t.bgAnim && <div className="vsp-bg" aria-hidden="true"><b /><b /><b /></div>}
+      <div className="vsp-app">
         <Sidebar screen={screen} go={go} onLogout={() => setAuthed(false)} rail={t.sidebar === 'rail'} />
-        <div className="ag-main">
+        <div className="vsp-main">
           <Topbar title={title} crumb={crumb} t={t} setTweak={setTweak}
             onOpenCmd={() => setCmdOpen(true)} createOpen={createOpen} setCreateOpen={setCreateOpen} go={go} />
-          <div className="ag-content ag-scroll">
-            <div key={screen} className="ag-screen">
+          <div className="vsp-content vsp-scroll">
+            <div key={screen} className="vsp-screen">
               {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'analytics' && <AnalyticsScreen />}
               {screen === 'accounts' && <TableScreen onOpen={openAccount} />}
@@ -170,47 +170,47 @@ function CreateAccountDialog({ open, onClose }) {
 function Sidebar({ screen, go, onLogout, rail }) {
   const activeTop = screen === 'detail' ? 'accounts' : screen;
   return (
-    <aside className="ag-side">
-      <div className="ag-brand">
-        <span className="ag-brand-mark"><Icon.bolt style={{ width: 17, height: 17, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
-        <div className="ag-brand-text">
-          <div className="ag-brand-name">Aether</div>
-          <div className="ag-brand-sub">ADMIN · v1.0</div>
+    <aside className="vsp-side">
+      <div className="vsp-brand">
+        <span className="vsp-brand-mark"><Icon.bolt style={{ width: 17, height: 17, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
+        <div className="vsp-brand-text">
+          <div className="vsp-brand-name">Vespera</div>
+          <div className="vsp-brand-sub">ADMIN · v1.0</div>
         </div>
       </div>
-      <nav className="ag-nav ag-scroll">
+      <nav className="vsp-nav vsp-scroll">
         {NAV.map(g => (
           <React.Fragment key={g.group}>
-            <div className="ag-nav-group-label">{g.group}</div>
+            <div className="vsp-nav-group-label">{g.group}</div>
             {g.items.map(it => {
               const I = Icon[it.icon];
               const active = activeTop === it.id;
               if (it.href) {
                 return (
-                  <a key={it.id} href={it.href} className="ag-nav-item" title={rail ? it.label : undefined} style={{ font: 'inherit', textDecoration: 'none' }}>
-                    <I /><span className="ag-nav-label">{it.label}</span><Icon.arrowRight className="ag-nav-label" style={{ width: 14, height: 14, marginLeft: 'auto', color: 'var(--text-faint)' }} />
+                  <a key={it.id} href={it.href} className="vsp-nav-item" title={rail ? it.label : undefined} style={{ font: 'inherit', textDecoration: 'none' }}>
+                    <I /><span className="vsp-nav-label">{it.label}</span><Icon.arrowRight className="vsp-nav-label" style={{ width: 14, height: 14, marginLeft: 'auto', color: 'var(--text-faint)' }} />
                   </a>
                 );
               }
               return (
-                <button key={it.id} className={`ag-nav-item ${active ? 'active' : ''}`} onClick={() => go(it.id)}
+                <button key={it.id} className={`vsp-nav-item ${active ? 'active' : ''}`} onClick={() => go(it.id)}
                   title={rail ? it.label : undefined} style={{ font: 'inherit' }}>
-                  <I /><span className="ag-nav-label">{it.label}</span>
-                  {it.badge && <span className="ag-nav-badge">{it.badge}</span>}
+                  <I /><span className="vsp-nav-label">{it.label}</span>
+                  {it.badge && <span className="vsp-nav-badge">{it.badge}</span>}
                 </button>
               );
             })}
           </React.Fragment>
         ))}
       </nav>
-      <div className="ag-side-foot">
-        <div className="ag-user" onClick={onLogout} title="Sign out">
+      <div className="vsp-side-foot">
+        <div className="vsp-user" onClick={onLogout} title="Sign out">
           <Av name="Avery Quinn" hue={250} size={34} />
-          <div className="ag-user-text" style={{ flex: 1, minWidth: 0 }}>
-            <div className="ag-user-name">Avery Quinn</div>
-            <div className="ag-user-mail">avery@aether.dev</div>
+          <div className="vsp-user-text" style={{ flex: 1, minWidth: 0 }}>
+            <div className="vsp-user-name">Avery Quinn</div>
+            <div className="vsp-user-mail">avery@vespera.dev</div>
           </div>
-          <Icon.logout className="ag-user-chev" style={{ width: 16, height: 16, color: 'var(--text-faint)' }} />
+          <Icon.logout className="vsp-user-chev" style={{ width: 16, height: 16, color: 'var(--text-faint)' }} />
         </div>
       </div>
     </aside>
@@ -219,17 +219,17 @@ function Sidebar({ screen, go, onLogout, rail }) {
 
 function Topbar({ title, crumb, t, setTweak, onOpenCmd, createOpen, setCreateOpen, go }) {
   return (
-    <header className="ag-top">
-      <button className="ag-icon-btn" title="Toggle sidebar" onClick={() => setTweak('sidebar', t.sidebar === 'rail' ? 'full' : 'rail')}>
+    <header className="vsp-top">
+      <button className="vsp-icon-btn" title="Toggle sidebar" onClick={() => setTweak('sidebar', t.sidebar === 'rail' ? 'full' : 'rail')}>
         <Icon.table />
       </button>
-      <div className="ag-top-title">
+      <div className="vsp-top-title">
         <h1>{title}</h1>
-        <span className="ag-top-crumb">{crumb}</span>
+        <span className="vsp-top-crumb">{crumb}</span>
       </div>
-      <div className="ag-top-spacer" />
-      <a className="btn btn-ghost btn-sm" href="Aether UI.html" title="Back to component library"><Icon.database />Library</a>
-      <button className="ag-search" onClick={onOpenCmd} style={{ cursor: 'pointer', font: 'inherit' }}>
+      <div className="vsp-top-spacer" />
+      <a className="btn btn-ghost btn-sm" href="Vespera UI.html" title="Back to component library"><Icon.database />Library</a>
+      <button className="vsp-search" onClick={onOpenCmd} style={{ cursor: 'pointer', font: 'inherit' }}>
         <Icon.search /><span style={{ flex: 1, textAlign: 'left', color: 'var(--text-faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Search or jump to…</span><kbd>⌘K</kbd>
       </button>
       <DropdownMenu align="end" width={220}
@@ -242,11 +242,11 @@ function Topbar({ title, crumb, t, setTweak, onOpenCmd, createOpen, setCreateOpe
           { sep: true },
           { label: 'New API key', icon: 'bolt', onClick: () => window.toast?.({ tone: 'pos', title: 'API key created' }) },
         ]} />
-      <button className="ag-icon-btn" title="Toggle theme" onClick={() => setTweak('dark', !t.dark)}>
+      <button className="vsp-icon-btn" title="Toggle theme" onClick={() => setTweak('dark', !t.dark)}>
         {t.dark ? <Icon.sun /> : <Icon.moon />}
       </button>
       <DropdownMenu align="end" width={300}
-        trigger={<button className="ag-icon-btn" title="Notifications"><Icon.bell /><span className="ag-dot" /></button>}
+        trigger={<button className="vsp-icon-btn" title="Notifications"><Icon.bell /><span className="vsp-dot" /></button>}
         items={[
           { label: 'Notifications', heading: true },
           { label: 'Cobalt payment failed', icon: 'bell', onClick: () => {} },

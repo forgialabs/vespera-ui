@@ -1,8 +1,8 @@
-// aether-overlays.jsx — Dialog, Sheet, Popover, DropdownMenu, Toast, CommandPalette.
-// Depends on window.Icon, aether-ui.jsx (cx), ui.css.
+// vespera-overlays.jsx — Dialog, Sheet, Popover, DropdownMenu, Toast, CommandPalette.
+// Depends on window.Icon, vespera-ui.jsx (cx), ui.css.
 const { useState: useOv, useRef: useOvRef, useEffect: useOvEffect, useCallback, useLayoutEffect } = React;
-// Portal into .ag-root so overlays inherit theme tokens (--surface-1, --text, etc.).
-const agPortal = () => document.querySelector('.ag-root') || document.body;
+// Portal into .vsp-root so overlays inherit theme tokens (--surface-1, --text, etc.).
+const agPortal = () => document.querySelector('.vsp-root') || document.body;
 
 function useEsc(open, onClose) {
   useOvEffect(() => {
@@ -47,9 +47,9 @@ function Sheet({ open, onClose, title, desc, children, footer, icon }) {
             <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-.01em' }}>{title}</div>
             {desc && <div style={{ fontSize: 12.5, color: 'var(--text-dim)', marginTop: 3 }}>{desc}</div>}
           </div>
-          <button className="ag-icon-btn" style={{ border: 0, background: 'transparent', width: 32, height: 32 }} onClick={onClose}><window.Icon.x /></button>
+          <button className="vsp-icon-btn" style={{ border: 0, background: 'transparent', width: 32, height: 32 }} onClick={onClose}><window.Icon.x /></button>
         </div>
-        <div className="ui-sheet-body ag-scroll">{children}</div>
+        <div className="ui-sheet-body vsp-scroll">{children}</div>
         {footer && <div className="ui-sheet-foot">{footer}</div>}
       </div>
     </div>, agPortal());
@@ -73,8 +73,8 @@ function Anchored({ trigger, children, align = 'start', width, className = 'ui-m
     document.addEventListener('mousedown', onDoc);
     window.addEventListener('keydown', onEsc);
     window.addEventListener('resize', onScroll);
-    document.querySelector('.ag-content')?.addEventListener('scroll', onScroll, true);
-    return () => { document.removeEventListener('mousedown', onDoc); window.removeEventListener('keydown', onEsc); window.removeEventListener('resize', onScroll); document.querySelector('.ag-content')?.removeEventListener('scroll', onScroll, true); };
+    document.querySelector('.vsp-content')?.addEventListener('scroll', onScroll, true);
+    return () => { document.removeEventListener('mousedown', onDoc); window.removeEventListener('keydown', onEsc); window.removeEventListener('resize', onScroll); document.querySelector('.vsp-content')?.removeEventListener('scroll', onScroll, true); };
   }, [open, place]);
   let style = {};
   if (rect) {
@@ -138,7 +138,7 @@ function ToastHost() {
               <div className="ui-toast-title">{t.title}</div>
               {t.body && <div className="ui-toast-body">{t.body}</div>}
             </div>
-            <button className="ag-icon-btn" style={{ border: 0, background: 'transparent', width: 26, height: 26 }} onClick={() => setToasts(x => x.filter(y => y.id !== t.id))}><window.Icon.x style={{ width: 15, height: 15 }} /></button>
+            <button className="vsp-icon-btn" style={{ border: 0, background: 'transparent', width: 26, height: 26 }} onClick={() => setToasts(x => x.filter(y => y.id !== t.id))}><window.Icon.x style={{ width: 15, height: 15 }} /></button>
           </div>
         );
       })}
@@ -176,7 +176,7 @@ function CommandPalette({ open, onClose, groups }) {
             onChange={e => { setQ(e.target.value); setActive(0); }} onKeyDown={onKey} />
           <kbd className="ui-kbd">ESC</kbd>
         </div>
-        <div className="ui-cmd-list ag-scroll">
+        <div className="ui-cmd-list vsp-scroll">
           {flat.length === 0 && <div style={{ padding: '28px 12px', textAlign: 'center', color: 'var(--text-faint)', fontSize: 13 }}>No results for “{q}”</div>}
           {Object.entries(byGroup).map(([g, items]) => (
             <div key={g}>

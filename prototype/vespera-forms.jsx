@@ -1,4 +1,4 @@
-// aether-forms.jsx — Pro form blocks (wizards, create/edit forms, filters, auth).
+// vespera-forms.jsx — Pro form blocks (wizards, create/edit forms, filters, auth).
 const { useState: useFm } = React;
 
 /* ===================== ONBOARDING WIZARD ===================== */
@@ -12,8 +12,8 @@ function OnboardingWizard() {
         <Stepper steps={steps} current={step} />
         <div style={{ minHeight: 196 }}>
           {step === 0 && <div style={{ display: 'grid', gap: 16, maxWidth: 460 }}>
-            <Field label="Workspace name" required hint="You can change this later."><Input defaultValue="Aether Labs" /></Field>
-            <Field label="Workspace URL"><InputAffix prefix="aether.dev/" defaultValue="acme" /></Field>
+            <Field label="Workspace name" required hint="You can change this later."><Input defaultValue="Vespera Labs" /></Field>
+            <Field label="Workspace URL"><InputAffix prefix="vespera.dev/" defaultValue="acme" /></Field>
             <Field label="Team size"><Select options={['1–10', '11–50', '51–200', '200+']} /></Field>
           </div>}
           {step === 1 && <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '1fr 1fr 1fr' }}>
@@ -169,8 +169,8 @@ function AuthCardBlock() {
     <Block title="Sign-in card" desc="A self-contained auth surface — drops into any blank page.">
       <div className="dx-block-body" style={{ display: 'grid', placeItems: 'center', padding: 40, background: 'radial-gradient(600px 300px at 50% 0%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%)' }}>
         <div className="card" style={{ width: '100%', maxWidth: 380, padding: 28 }}>
-          <span className="ag-brand-mark" style={{ width: 38, height: 38, marginBottom: 18 }}><Icon.bolt style={{ width: 19, height: 19, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
-          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-.02em' }}>Sign in to Aether</div>
+          <span className="vsp-brand-mark" style={{ width: 38, height: 38, marginBottom: 18 }}><Icon.bolt style={{ width: 19, height: 19, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-.02em' }}>Sign in to Vespera</div>
           <p style={{ fontSize: 13, color: 'var(--text-dim)', margin: '6px 0 22px' }}>Welcome back. Enter your details to continue.</p>
           <div style={{ display: 'grid', gap: 14 }}>
             <Field label="Email"><Input type="email" placeholder="you@company.com" /></Field>

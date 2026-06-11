@@ -1,5 +1,5 @@
 /* ============================================================
-   AETHER UI — component classes (form controls, overlays,
+   VESPERA UI — component classes (form controls, overlays,
    menus, command palette, tooltips, alerts, tables).
    Built on the tokens defined in styles.css. Theme-aware.
    ============================================================ */
@@ -31,7 +31,7 @@
 }
 .ui-input:disabled, .ui-textarea:disabled, .ui-select:disabled { opacity: .5; cursor: not-allowed; }
 /* always-visible insertion caret (text color can wash out against the field) */
-.ag-root input, .ag-root textarea, .ag-root [contenteditable] { caret-color: var(--accent); }
+.vsp-root input, .vsp-root textarea, .vsp-root [contenteditable] { caret-color: var(--accent); }
 .ui-input.invalid { border-color: color-mix(in oklab, var(--danger) 60%, var(--border)); }
 .ui-input.invalid:focus { box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 16%, transparent); }
 

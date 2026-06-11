@@ -6,11 +6,11 @@ function SettingsScreen() {
   const [tab, setTab] = useStateX('Profile');
   const tabs = ['Profile', 'Workspace', 'Billing', 'Notifications', 'Security'];
   return (
-    <div className="ag-content-inner" style={{ maxWidth: 1080 }}>
+    <div className="vsp-content-inner" style={{ maxWidth: 1080 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'var(--gap)', alignItems: 'start' }}>
         <div className="card" style={{ padding: 8, position: 'sticky', top: 0 }}>
           {tabs.map(t => (
-            <button key={t} onClick={() => setTab(t)} className={`ag-nav-item ${tab === t ? 'active' : ''}`}
+            <button key={t} onClick={() => setTab(t)} className={`vsp-nav-item ${tab === t ? 'active' : ''}`}
               style={{ width: '100%', marginBottom: 2, border: 'none', background: tab === t ? 'color-mix(in oklab, var(--accent) 13%, transparent)' : 'transparent', font: 'inherit' }}>
               {t}
             </button>
@@ -19,7 +19,7 @@ function SettingsScreen() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
           {tab === 'Profile' && <ProfileSettings />}
-          {tab === 'Workspace' && <CardForm title="Workspace" desc="Organization-wide defaults." fields={[['Workspace name', 'Aether Labs Inc.'], ['Workspace URL', 'aether.dev/acme'], ['Default timezone', 'UTC−05:00 · Eastern']]} />}
+          {tab === 'Workspace' && <CardForm title="Workspace" desc="Organization-wide defaults." fields={[['Workspace name', 'Vespera Labs Inc.'], ['Workspace URL', 'vespera.dev/acme'], ['Default timezone', 'UTC−05:00 · Eastern']]} />}
           {tab === 'Billing' && <BillingSettings />}
           {tab === 'Notifications' && <NotificationSettings />}
           {tab === 'Security' && <SecuritySettings />}
@@ -31,7 +31,7 @@ function SettingsScreen() {
 
 function SettingCard({ title, desc, children, foot }) {
   return (
-    <div className="card ag-rise">
+    <div className="card vsp-rise">
       <div className="card-pad" style={{ borderBottom: foot ? 'none' : undefined }}>
         <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>{title}</h3>
         {desc && <p style={{ margin: '4px 0 0', color: 'var(--text-dim)', fontSize: 13 }}>{desc}</p>}
@@ -66,7 +66,7 @@ function ProfileSettings() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <Field label="First name" value="Avery" />
         <Field label="Last name" value="Quinn" />
-        <Field label="Email" value="avery@aether.dev" type="email" full />
+        <Field label="Email" value="avery@vespera.dev" type="email" full />
         <Field label="Role" value="Administrator" />
         <Field label="Phone" value="+1 (415) 555-0148" />
       </div>
@@ -151,14 +151,14 @@ function LoginScreen({ onSignIn }) {
   const [email, setEmail] = useStateX('');
   const [pw, setPw] = useStateX('');
   return (
-    <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1.05fr .95fr' }} className="ag-login">
+    <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1.05fr .95fr' }} className="vsp-login">
       {/* brand panel */}
       <div style={{ position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48,
         background: 'radial-gradient(800px 500px at 70% 10%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 60%), radial-gradient(600px 600px at 10% 100%, color-mix(in oklab, var(--accent-2) 26%, transparent), transparent 55%), var(--bg)' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)', backgroundSize: '44px 44px', maskImage: 'radial-gradient(circle at 50% 40%, #000, transparent 75%)' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, position: 'relative' }}>
-          <span className="ag-brand-mark" style={{ width: 34, height: 34 }}><Icon.bolt style={{ width: 18, height: 18, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
-          <span style={{ fontWeight: 700, fontSize: 16 }}>Aether</span>
+          <span className="vsp-brand-mark" style={{ width: 34, height: 34 }}><Icon.bolt style={{ width: 18, height: 18, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
+          <span style={{ fontWeight: 700, fontSize: 16 }}>Vespera</span>
         </div>
         <div style={{ position: 'relative', maxWidth: 420 }}>
           <div className="eyebrow" style={{ marginBottom: 16 }}>Admin Console · v1.0</div>
@@ -173,7 +173,7 @@ function LoginScreen({ onSignIn }) {
       </div>
       {/* form panel */}
       <div style={{ display: 'grid', placeItems: 'center', padding: 32, background: 'var(--surface-1)' }}>
-        <div style={{ width: '100%', maxWidth: 360 }} className="ag-rise">
+        <div style={{ width: '100%', maxWidth: 360 }} className="vsp-rise">
           <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, letterSpacing: '-.02em' }}>Welcome back</h2>
           <p style={{ margin: '6px 0 28px', color: 'var(--text-dim)', fontSize: 13.5 }}>Sign in to your admin console.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -200,7 +200,7 @@ const inputStyleLogin = { height: 44, padding: '0 14px', borderRadius: 'var(--r-
 function StatesScreen() {
   const [mode, setMode] = useStateX('Loading');
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <PageToolbar><Segmented options={['Loading', 'Empty', 'Error']} value={mode} onChange={setMode} /></PageToolbar>
       {mode === 'Loading' && <LoadingState />}
       {mode === 'Empty' && <EmptyState />}
@@ -231,7 +231,7 @@ function LoadingState() {
 function CenterState({ icon, title, desc, children }) {
   const I = Icon[icon];
   return (
-    <div className="card ag-rise" style={{ display: 'grid', placeItems: 'center', textAlign: 'center', padding: '72px 24px', minHeight: 420 }}>
+    <div className="card vsp-rise" style={{ display: 'grid', placeItems: 'center', textAlign: 'center', padding: '72px 24px', minHeight: 420 }}>
       <div style={{ maxWidth: 360 }}>
         <span style={{ width: 64, height: 64, borderRadius: 18, display: 'grid', placeItems: 'center', margin: '0 auto 22px', background: 'color-mix(in oklab, var(--accent) 12%, transparent)', color: 'var(--accent)', border: '1px solid color-mix(in oklab, var(--accent) 22%, transparent)' }}>
           <I style={{ width: 28, height: 28 }} />

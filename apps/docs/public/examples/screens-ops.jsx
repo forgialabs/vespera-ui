@@ -34,7 +34,7 @@ function ApprovalsScreen() {
     window.toast?.({ tone: ok ? 'pos' : 'neg', title: ok ? 'Request approved' : 'Request rejected', body: id });
   };
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <OpsHead title="Approvals" desc="Requests routed to you for sign-off, with risk scoring and SLA timers."
         right={<><Button variant="ghost" size="sm" leadingIcon="filter">Filter</Button><Button variant="ghost" size="sm" leadingIcon="checkCircle" onClick={() => { setItems([]); window.toast?.({ tone: 'pos', title: 'Queue cleared' }); }}>Approve all low-risk</Button></>} />
 
@@ -52,7 +52,7 @@ function ApprovalsScreen() {
         {items.length === 0
           ? <div style={{ padding: '56px 24px', textAlign: 'center', color: 'var(--text-faint)' }}><Icon.checkCircle style={{ width: 30, height: 30, margin: '0 auto 12px', color: 'var(--success)' }} /><div style={{ fontWeight: 600, color: 'var(--text)' }}>All caught up</div><div style={{ fontSize: 13, marginTop: 4 }}>No requests waiting on you.</div></div>
           : items.map((r, i) => (
-            <div key={r.id} className="ag-trow" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 'var(--row-py) var(--pad)', borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 0, cursor: 'pointer' }} onClick={() => setActive(r)}>
+            <div key={r.id} className="vsp-trow" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 'var(--row-py) var(--pad)', borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 0, cursor: 'pointer' }} onClick={() => setActive(r)}>
               <Av name={r.who} hue={r.hue} size={36} />
               <div style={{ width: 150, flexShrink: 0 }}>
                 <div style={{ fontWeight: 600, fontSize: 13.5 }}>{r.who}</div>
@@ -66,7 +66,7 @@ function ApprovalsScreen() {
                 <div className="mono" style={{ fontSize: 11, color: r.sla === 'Overdue' ? 'var(--danger)' : 'var(--text-faint)' }}>{r.sla}</div>
               </div>
               <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
-                <button className="ag-icon-btn" title="Reject" style={{ width: 34, height: 34 }} onClick={() => decide(r.id, false)}><Icon.x /></button>
+                <button className="vsp-icon-btn" title="Reject" style={{ width: 34, height: 34 }} onClick={() => decide(r.id, false)}><Icon.x /></button>
                 <Button variant="primary" size="sm" onClick={() => decide(r.id, true)}>Approve</Button>
               </div>
             </div>

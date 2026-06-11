@@ -1,6 +1,6 @@
-// aether-datepicker.jsx — Calendar, DatePicker (single), DateRangePicker. Depends on window.Icon, cx.
+// vespera-datepicker.jsx — Calendar, DatePicker (single), DateRangePicker. Depends on window.Icon, cx.
 const { useState: useDp, useRef: useDpRef, useEffect: useDpEffect, useLayoutEffect: useDpLayout } = React;
-const dpPortal = () => document.querySelector('.ag-root') || document.body;
+const dpPortal = () => document.querySelector('.vsp-root') || document.body;
 const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const fmtDate = (d) => d ? `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}, ${d.getFullYear()}` : '';

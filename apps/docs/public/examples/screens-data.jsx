@@ -41,13 +41,13 @@ function TableScreen({ onOpen }) {
   );
 
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <PageToolbar right={<>
         <button className="btn btn-ghost btn-sm"><Icon.filter />Filters</button>
         <button className="btn btn-ghost btn-sm"><Icon.download />Export</button>
         <button className="btn btn-primary btn-sm"><Icon.plus />Add account</button>
       </>}>
-        <div className="ag-search" style={{ width: 260 }}>
+        <div className="vsp-search" style={{ width: 260 }}>
           <Icon.search /><input placeholder="Search accounts…" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} />
         </div>
       </PageToolbar>
@@ -62,7 +62,7 @@ function TableScreen({ onOpen }) {
       </div>
 
       {sel.size > 0 && (
-        <div className="card ag-rise" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', marginBottom: 12, borderColor: 'color-mix(in oklab, var(--accent) 30%, var(--border))' }}>
+        <div className="card vsp-rise" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', marginBottom: 12, borderColor: 'color-mix(in oklab, var(--accent) 30%, var(--border))' }}>
           <span className="badge badge-info">{sel.size} selected</span>
           <button className="btn btn-subtle btn-sm"><Icon.mail />Email</button>
           <button className="btn btn-subtle btn-sm"><Icon.layers />Change plan</button>
@@ -72,7 +72,7 @@ function TableScreen({ onOpen }) {
       )}
 
       <div className="card" style={{ overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }} className="ag-scroll">
+        <div style={{ overflowX: 'auto' }} className="vsp-scroll">
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 880 }}>
             <thead><tr style={{ borderBottom: '1px solid var(--border)' }}>
               <th style={{ width: 44, padding: '0 0 0 16px', position: 'sticky', top: 0, background: 'var(--surface-1)' }}>
@@ -92,7 +92,7 @@ function TableScreen({ onOpen }) {
                 const st = STATUSES[c.status];
                 const isSel = sel.has(c.id);
                 return (
-                  <tr key={c.id} onClick={() => onOpen(c)} className="ag-trow"
+                  <tr key={c.id} onClick={() => onOpen(c)} className="vsp-trow"
                     style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', background: isSel ? 'color-mix(in oklab, var(--accent) 7%, transparent)' : 'transparent', transition: 'background .12s' }}>
                     <td style={{ padding: '0 0 0 16px' }} onClick={e => { e.stopPropagation(); toggle(c.id); }}><Check on={isSel} /></td>
                     <td style={{ padding: 'var(--row-py) 14px' }}>
@@ -115,7 +115,7 @@ function TableScreen({ onOpen }) {
                         <span className="mono tnum" style={{ fontSize: 11, color: 'var(--text-faint)', width: 30 }}>{c.usage}%</span>
                       </div>
                     </td>
-                    <td onClick={e => e.stopPropagation()}><button className="ag-icon-btn" style={{ width: 30, height: 30, border: 0, background: 'transparent' }}><Icon.more /></button></td>
+                    <td onClick={e => e.stopPropagation()}><button className="vsp-icon-btn" style={{ width: 30, height: 30, border: 0, background: 'transparent' }}><Icon.more /></button></td>
                   </tr>
                 );
               })}
@@ -148,10 +148,10 @@ function DetailScreen({ customer, onBack }) {
   const c = customer || CUSTOMERS[0];
   const st = STATUSES[c.status];
   return (
-    <div className="ag-content-inner">
+    <div className="vsp-content-inner">
       <button className="btn btn-subtle btn-sm" onClick={onBack} style={{ marginBottom: 16, paddingLeft: 8 }}><Icon.chevLeft style={{ width: 15, height: 15 }} />Accounts</button>
 
-      <div className="card ag-rise" style={{ marginBottom: 'var(--gap)', overflow: 'hidden' }}>
+      <div className="card vsp-rise" style={{ marginBottom: 'var(--gap)', overflow: 'hidden' }}>
         <div style={{ height: 76, background: `linear-gradient(110deg, color-mix(in oklab, var(--accent) 22%, var(--surface-2)), color-mix(in oklab, var(--accent-2) 18%, var(--surface-2)))` }} />
         <div className="card-pad" style={{ paddingTop: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginTop: -30, flexWrap: 'wrap' }}>
@@ -179,11 +179,11 @@ function DetailScreen({ customer, onBack }) {
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: '1.6fr 1fr' }}>
-        <div className="card ag-rise">
-          <div className="card-head"><h3>Usage trend</h3><div className="ag-top-spacer" /><Segmented options={['API','Seats','Storage']} value="API" onChange={() => {}} /></div>
+        <div className="card vsp-rise">
+          <div className="card-head"><h3>Usage trend</h3><div className="vsp-top-spacer" /><Segmented options={['API','Seats','Storage']} value="API" onChange={() => {}} /></div>
           <div className="card-pad"><AreaChart series={[c.spark.map(x => x * 12)]} labels={monthLabels} height={230} /></div>
         </div>
-        <div className="card ag-rise">
+        <div className="card vsp-rise">
           <div className="card-head"><h3>Details</h3></div>
           <div className="card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[['Account ID', c.id], ['Company', c.company], ['Plan', c.plan], ['Seats', String(c.seats)], ['Billing', 'Monthly · Card'], ['Region', 'us-east-1'], ['Owner', c.name]].map(([k, v], i) => (
@@ -201,7 +201,7 @@ function DetailScreen({ customer, onBack }) {
 function MiniStat({ label, value, sub, tone }) {
   const c = { pos: 'var(--success)', warn: 'var(--warning)', neg: 'var(--danger)' }[tone] || 'var(--text-faint)';
   return (
-    <div className="card card-pad ag-rise">
+    <div className="card card-pad vsp-rise">
       <div className="eyebrow">{label}</div>
       <div className="tnum" style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-.02em', margin: '8px 0 4px' }}>{value}</div>
       <div style={{ fontSize: 12, color: c, fontWeight: 600 }}>{sub}</div>

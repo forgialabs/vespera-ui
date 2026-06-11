@@ -199,7 +199,7 @@ function StatCard({ icon, label, value, delta, deltaDir = 'up', spark, sparkColo
   const I = window.Icon[icon];
   const Arrow = deltaDir === 'up' ? window.Icon.arrowUp : window.Icon.arrowDown;
   return (
-    <div className="card card-pad ag-rise" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div className="card card-pad vsp-rise" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 34, height: 34, borderRadius: 'var(--r-sm)', display: 'grid', placeItems: 'center',
@@ -226,7 +226,7 @@ function StatCard({ icon, label, value, delta, deltaDir = 'up', spark, sparkColo
 function Av({ name, hue = 0, size = 34 }) {
   const initials = name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
   return (
-    <span className="ag-avatar" style={{ width: size, height: size, fontSize: size * 0.38,
+    <span className="vsp-avatar" style={{ width: size, height: size, fontSize: size * 0.38,
       background: `linear-gradient(140deg, oklch(0.62 0.16 ${hue}), oklch(0.55 0.17 ${(hue+50)%360}))` }}>
       {initials}
     </span>

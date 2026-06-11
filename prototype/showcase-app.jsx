@@ -1,4 +1,4 @@
-// showcase-app.jsx — Aether UI docs shell: sidebar nav, router, command palette.
+// showcase-app.jsx — Vespera UI docs shell: sidebar nav, router, command palette.
 const { useState: useS, useEffect: useSE } = React;
 
 const SC_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -179,16 +179,16 @@ function Showcase() {
   }));
 
   return (
-    <div className="ag-root" data-theme={t.dark ? 'dark' : 'light'} data-corners={t.corners} data-density={t.density} data-dxside={t.sidebar} data-bganim={t.bgAnim ? 'on' : 'off'}
+    <div className="vsp-root" data-theme={t.dark ? 'dark' : 'light'} data-corners={t.corners} data-density={t.density} data-dxside={t.sidebar} data-bganim={t.bgAnim ? 'on' : 'off'}
          style={{ '--accent': t.accent, '--accent-2': t.accent2, '--accent-ink': '#fff', '--font-sans': SC_FONTS[t.font] || SC_FONTS.jakarta, '--bg-accent': t.bgGlow }}>
-      {t.bgAnim && <div className="ag-bg" aria-hidden="true"><b /><b /><b /></div>}
+      {t.bgAnim && <div className="vsp-bg" aria-hidden="true"><b /><b /><b /></div>}
       <div className="dx-shell">
         <aside className="dx-side">
           <div className="dx-side-head">
-            <span className="ag-brand-mark"><Icon.bolt style={{ width: 17, height: 17, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
-            <div className="dx-side-text"><div style={{ fontWeight: 700, fontSize: 15 }}>Aether</div><div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', letterSpacing: '.1em' }}>UI · v1.0</div></div>
+            <span className="vsp-brand-mark"><Icon.bolt style={{ width: 17, height: 17, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
+            <div className="dx-side-text"><div style={{ fontWeight: 700, fontSize: 15 }}>Vespera</div><div className="mono" style={{ fontSize: 9.5, color: 'var(--text-faint)', letterSpacing: '.1em' }}>UI · v1.0</div></div>
           </div>
-          <nav className="dx-nav ag-scroll">
+          <nav className="dx-nav vsp-scroll">
             {SC_NAV.map(g => {
               const open = !navClosed.has(g.group);
               return (
@@ -231,20 +231,20 @@ function Showcase() {
           </nav>
         </aside>
 
-        <main className="dx-main ag-scroll">
+        <main className="dx-main vsp-scroll">
           <div className="dx-top">
-            <button className="ag-icon-btn" title="Toggle sidebar" onClick={() => setTweak('sidebar', { full: 'compact', compact: 'float', float: 'hidden', hidden: 'full' }[t.sidebar] || 'full')}><Icon.table /></button>
-            <button className="ag-search" onClick={() => setCmd(true)} style={{ cursor: 'pointer', font: 'inherit', width: 260 }}>
+            <button className="vsp-icon-btn" title="Toggle sidebar" onClick={() => setTweak('sidebar', { full: 'compact', compact: 'float', float: 'hidden', hidden: 'full' }[t.sidebar] || 'full')}><Icon.table /></button>
+            <button className="vsp-search" onClick={() => setCmd(true)} style={{ cursor: 'pointer', font: 'inherit', width: 260 }}>
               <Icon.search /><span style={{ flex: 1, textAlign: 'left', color: 'var(--text-faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Search components &amp; blocks…</span><kbd>⌘K</kbd>
             </button>
-            <div className="ag-top-spacer" />
-            <a className="btn btn-ghost btn-sm" href="Aether Admin.html"><Icon.grid />Live admin demo</a>
-            <button className="ag-icon-btn" title="Toggle theme" onClick={() => setTweak('dark', !t.dark)}>{t.dark ? <Icon.sun /> : <Icon.moon />}</button>
-            <a className="ag-icon-btn" href="https://github.com" title="Source" onClick={e => e.preventDefault()}><Icon.doc /></a>
+            <div className="vsp-top-spacer" />
+            <a className="btn btn-ghost btn-sm" href="Vespera Admin.html"><Icon.grid />Live admin demo</a>
+            <button className="vsp-icon-btn" title="Toggle theme" onClick={() => setTweak('dark', !t.dark)}>{t.dark ? <Icon.sun /> : <Icon.moon />}</button>
+            <a className="vsp-icon-btn" href="https://github.com" title="Source" onClick={e => e.preventDefault()}><Icon.doc /></a>
           </div>
 
           <div className={cx('dx-content', String(page).startsWith('b-') && 'wide')}>
-            <div key={page} className="ag-screen">
+            <div key={page} className="vsp-screen">
               {page === 'overview' && <OverviewPage go={go} />}
               {page === 'foundations' && <FoundationsSection t={t} setTweak={setTweak} />}
               {page === 'buttons' && <ButtonsSection />}
@@ -280,9 +280,9 @@ function OverviewPage({ go }) {
   ];
   return (
     <>
-      <div className="eyebrow" style={{ marginBottom: 14 }}>Aether · Design System v1.0</div>
+      <div className="eyebrow" style={{ marginBottom: 14 }}>Vespera · Design System v1.0</div>
       <h1 className="dx-h1" style={{ fontSize: 40, maxWidth: 720 }}>A weightless component system for admin &amp; operational software.</h1>
-      <p className="dx-lede">Aether is a deep-space design language and React component library built for dense, data-heavy products. Flexible enough to reskin per product, complete enough to ship a console today.</p>
+      <p className="dx-lede">Vespera is a deep-space design language and React component library built for dense, data-heavy products. Flexible enough to reskin per product, complete enough to ship a console today.</p>
       <div style={{ display: 'flex', gap: 10, margin: '26px 0 8px' }}>
         <Button variant="primary" leadingIcon="bolt" onClick={() => go('foundations')}>Explore foundations</Button>
         <Button variant="ghost" leadingIcon="database" onClick={() => go('b-ops')}>Browse blocks</Button>
@@ -379,15 +379,15 @@ function TemplatesPage() {
   return (
     <>
       <h1 className="dx-h1">Templates</h1>
-      <p className="dx-lede">Full applications assembled from Aether. Open them, then lift any screen straight into your product.</p>
+      <p className="dx-lede">Full applications assembled from Vespera. Open them, then lift any screen straight into your product.</p>
       <h2 className="dx-h2">Available now</h2>
-      <a href="Aether Admin.html" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <a href="Vespera Admin.html" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="card" style={{ overflow: 'hidden', cursor: 'pointer' }}>
           <div style={{ height: 150, background: 'radial-gradient(500px 240px at 75% 0%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 65%), radial-gradient(400px 300px at 10% 120%, color-mix(in oklab, var(--accent-2) 24%, transparent), transparent 60%), var(--surface-2)', borderBottom: '1px solid var(--border)', position: 'relative', display: 'grid', placeItems: 'center' }}>
-            <span className="ag-brand-mark" style={{ width: 46, height: 46 }}><Icon.grid style={{ width: 22, height: 22, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
+            <span className="vsp-brand-mark" style={{ width: 46, height: 46 }}><Icon.grid style={{ width: 22, height: 22, color: '#fff', position: 'relative', zIndex: 1 }} /></span>
           </div>
           <div className="card-pad" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ flex: 1 }}><div className="dx-h3">Aether Admin</div><p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-dim)' }}>Analytics console — dashboard, accounts table, detail, settings, auth, and command palette.</p></div>
+            <div style={{ flex: 1 }}><div className="dx-h3">Vespera Admin</div><p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-dim)' }}>Analytics console — dashboard, accounts table, detail, settings, auth, and command palette.</p></div>
             <Button variant="primary" trailingIcon="arrowRight">Open</Button>
           </div>
         </div>

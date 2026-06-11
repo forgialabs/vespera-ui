@@ -1,4 +1,4 @@
-// aether-blocks.jsx — composed operational blocks (tables, ops, monitoring).
+// vespera-blocks.jsx — composed operational blocks (tables, ops, monitoring).
 // Composed from Vespera primitives. Each block is drop-in for an admin surface.
 const { useState: useB, useMemo: useBMemo, useRef: useBRef, useEffect: useBEffect } = React;
 
@@ -66,7 +66,7 @@ function OrdersBlock() {
                 <td style={{ color: 'var(--text-dim)' }}>{o.item}</td>
                 <td><Badge tone={ORDER_TONE[o.state]} dot>{o.state}</Badge></td>
                 <td style={{ textAlign: 'right', fontWeight: 700 }} className="tnum">${o.amount.toLocaleString()}</td>
-                <td><DropdownMenu trigger={<button className="ag-icon-btn" style={{ width: 30, height: 30, border: 0, background: 'transparent' }}><Icon.more /></button>}
+                <td><DropdownMenu trigger={<button className="vsp-icon-btn" style={{ width: 30, height: 30, border: 0, background: 'transparent' }}><Icon.more /></button>}
                   items={[{ label: 'View order', icon: 'eye' }, { label: 'Refund', icon: 'refresh' }, { sep: true }, { label: 'Cancel', icon: 'x', danger: true }]} />
                 </td>
               </tr>
@@ -80,7 +80,7 @@ function OrdersBlock() {
 
 /* ===================== TEAM / ROLES & PERMISSIONS ===================== */
 function TeamRolesBlock() {
-  const seed = [['Avery Quinn', 'avery@aether.dev', 250, 'Owner'], ['Maya Okafor', 'maya@northwind.com', 220, 'Admin'], ['Leo Vega', 'leo@halcyon.com', 150, 'Editor'], ['Noor Haddad', 'noor@beacon.com', 40, 'Viewer']];
+  const seed = [['Avery Quinn', 'avery@vespera.dev', 250, 'Owner'], ['Maya Okafor', 'maya@northwind.com', 220, 'Admin'], ['Leo Vega', 'leo@halcyon.com', 150, 'Editor'], ['Noor Haddad', 'noor@beacon.com', 40, 'Viewer']];
   const [members, setMembers] = useB(seed.map((m, i) => ({ id: i, name: m[0], email: m[1], hue: m[2], role: m[3] })));
   return (
     <Block title="Team &amp; roles" desc="Manage members and permissions with inline role selects.">
@@ -93,7 +93,7 @@ function TeamRolesBlock() {
             {m.role === 'Owner'
               ? <Badge tone="info">Owner</Badge>
               : <Select style={{ width: 130, height: 34 }} value={m.role} onChange={e => setMembers(x => x.map(y => y.id === m.id ? { ...y, role: e.target.value } : y))} options={['Admin', 'Editor', 'Viewer']} />}
-            <DropdownMenu trigger={<button className="ag-icon-btn" style={{ width: 32, height: 32 }}><Icon.more /></button>}
+            <DropdownMenu trigger={<button className="vsp-icon-btn" style={{ width: 32, height: 32 }}><Icon.more /></button>}
               items={[{ label: 'Resend invite', icon: 'mail' }, { label: 'Transfer ownership', icon: 'shield' }, { sep: true }, { label: 'Remove', icon: 'x', danger: true }]} />
           </div>
         ))}
@@ -145,8 +145,8 @@ function ApiKeysBlock() {
             <code className="mono" style={{ flex: 1, fontSize: 12.5, color: 'var(--text-dim)', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', padding: '7px 11px', letterSpacing: '.02em' }}>
               {k.reveal ? 'aeth_live_8f2a39c4e7b1d91c' : k.token}
             </code>
-            <Tooltip label={k.reveal ? 'Hide' : 'Reveal'}><button className="ag-icon-btn" style={{ width: 34, height: 34 }} onClick={() => setKeys(x => x.map(y => y.id === k.id ? { ...y, reveal: !y.reveal } : y))}><Icon.eye /></button></Tooltip>
-            <Tooltip label="Copy"><button className="ag-icon-btn" style={{ width: 34, height: 34 }} onClick={() => window.toast?.({ title: 'Copied to clipboard' })}><Icon.doc /></button></Tooltip>
+            <Tooltip label={k.reveal ? 'Hide' : 'Reveal'}><button className="vsp-icon-btn" style={{ width: 34, height: 34 }} onClick={() => setKeys(x => x.map(y => y.id === k.id ? { ...y, reveal: !y.reveal } : y))}><Icon.eye /></button></Tooltip>
+            <Tooltip label="Copy"><button className="vsp-icon-btn" style={{ width: 34, height: 34 }} onClick={() => window.toast?.({ title: 'Copied to clipboard' })}><Icon.doc /></button></Tooltip>
             <span className="eyebrow" style={{ width: 66, textAlign: 'right' }}>{k.last}</span>
             <Button variant="subtle" size="sm" onClick={() => { setKeys(x => x.filter(y => y.id !== k.id)); window.toast?.({ tone: 'neg', title: 'Key revoked' }); }}>Revoke</Button>
           </div>
@@ -289,7 +289,7 @@ function KanbanBlock() {
             <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 9, lineHeight: 1.4 }}>{drag.card.t}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><Badge tone={drag.card.tone}>{drag.card.tag}</Badge><Av name="A Q" hue={250} size={22} /></div>
           </div>
-        </div>, document.querySelector('.ag-root') || document.body)}
+        </div>, document.querySelector('.vsp-root') || document.body)}
     </Block>
   );
 }

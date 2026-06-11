@@ -1,7 +1,7 @@
-// aether-select.jsx — searchable single-select, multi-select, and token input.
+// vespera-select.jsx — searchable single-select, multi-select, and token input.
 // Depends on window.Icon, cx, Tag, Checkbox. Exports Combobox, MultiSelect, TokenInput.
 const { useState: useSel, useRef: useSelRef, useEffect: useSelEffect, useLayoutEffect: useSelLayout } = React;
-const selPortal = () => document.querySelector('.ag-root') || document.body;
+const selPortal = () => document.querySelector('.vsp-root') || document.body;
 const normOpt = (o) => (typeof o === 'object' ? o : { value: o, label: String(o) });
 
 /* anchored dropdown panel — positions under trigger, closes on outside/esc */

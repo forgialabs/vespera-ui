@@ -30,7 +30,7 @@ Kreatif. The full plan lives in [`docs/ROADMAP.md`](./docs/ROADMAP.md).
   `@vespera-ui/css`; they never fork or re-declare styles. Use tokens, never hardcoded hex.
 - **`.vsp-root` is the theming root.** All tokens live on it via `data-*` attributes
   (`data-theme`, `data-density`, `data-corners`) and CSS variables (`--accent`, …).
-  (The prototype uses the legacy prefix `.ag-`; it is rebranded to `.vsp-` during porting.)
+  (The prototype was renamed Aether → Vespera and uses `.vsp-` throughout too.)
 - **Overlays must portal into the nearest `.vsp-root`**, not `document.body`, or they lose
   the CSS variables. (See `prototype/AGENTS.md` for the full list of affected components.)
 - **No `window` globals.** The prototype attaches components to `window`; productized

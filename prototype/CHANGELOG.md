@@ -1,6 +1,6 @@
-# Changelog — Aether UI
+# Changelog — Vespera UI
 
-All notable changes to the Aether design system & admin template.
+All notable changes to the Vespera design system & admin template.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com) + SemVer.
 
 > **Repo layout (target):** `prototype/` holds the zero-install HTML showcase + admin demo
@@ -35,7 +35,7 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com) + SemVer.
 - **DatePicker / DateRangePicker / Calendar**.
 - **Button** loading state.
 ### Fixed
-- Overlays portal into `.ag-root` so popups inherit theme tokens (were transparent / black text).
+- Overlays portal into `.vsp-root` so popups inherit theme tokens (were transparent / black text).
 - Accent caret on inputs; native selects follow `color-scheme`.
 
 ## [1.2.0] — 2026-06-09
@@ -54,7 +54,7 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com) + SemVer.
 
 ## [1.0.0] — 2026-06-08
 ### Added
-- Initial **Aether** design system: deep-space tokens, light/dark, density, corners, animated glow.
+- Initial **Vespera** design system: deep-space tokens, light/dark, density, corners, animated glow.
 - Core primitives, charts, foundations/components/blocks showcase.
-- **Aether Admin** template: dashboard, analytics, accounts table + detail, settings, login, states.
+- **Vespera Admin** template: dashboard, analytics, accounts table + detail, settings, login, states.
 - Tweaks panel (theme, accent, typeface, sidebar, density).

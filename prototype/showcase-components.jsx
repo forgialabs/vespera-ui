@@ -158,7 +158,7 @@ function FeedbackSection() {
       <div className="dx-block"><EmptyState icon="inbox" title="No accounts yet" desc="When you add your first account it'll show up here with live revenue and usage."
         action={<><Button variant="ghost" size="sm" leadingIcon="download">Import CSV</Button><Button variant="primary" size="sm" leadingIcon="plus">Add account</Button></>} /></div>
 
-      <Dialog open={dlg} onClose={() => setDlg(false)} icon="bolt" title="Upgrade workspace" desc="Move Aether Labs to the Enterprise plan with SSO and priority support."
+      <Dialog open={dlg} onClose={() => setDlg(false)} icon="bolt" title="Upgrade workspace" desc="Move Vespera Labs to the Enterprise plan with SSO and priority support."
         footer={<><Button variant="ghost" size="sm" onClick={() => setDlg(false)}>Not now</Button><Button variant="primary" size="sm" onClick={() => { setDlg(false); window.toast({ tone: 'pos', title: 'Upgraded to Enterprise' }); }}>Upgrade</Button></>}>
         <div style={{ display: 'grid', gap: 14 }}>
           <Field label="Billing cycle"><Select options={['Monthly · $2,400', 'Annual · $24,000 (save 17%)']} /></Field>
