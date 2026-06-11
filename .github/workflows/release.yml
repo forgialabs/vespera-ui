@@ -36,6 +36,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - name: Upgrade npm for OIDC trusted publishing
+        # changeset publish shells out to `npm publish`; OIDC needs npm >= 11.5.1,
+        # but Node 22 ships npm 10.x (which fails with ENEEDAUTH).
+        run: npm install -g npm@latest
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build packages
