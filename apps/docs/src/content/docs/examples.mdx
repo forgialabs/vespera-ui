@@ -77,32 +77,31 @@ Drag a card to reorder it or move it between columns.
   <TeamRolesBlockExample client:visible />
 </Preview>
 
-## Full showcases
+## Admin console
 
-Two complete, interactive UIs that show what you can build with Vespera. Open either
-full-screen and try the live theming, density, and corner controls.
+A complete, navigable admin console — sidebar nav, top bar, and switchable views (dashboard,
+orders, kanban, team, API keys, audit log, system status) — built **entirely from
+`@vespera-ui/react`**. This is the published components, running live.
 
 <CardGrid>
-  <Card title="Component library" icon="open-book">
-    Every component, block, and pattern in one place — forms, overlays, tables, charts,
-    calendars, command palette — with live theming and copy-paste code.
+  <Card title="Admin console (real packages)" icon="laptop">
+    Open it full-screen and click through the views. Everything you see is `@vespera-ui/react`
+    composed together — try the live theme/density/corner controls too.
 
-    <p><a href="/vespera-ui/examples/library.html" target="_blank" rel="noopener">Open the library showcase →</a></p>
+    <p><a href="/vespera-ui/admin" target="_blank" rel="noopener">Open the admin console →</a></p>
   </Card>
 
-  <Card title="Admin console" icon="laptop">
-    A flagship operational template: dashboard, analytics, data tables, approvals, audit log,
-    insights, notifications, settings, and login — all wired up.
+  <Card title="Component library (prototype)" icon="open-book">
+    The original showcase — every component, block, and pattern with copy-paste code. Compiles
+    in the browser, so give it a second on first load.
 
-    <p><a href="/vespera-ui/examples/admin.html" target="_blank" rel="noopener">Open the admin demo →</a></p>
+    <p><a href="/vespera-ui/examples/library.html" target="_blank" rel="noopener">Open the library showcase →</a></p>
   </Card>
 </CardGrid>
 
 ## Build it with the packages
 
-The two demos above are the original showcase builds (they compile in the browser, so give
-them a second on first load). They demonstrate the full design language — and you reproduce
-the exact same UI with the productized packages:
+The admin console above is composed from the productized packages — here's the shape of it:
 
 ```tsx
 import '@vespera-ui/css';
