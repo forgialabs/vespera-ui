@@ -1,0 +1,37 @@
+{
+  "name": "@vespera-ui/angular",
+  "version": "0.1.0",
+  "description": "Vespera design system — Angular components.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=20",
+    "@angular/core": ">=20"
+  },
+  "devDependencies": {
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "ng-packagr": "^20.0.0",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.8.1",
+    "zone.js": "~0.15.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git",
+    "directory": "packages/angular"
+  },
+  "keywords": [
+    "vespera",
+    "angular",
+    "design-system",
+    "ui"
+  ]
+}
