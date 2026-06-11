@@ -1,5 +1,21 @@
 # @vespera-ui/react
 
+## 0.2.0
+
+### Minor Changes
+
+- 8b912ba: Add data-display and navigation components: `Accordion`, `Banner`, `EmptyState`,
+  `CircularProgress`, `Stat`, `Timeline`, `DescriptionList`, `SettingRow`, `VerticalTabs`,
+  `NavItem`, and `NavGroup`. The React package now covers 48 components.
+- ef726f2: Add the remaining extras: `Tree`, `Avatar`, `AvatarGroup`, `Segmented`, `NumberStepper`,
+  `OTPInput`, `InlineEdit`, `CopyButton`, and `FileDropzone` (a real file dropzone with an
+  `onFiles` callback). The React package now covers 57 components.
+- 6be19d9: Add charts: `Sparkline`, `AreaChart` (responsive, hover tooltip, optional dual series),
+  `BarChart`, `Donut`, and `StatCard`, plus the `niceNum` and `smoothPath` helpers. Gradient
+  ids use `useId()` for SSR safety. 65 components total — the component port is feature-complete.
+- b666d22: Add date components: `Calendar`, `DatePicker`, and `DateRangePicker` (with a `DateRange` type
+  and a `fmtDate` helper). 60 components total.
+
 ## 0.1.0
 
 ### Minor Changes

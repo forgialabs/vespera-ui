@@ -1,5 +1,15 @@
 # @vespera-ui/docs
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [8b912ba]
+- Updated dependencies [ef726f2]
+- Updated dependencies [6be19d9]
+- Updated dependencies [b666d22]
+  - @vespera-ui/react@0.2.0
+
 ## 0.0.1
 
 ### Patch Changes
