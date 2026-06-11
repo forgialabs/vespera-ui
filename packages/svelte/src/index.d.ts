@@ -70,3 +70,27 @@ export const Tabs: Component<{ value?: string; tabs?: TabItem[]; right?: unknown
 export const Breadcrumb: Component<{ items?: string[] }>;
 export const Pagination: Component<{ page?: number; pages?: number }>;
 export const Stepper: Component<{ steps?: string[]; current?: number }>;
+export const CircularProgress: Component<{
+  value?: number;
+  size?: number;
+  thickness?: number;
+  color?: string;
+  label?: string;
+}>;
+export const Stat: Component<{
+  label?: string;
+  value?: string;
+  delta?: string;
+  deltaDir?: 'up' | 'down';
+  tone?: string;
+  icon?: unknown;
+}>;
+export type TimelineTone = 'pos' | 'neg' | 'warn' | 'info';
+export interface TimelineItem {
+  title: string;
+  time?: string;
+  body?: string;
+  tone?: TimelineTone;
+}
+export const Timeline: Component<{ items?: TimelineItem[] }>;
+export const DescriptionList: Component<{ items?: [string, string][] }>;
