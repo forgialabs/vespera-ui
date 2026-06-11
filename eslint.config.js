@@ -9,7 +9,7 @@ export default tseslint.config(
       '**/storybook-static/**',
       'prototype/**',
       'apps/docs/**',
-      'scripts/**',
+      '**/scripts/**',
       '_preview-server.cjs',
     ],
   },

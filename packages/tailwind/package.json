@@ -1,0 +1,48 @@
+{
+  "name": "@vespera-ui/tailwind",
+  "version": "0.0.0",
+  "description": "Vespera design system — Tailwind CSS preset (token → utility mapping).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vespera-ui/tokens": "workspace:^"
+  },
+  "peerDependencies": {
+    "tailwindcss": ">=3"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.15"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git",
+    "directory": "packages/tailwind"
+  },
+  "keywords": [
+    "vespera",
+    "tailwind",
+    "tailwindcss",
+    "preset",
+    "design-system"
+  ]
+}
