@@ -1,5 +1,13 @@
 # @vespera-ui/vue
 
+## 0.5.0
+
+### Minor Changes
+
+- 7a54015: Add form-extra components to the Vue and Svelte wrappers: `NumberStepper`, `CopyButton`
+  (clipboard), and `InlineEdit`. (Angular gains the same — `vsp-number-stepper`, `vsp-copy-button`,
+  `vsp-inline-edit` — published separately.)
+
 ## 0.4.0
 
 ### Minor Changes
