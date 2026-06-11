@@ -4,6 +4,28 @@ description: Full, real-world UIs built with Vespera — a complete component li
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+import Preview from '../../components/Preview.astro';
+import { DashboardTemplate } from '../../components/templates';
+
+## Admin dashboard
+
+A complete dashboard built **only from `@vespera-ui/react`** — header with a range switch, KPI
+cards, a revenue area chart, a traffic donut, and a recent-orders table. This is rendered live
+below (not a screenshot) from the published components.
+
+<Preview
+  code={`import {
+  AreaChart, Avatar, Badge, Button, Card, CardHead, Donut, Segmented, StatCard,
+} from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
+
+// KPI cards + AreaChart + Donut + a <table className="ui-table"> — see the
+// full source at apps/docs/src/components/templates.tsx`}
+>
+  <DashboardTemplate client:visible />
+</Preview>
+
+## Full showcases
 
 Two complete, interactive UIs that show what you can build with Vespera. Open either
 full-screen and try the live theming, density, and corner controls.
