@@ -5,11 +5,15 @@
 export { default as Button } from './Button.svelte';
 export { default as IconButton } from './IconButton.svelte';
 export { default as Badge } from './Badge.svelte';
+export { default as Tag } from './Tag.svelte';
+export { default as Kbd } from './Kbd.svelte';
+export { default as Divider } from './Divider.svelte';
 export { default as Spinner } from './Spinner.svelte';
 export { default as Card } from './Card.svelte';
 export { default as CardHead } from './CardHead.svelte';
 export { default as Alert } from './Alert.svelte';
 export { default as Field } from './Field.svelte';
 export { default as Input } from './Input.svelte';
+export { default as Textarea } from './Textarea.svelte';
 export { default as Switch } from './Switch.svelte';
 export { default as Checkbox } from './Checkbox.svelte';

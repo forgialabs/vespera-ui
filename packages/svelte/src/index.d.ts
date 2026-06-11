@@ -13,6 +13,9 @@ export const Badge: Component<{
   dot?: boolean;
   children?: unknown;
 }>;
+export const Tag: Component<{ children?: unknown; onremove?: () => void }>;
+export const Kbd: Component<{ children?: unknown }>;
+export const Divider: Component<{ vertical?: boolean }>;
 export const Spinner: Component<{ size?: 'lg' }>;
 export const Card: Component<{ pad?: boolean; children?: unknown }>;
 export const CardHead: Component<{ title?: string; desc?: string; right?: unknown }>;
@@ -32,6 +35,7 @@ export const Field: Component<{
   children?: unknown;
 }>;
 export const Input: Component<{ value?: string; invalid?: boolean }>;
+export const Textarea: Component<{ value?: string }>;
 export const Switch: Component<{ checked?: boolean; size?: 'sm'; disabled?: boolean }>;
 export const Checkbox: Component<{
   checked?: boolean;

@@ -46,3 +46,16 @@ export class VspInput {
     this.valueChange.emit(this.value);
   }
 }
+
+@Component({
+  selector: 'vsp-textarea',
+  template: `<textarea class="ui-textarea" [value]="value" (input)="onInput($event)"></textarea>`,
+})
+export class VspTextarea {
+  @Input() value = '';
+  @Output() valueChange = new EventEmitter<string>();
+  onInput(e: Event): void {
+    this.value = (e.target as HTMLTextAreaElement).value;
+    this.valueChange.emit(this.value);
+  }
+}

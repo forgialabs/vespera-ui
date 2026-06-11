@@ -43,6 +43,7 @@ export default defineConfig({
           items: [
             { label: 'Theming', link: '/guides/theming/' },
             { label: 'Frameworks', link: '/guides/frameworks/' },
+            { label: 'Accessibility', link: '/guides/accessibility/' },
             { label: 'Components', link: '/guides/components/' },
             { label: 'CLI', link: '/guides/cli/' },
             { label: 'Recipes', link: '/guides/recipes/' },

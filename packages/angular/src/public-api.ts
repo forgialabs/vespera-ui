@@ -1,5 +1,6 @@
 export * from './button.component';
 export * from './badge.component';
+export * from './display.component';
 export * from './feedback.component';
 export * from './card.component';
 export * from './alert.component';

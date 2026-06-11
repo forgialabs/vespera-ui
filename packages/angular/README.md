@@ -46,8 +46,9 @@ Form components support two-way binding (`[(value)]` on `vsp-input`, `[(checked)
 
 ## Components
 
-`vsp-button`, `vsp-icon-button`, `vsp-badge`, `vsp-spinner`, `vsp-card`, `vsp-card-head`,
-`vsp-alert`, `vsp-field`, `vsp-input`, `vsp-switch`, `vsp-checkbox`. More are being ported — the
-CSS layer already supports every Vespera component, so wrappers are thin.
+`vsp-button`, `vsp-icon-button`, `vsp-badge`, `vsp-tag`, `vsp-kbd`, `vsp-divider`, `vsp-spinner`,
+`vsp-card`, `vsp-card-head`, `vsp-alert`, `vsp-field`, `vsp-input`, `vsp-textarea`, `vsp-switch`,
+`vsp-checkbox`. More are being ported — the CSS layer already supports every Vespera component,
+so wrappers are thin.
 
 License: Apache-2.0
