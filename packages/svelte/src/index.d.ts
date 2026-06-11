@@ -56,3 +56,12 @@ export const Radio: Component<{
 }>;
 export const RadioGroup: Component<{ value?: string; options?: SelectOption[]; name?: string }>;
 export const Slider: Component<{ value?: number; min?: number; max?: number; step?: number }>;
+export const Progress: Component<{ value?: number; tone?: string; height?: number }>;
+export const Skeleton: Component<{ w?: string | number; h?: string | number; r?: number }>;
+export const Avatar: Component<{ name: string; hue?: number; size?: number }>;
+export interface Person {
+  name: string;
+  hue?: number;
+}
+export const AvatarGroup: Component<{ people?: Person[]; max?: number; size?: number }>;
+export const Segmented: Component<{ value?: string; options?: string[] }>;

@@ -20,3 +20,36 @@ export class VspSpinner {
 export class VspIconButton {
   @Input() label?: string;
 }
+
+@Component({
+  selector: 'vsp-progress',
+  template: `<div class="meter" [style.height.px]="height">
+    <i [style.width.%]="clamped" [style.background]="tone" style="transition: width 0.3s"></i>
+  </div>`,
+})
+export class VspProgress {
+  @Input() value = 0;
+  @Input() tone?: string;
+  @Input() height = 6;
+  get clamped(): number {
+    return Math.min(100, this.value);
+  }
+}
+
+@Component({
+  selector: 'vsp-skeleton',
+  template: `<div
+    class="skel"
+    [style.width]="px(w)"
+    [style.height]="px(h)"
+    [style.borderRadius]="px(r)"
+  ></div>`,
+})
+export class VspSkeleton {
+  @Input() w: string | number = '100%';
+  @Input() h: string | number = 12;
+  @Input() r: number = 7;
+  px(v: string | number): string {
+    return typeof v === 'number' ? `${v}px` : v;
+  }
+}

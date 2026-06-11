@@ -367,3 +367,162 @@ export const NativeSelect = defineComponent({
       );
   },
 });
+
+const px = (v: string | number) => (typeof v === 'number' ? `${v}px` : v);
+
+export const Progress = defineComponent({
+  name: 'VspProgress',
+  props: {
+    value: { type: Number, default: 0 },
+    tone: { type: String, default: undefined },
+    height: { type: Number, default: 6 },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'meter', style: { height: px(props.height) } }, [
+        h('i', {
+          style: {
+            width: `${Math.min(100, props.value)}%`,
+            background: props.tone,
+            transition: 'width .3s',
+          },
+        }),
+      ]);
+  },
+});
+
+export const Skeleton = defineComponent({
+  name: 'VspSkeleton',
+  props: {
+    w: { type: [String, Number] as PropType<string | number>, default: '100%' },
+    h: { type: [String, Number] as PropType<string | number>, default: 12 },
+    r: { type: Number, default: 7 },
+  },
+  setup(props) {
+    return () =>
+      h('div', {
+        class: 'skel',
+        style: { width: px(props.w), height: px(props.h), borderRadius: px(props.r) },
+      });
+  },
+});
+
+const initialsOf = (name: string) =>
+  name
+    .split(' ')
+    .map((s) => s.charAt(0))
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+export interface Person {
+  name: string;
+  hue?: number;
+}
+
+export const Avatar = defineComponent({
+  name: 'VspAvatar',
+  props: {
+    name: { type: String, required: true },
+    hue: { type: Number, default: 0 },
+    size: { type: Number, default: 34 },
+  },
+  setup(props) {
+    return () =>
+      h(
+        'span',
+        {
+          class: 'vsp-avatar',
+          style: {
+            width: px(props.size),
+            height: px(props.size),
+            fontSize: px(props.size * 0.38),
+            background: `linear-gradient(140deg, oklch(0.62 0.16 ${props.hue}), oklch(0.55 0.17 ${(props.hue + 50) % 360}))`,
+          },
+        },
+        initialsOf(props.name),
+      );
+  },
+});
+
+export const AvatarGroup = defineComponent({
+  name: 'VspAvatarGroup',
+  props: {
+    people: { type: Array as PropType<Person[]>, default: () => [] },
+    max: { type: Number, default: 4 },
+    size: { type: Number, default: 32 },
+  },
+  setup(props) {
+    return () => {
+      const shown = props.people.slice(0, props.max);
+      const extra = props.people.length - shown.length;
+      return h('div', { style: { display: 'flex', alignItems: 'center' } }, [
+        ...shown.map((p, i) =>
+          h(
+            'span',
+            {
+              key: i,
+              style: {
+                marginLeft: i ? '-10px' : '0',
+                border: '2px solid var(--surface-1)',
+                borderRadius: '50%',
+                position: 'relative',
+                zIndex: shown.length - i,
+              },
+            },
+            [h(Avatar, { name: p.name, hue: p.hue ?? 0, size: props.size })],
+          ),
+        ),
+        extra > 0
+          ? h(
+              'span',
+              {
+                style: {
+                  marginLeft: '-10px',
+                  width: px(props.size),
+                  height: px(props.size),
+                  borderRadius: '50%',
+                  display: 'grid',
+                  placeItems: 'center',
+                  background: 'var(--surface-3)',
+                  border: '2px solid var(--surface-1)',
+                  fontSize: px(props.size * 0.34),
+                  fontWeight: 700,
+                  color: 'var(--text-dim)',
+                },
+              },
+              `+${extra}`,
+            )
+          : null,
+      ]);
+    };
+  },
+});
+
+export const Segmented = defineComponent({
+  name: 'VspSegmented',
+  props: {
+    modelValue: { type: String, default: undefined },
+    options: { type: Array as PropType<string[]>, default: () => [] },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () =>
+      h(
+        'div',
+        { class: 'ui-seg' },
+        props.options.map((o) =>
+          h(
+            'button',
+            {
+              key: o,
+              type: 'button',
+              class: cx(props.modelValue === o && 'on'),
+              onClick: () => emit('update:modelValue', o),
+            },
+            o,
+          ),
+        ),
+      );
+  },
+});
