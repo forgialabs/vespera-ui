@@ -33,3 +33,6 @@ prototype/_original-zip/
 # local preview helpers (not part of the project)
 _preview-server.cjs
 .claude/launch.json
+
+# ad-hoc temp files (CI polling, etc.)
+/_*.json

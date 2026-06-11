@@ -1,0 +1,24 @@
+name: Release
+
+# Create a GitHub Release whenever a version tag (e.g. v0.1.0) is pushed.
+# Versions + changelogs are managed by Changesets (`pnpm version-packages`);
+# npm publishing is a separate, opt-in step (needs an NPM_TOKEN secret).
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "Vespera $GITHUB_REF_NAME" --generate-notes
