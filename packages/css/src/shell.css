@@ -1,0 +1,397 @@
+/* ============================================================
+   @vespera-ui/css — app shell (.vsp-*): sidebar, topbar,
+   nav, brand, search, icon buttons.
+   ============================================================ */
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.vsp-app {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  min-height: 100vh;
+}
+
+.vsp-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+.vsp-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.vsp-content-inner {
+  padding: var(--pad);
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+/* ---------- sidebar ---------- */
+.vsp-side {
+  position: relative;
+  width: 248px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--surface-1) 92%, var(--bg));
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.28s cubic-bezier(0.4, 0.6, 0.3, 1);
+  height: 100vh;
+}
+.vsp-root[data-sidebar='rail'] .vsp-side {
+  width: 74px;
+}
+.vsp-root[data-sidebar='float'] .vsp-app {
+  padding: 14px;
+  gap: 14px;
+  grid-template-columns: auto 1fr;
+}
+.vsp-root[data-sidebar='float'] .vsp-side {
+  height: calc(100vh - 28px);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.vsp-root[data-sidebar='float'] .vsp-main {
+  height: calc(100vh - 28px);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.vsp-root[data-sidebar='float'] .vsp-top {
+  background: color-mix(in oklab, var(--surface-1) 88%, transparent);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+.vsp-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 20px 20px 18px;
+  height: 70px;
+  flex-shrink: 0;
+}
+.vsp-brand-mark {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: linear-gradient(
+    150deg,
+    var(--accent),
+    color-mix(in oklab, var(--accent) 40%, var(--accent-2))
+  );
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 40%, transparent),
+    0 6px 18px color-mix(in oklab, var(--accent) 45%, transparent);
+  position: relative;
+}
+.vsp-brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.55), transparent 55%);
+}
+.vsp-brand-name {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.vsp-brand-sub {
+  font-size: 10px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.vsp-root[data-sidebar='rail'] .vsp-brand-text {
+  display: none;
+}
+.vsp-root[data-sidebar='rail'] .vsp-brand {
+  justify-content: center;
+  padding: 20px 0 18px;
+}
+
+.vsp-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vsp-nav-group-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 16px 12px 6px;
+}
+.vsp-root[data-sidebar='rail'] .vsp-nav-group-label {
+  text-align: center;
+  padding: 14px 0 6px;
+  font-size: 0;
+}
+.vsp-root[data-sidebar='rail'] .vsp-nav-group-label::before {
+  content: '•••';
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.vsp-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  position: relative;
+  font-weight: 500;
+  font-size: 13.5px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  background: transparent;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.vsp-nav-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.vsp-nav-item:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.vsp-nav-item.active {
+  color: var(--text);
+  background: color-mix(in oklab, var(--accent) 13%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 26%, transparent);
+}
+.vsp-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.vsp-nav-item.active svg {
+  color: var(--accent);
+}
+.vsp-nav-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+  color: color-mix(in oklab, var(--accent) 92%, var(--text));
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+.vsp-root[data-sidebar='rail'] .vsp-nav-label,
+.vsp-root[data-sidebar='rail'] .vsp-nav-badge {
+  display: none;
+}
+.vsp-root[data-sidebar='rail'] .vsp-nav-item {
+  justify-content: center;
+  padding: 11px 0;
+}
+.vsp-root[data-sidebar='rail'] .vsp-nav-item.active::before {
+  left: -12px;
+}
+
+.vsp-side-foot {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.vsp-user {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.vsp-user:hover {
+  background: var(--hover);
+}
+.vsp-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  background: linear-gradient(
+    140deg,
+    var(--accent),
+    color-mix(in oklab, var(--accent) 50%, var(--accent-2))
+  );
+}
+.vsp-user-name {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.vsp-user-mail {
+  font-size: 11px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.vsp-root[data-sidebar='rail'] .vsp-user-text,
+.vsp-root[data-sidebar='rail'] .vsp-user-chev {
+  display: none;
+}
+.vsp-root[data-sidebar='rail'] .vsp-user {
+  justify-content: center;
+}
+
+/* ---------- topbar ---------- */
+.vsp-top {
+  height: 70px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 var(--pad);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--glass) 100%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  position: relative;
+  z-index: 5;
+}
+.vsp-top-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+.vsp-top-title h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.vsp-top-crumb {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vsp-top-spacer {
+  flex: 1;
+}
+
+.vsp-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  width: 280px;
+  min-width: 44px;
+  flex-shrink: 1;
+  padding: 0 12px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.vsp-search:focus-within {
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent);
+}
+.vsp-search svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.vsp-search input {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  width: 100%;
+}
+.vsp-search input::placeholder {
+  color: var(--text-faint);
+}
+.vsp-search kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ---------- icon buttons ---------- */
+.vsp-icon-btn {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.vsp-icon-btn:hover {
+  color: var(--text);
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+.vsp-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.vsp-icon-btn .vsp-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 0 2px var(--surface-2),
+    0 0 8px var(--accent);
+}

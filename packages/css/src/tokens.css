@@ -1,22 +1,139 @@
 /* ============================================================
    @vespera-ui/css — design tokens
-   Phase 1 will port the prototype's token layer (styles.css :root +
-   [data-theme] blocks) here, rebranding the `.ag-` prefix to `.vsp-`.
-   Theming is driven by data-attributes and CSS variables on `.vsp-root`.
+   Theming via data-attributes + CSS variables on .vsp-root:
+     data-theme=dark|light · data-density=compact|comfortable|spacious
+     data-corners=round|soft|sharp · --accent (inline)
    ============================================================ */
 
-.vsp-root {
-  /* accent — overridden inline by host */
+:root {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* accent — overridden inline by tweaks */
   --accent: #4a7cff;
+  --accent-2: #b16cff;
+  --accent-ink: #ffffff;
+
+  /* named color set — Accent & Accent 2 select from these */
+  --c-blue: #4a7cff;
+  --c-cyan: #16b6c9;
+  --c-indigo: #8b6cff;
+  --c-violet: #b16cff;
+  --c-emerald: #1fb574;
+  --c-coral: #ff7a6b;
+  --c-amber: #f5a524;
+  --c-magenta: #e75cff;
 
   /* corners */
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
+  --r-pill: 999px;
 
   /* density */
   --pad: 22px;
   --gap: 18px;
+  --row-h: 52px;
+  --row-py: 11px;
+  --ctrl-h: 40px;
+  --fs-base: 14px;
+
+  /* animated background glow (overridden inline by tweaks) */
+  --bg-accent: #4a7cff;
 }
 
-/* TODO(phase-1): full token set, dark/light theme blocks, density/corners variants. */
+/* ---------- corner styles ---------- */
+.vsp-root[data-corners='round'] {
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+}
+.vsp-root[data-corners='soft'] {
+  --r-sm: 6px;
+  --r-md: 9px;
+  --r-lg: 12px;
+}
+.vsp-root[data-corners='sharp'] {
+  --r-sm: 2px;
+  --r-md: 3px;
+  --r-lg: 4px;
+}
+
+/* native controls (select popups, date pickers, scrollbars) follow the theme */
+.vsp-root[data-theme='dark'] {
+  color-scheme: dark;
+}
+.vsp-root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* ---------- density ---------- */
+.vsp-root[data-density='compact'] {
+  --pad: 13px;
+  --gap: 10px;
+  --row-h: 40px;
+  --row-py: 6px;
+  --ctrl-h: 34px;
+  --fs-base: 13px;
+}
+.vsp-root[data-density='comfortable'] {
+  --pad: 22px;
+  --gap: 18px;
+  --row-h: 52px;
+  --row-py: 11px;
+  --ctrl-h: 40px;
+  --fs-base: 14px;
+}
+.vsp-root[data-density='spacious'] {
+  --pad: 34px;
+  --gap: 28px;
+  --row-h: 64px;
+  --row-py: 18px;
+  --ctrl-h: 48px;
+  --fs-base: 15px;
+}
+
+/* ============================================================
+   THEME TOKENS
+   ============================================================ */
+.vsp-root[data-theme='dark'] {
+  --bg: #080b14;
+  --bg-glow: #0e1626;
+  --surface-1: #0e131f;
+  --surface-2: #141a28;
+  --surface-3: #1a2233;
+  --hover: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e8ecf4;
+  --text-dim: #97a1b6;
+  --text-faint: #5d6479;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.55);
+  --grid-line: rgba(255, 255, 255, 0.045);
+  --success: #34d399;
+  --danger: #fb7185;
+  --warning: #fbbf24;
+  --glass: rgba(14, 19, 31, 0.72);
+}
+
+.vsp-root[data-theme='light'] {
+  --bg: #f4f6fb;
+  --bg-glow: #e9eef9;
+  --surface-1: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #f3f5fa;
+  --hover: rgba(10, 20, 50, 0.035);
+  --border: rgba(13, 18, 32, 0.09);
+  --border-strong: rgba(13, 18, 32, 0.16);
+  --text: #0d1424;
+  --text-dim: #5a637a;
+  --text-faint: #9aa2b5;
+  --shadow: 0 1px 2px rgba(20, 30, 60, 0.06), 0 8px 24px rgba(20, 30, 60, 0.07);
+  --shadow-lg: 0 24px 60px rgba(20, 30, 60, 0.14);
+  --grid-line: rgba(13, 18, 32, 0.06);
+  --success: #0ea371;
+  --danger: #e5484d;
+  --warning: #d98a00;
+  --glass: rgba(255, 255, 255, 0.72);
+}

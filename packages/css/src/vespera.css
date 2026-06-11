@@ -1,5 +1,5 @@
 /* ============================================================
-   @vespera-ui/css — Vespera design system stylesheet (bundle entry)
+   @vespera-ui/css — Vespera design system (bundle entry)
    Deep-space navy + electric cornflower accent.
 
    Usage: import this file once, then wrap your app (or a subtree) in
@@ -7,10 +7,12 @@
 
      <div class="vsp-root" data-theme="dark" data-density="comfortable">…</div>
 
-   Phase 1 ports the prototype's `styles.css` + `ui.css` here, split into
-   tokens / base / shell / components, with `.ag-` → `.vsp-`.
+   Re-theme by overriding tokens on `.vsp-root` — never hardcode hex.
    ============================================================ */
 
-@import './tokens.css';
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* TODO(phase-1): base.css, shell.css (.vsp-*), components.css (.ui-* / .vsp-*). */
+@import './tokens.css';
+@import './base.css';
+@import './shell.css';
+@import './components.css';

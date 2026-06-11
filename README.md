@@ -30,11 +30,11 @@ let coding agents author and theme Vespera correctly.
 
 ## Packages
 
-| Package                                 | Description                                                  | Status         |
-| --------------------------------------- | ------------------------------------------------------------ | -------------- |
-| [`@vespera-ui/css`](./packages/css)     | Framework-agnostic tokens + component CSS. Works everywhere. | 🚧 scaffolding |
-| [`@vespera-ui/react`](./packages/react) | React components (flagship).                                 | 🚧 scaffolding |
-| [`@vespera-ui/icons`](./packages/icons) | Framework-neutral SVG icon set.                              | 🚧 scaffolding |
+| Package                                 | Description                                                  | Status              |
+| --------------------------------------- | ------------------------------------------------------------ | ------------------- |
+| [`@vespera-ui/css`](./packages/css)     | Framework-agnostic tokens + component CSS. Works everywhere. | ✅ ported (preview) |
+| [`@vespera-ui/react`](./packages/react) | React components (flagship).                                 | 🚧 scaffolding      |
+| [`@vespera-ui/icons`](./packages/icons) | Framework-neutral SVG icon set.                              | 🚧 scaffolding      |
 
 Planned: `@vespera-ui/tokens`, `@vespera-ui/tailwind`, `@vespera-ui/charts`, `@vespera-ui/widgets`.
 

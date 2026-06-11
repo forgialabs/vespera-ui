@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vespera · @vespera-ui/css demo</title>
+    <!-- The whole design system, framework-agnostic, from one stylesheet: -->
+    <link rel="stylesheet" href="../src/vespera.css" />
+    <style>
+      /* demo-only layout helpers (not part of the design system) */
+      body {
+        margin: 0;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 28px 22px 80px;
+        position: relative;
+        z-index: 1;
+      }
+      .demo-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 8px;
+      }
+      .demo-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin: 18px 0 26px;
+      }
+      .demo-controls .sep {
+        width: 1px;
+        height: 22px;
+        background: var(--border);
+        margin: 0 4px;
+      }
+      .swatch {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 2px solid var(--border-strong);
+        cursor: pointer;
+        padding: 0;
+      }
+      .swatch.on {
+        border-color: #fff;
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--gap);
+      }
+      @media (max-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="vsp-root"
+      id="root"
+      data-theme="dark"
+      data-density="comfortable"
+      data-corners="round"
+      data-bganim="on"
+      style="--accent: #4a7cff; --bg-accent: #4a7cff"
+    >
+      <!-- animated glow background -->
+      <div class="vsp-bg"><b></b><b></b><b></b></div>
+
+      <div class="wrap">
+        <header class="demo-head">
+          <div class="vsp-brand-mark" style="width: 38px; height: 38px; border-radius: 11px"></div>
+          <div>
+            <h1 style="margin: 0; font-size: 22px; letter-spacing: -0.02em">Vespera</h1>
+            <div class="eyebrow">@vespera-ui/css · live demo</div>
+          </div>
+          <div class="vsp-top-spacer" style="flex: 1"></div>
+          <span class="badge badge-info"><i></i>v0.1 preview</span>
+        </header>
+
+        <!-- live theming controls -->
+        <div class="demo-controls">
+          <button class="chip" data-theme-btn>Toggle theme</button>
+          <div class="sep"></div>
+          <span class="eyebrow">accent</span>
+          <button class="swatch on" style="background: #4a7cff" data-accent="#4a7cff"></button>
+          <button class="swatch" style="background: #1fb574" data-accent="#1fb574"></button>
+          <button class="swatch" style="background: #b16cff" data-accent="#b16cff"></button>
+          <button class="swatch" style="background: #ff7a6b" data-accent="#ff7a6b"></button>
+          <button class="swatch" style="background: #f5a524" data-accent="#f5a524"></button>
+          <button class="swatch" style="background: #16b6c9" data-accent="#16b6c9"></button>
+          <div class="sep"></div>
+          <span class="eyebrow">density</span>
+          <div class="ui-seg" data-seg="density">
+            <button data-val="compact">Compact</button>
+            <button class="on" data-val="comfortable">Comfortable</button>
+            <button data-val="spacious">Spacious</button>
+          </div>
+          <div class="sep"></div>
+          <span class="eyebrow">corners</span>
+          <div class="ui-seg" data-seg="corners">
+            <button data-val="sharp">Sharp</button>
+            <button data-val="soft">Soft</button>
+            <button class="on" data-val="round">Round</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <!-- Buttons -->
+          <section class="card">
+            <div class="card-head">
+              <h3>Buttons</h3>
+              <div class="vsp-top-spacer"></div>
+              <span class="eyebrow">.btn</span>
+            </div>
+            <div class="card-pad stack">
+              <div class="row">
+                <button class="btn btn-primary">Primary</button>
+                <button class="btn btn-ghost">Ghost</button>
+                <button class="btn btn-outline">Outline</button>
+                <button class="btn btn-subtle">Subtle</button>
+                <button class="btn btn-danger">Danger</button>
+              </div>
+              <div class="row">
+                <button class="btn btn-primary btn-sm">Small</button>
+                <button class="btn btn-ghost"><span class="ui-spinner"></span>Loading</button>
+                <button class="btn btn-ghost" disabled>Disabled</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Badges, chips, tags -->
+          <section class="card">
+            <div class="card-head"><h3>Badges · chips · tags</h3></div>
+            <div class="card-pad stack">
+              <div class="row">
+                <span class="badge badge-pos"><i></i>Active</span>
+                <span class="badge badge-neg"><i></i>Failed</span>
+                <span class="badge badge-warn"><i></i>Pending</span>
+                <span class="badge badge-info"><i></i>Beta</span>
+                <span class="badge badge-muted">Draft</span>
+              </div>
+              <div class="row">
+                <button class="chip active">All</button>
+                <button class="chip">Active</button>
+                <button class="chip">Archived</button>
+              </div>
+              <div class="row">
+                <span class="ui-tag">Design <button aria-label="remove">×</button></span>
+                <span class="ui-tag">Frontend <button aria-label="remove">×</button></span>
+                <kbd class="ui-kbd">⌘K</kbd>
+              </div>
+            </div>
+          </section>
+
+          <!-- Form fields -->
+          <section class="card">
+            <div class="card-head"><h3>Form controls</h3></div>
+            <div class="card-pad stack">
+              <div class="ui-field">
+                <label class="ui-label">Workspace name</label>
+                <input class="ui-input" placeholder="Acme Inc." value="Vespera" />
+              </div>
+              <div class="ui-field">
+                <label class="ui-label">Plan</label>
+                <button class="ui-selectbtn"><span class="val">Pro — $29/mo</span></button>
+              </div>
+              <div class="ui-field">
+                <label class="ui-label">Budget</label>
+                <div class="ui-affix">
+                  <span class="unit">$</span><input placeholder="0.00" value="2,400" /><span
+                    class="unit"
+                    >USD</span
+                  >
+                </div>
+              </div>
+              <div class="ui-field">
+                <label class="ui-label">API key <span class="req">*</span></label>
+                <input class="ui-input invalid" value="sk-bad" />
+                <span class="ui-hint err">This key is invalid.</span>
+              </div>
+              <div class="ui-field">
+                <label class="ui-label">Notes</label>
+                <textarea class="ui-textarea" placeholder="Add a note…">
+Deep-space, weightless.</textarea
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- Toggles -->
+          <section class="card">
+            <div class="card-head"><h3>Selection &amp; toggles</h3></div>
+            <div class="card-pad stack">
+              <label class="ui-opt"
+                ><span class="ui-check on"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" /></svg></span
+                ><span
+                  >Email notifications
+                  <div class="ui-opt-sub">Get notified about activity</div></span
+                ></label
+              >
+              <label class="ui-opt"><span class="ui-check"></span><span>Weekly digest</span></label>
+              <div class="row" style="gap: 18px">
+                <label class="ui-opt"
+                  ><span class="ui-radio-dot on"></span><span>Monthly</span></label
+                >
+                <label class="ui-opt"><span class="ui-radio-dot"></span><span>Annual</span></label>
+              </div>
+              <div class="ui-setrow" style="border: 0; padding: 4px 0">
+                <div class="ui-setrow-main">
+                  <div class="ui-setrow-title">Two-factor auth</div>
+                  <div class="ui-setrow-desc">Require a code at sign-in.</div>
+                </div>
+                <button class="ui-switch on" aria-label="toggle"></button>
+              </div>
+              <input type="range" class="ui-slider" value="64" />
+            </div>
+          </section>
+
+          <!-- Alerts -->
+          <section class="card">
+            <div class="card-head"><h3>Alerts</h3></div>
+            <div class="card-pad stack">
+              <div class="ui-alert info">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4M12 8h.01" />
+                </svg>
+                <div>
+                  <div class="ui-alert-title">Heads up</div>
+                  <div class="ui-alert-body">Your trial ends in 3 days.</div>
+                </div>
+              </div>
+              <div class="ui-alert pos">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <div>
+                  <div class="ui-alert-title">Saved</div>
+                  <div class="ui-alert-body">Your changes are live.</div>
+                </div>
+              </div>
+              <div class="ui-alert warn">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"
+                  />
+                  <path d="M12 9v4M12 17h.01" />
+                </svg>
+                <div>
+                  <div class="ui-alert-title">Usage high</div>
+                  <div class="ui-alert-body">You're near your API limit.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Tabs + steps + data -->
+          <section class="card">
+            <div class="card-head"><h3>Navigation &amp; data</h3></div>
+            <div class="card-pad stack">
+              <div class="ui-tabs">
+                <button class="ui-tab on">Overview</button>
+                <button class="ui-tab">Activity</button>
+                <button class="ui-tab">Settings</button>
+              </div>
+              <div class="ui-steps">
+                <div class="ui-step done">
+                  <span class="ui-step-dot">✓</span><span class="ui-step-label">Account</span>
+                </div>
+                <div class="ui-step-bar done"></div>
+                <div class="ui-step active">
+                  <span class="ui-step-dot">2</span><span class="ui-step-label">Profile</span>
+                </div>
+                <div class="ui-step-bar"></div>
+                <div class="ui-step pending">
+                  <span class="ui-step-dot">3</span><span class="ui-step-label">Done</span>
+                </div>
+              </div>
+              <table class="ui-table">
+                <thead>
+                  <tr>
+                    <th><span class="eyebrow">Account</span></th>
+                    <th><span class="eyebrow">Status</span></th>
+                    <th><span class="eyebrow">MRR</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Northwind</td>
+                    <td>
+                      <span class="badge badge-pos"><i></i>Active</span>
+                    </td>
+                    <td class="mono tnum">$4,200</td>
+                  </tr>
+                  <tr>
+                    <td>Initech</td>
+                    <td>
+                      <span class="badge badge-warn"><i></i>Trial</span>
+                    </td>
+                    <td class="mono tnum">$0</td>
+                  </tr>
+                  <tr>
+                    <td>Umbrella</td>
+                    <td><span class="badge badge-muted">Churned</span></td>
+                    <td class="mono tnum">$1,150</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div>
+                <div class="eyebrow" style="margin-bottom: 6px">Storage · 64%</div>
+                <div class="meter"><i style="width: 64%"></i></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const root = document.getElementById('root');
+      // theme toggle
+      document.querySelector('[data-theme-btn]').addEventListener('click', () => {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      });
+      // accent swatches
+      document.querySelectorAll('[data-accent]').forEach((b) => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('[data-accent]').forEach((x) => x.classList.remove('on'));
+          b.classList.add('on');
+          root.style.setProperty('--accent', b.dataset.accent);
+          root.style.setProperty('--bg-accent', b.dataset.accent);
+        });
+      });
+      // segmented controls (density / corners)
+      document.querySelectorAll('[data-seg]').forEach((seg) => {
+        const attr = 'data-' + seg.dataset.seg;
+        seg.querySelectorAll('button').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            seg.querySelectorAll('button').forEach((x) => x.classList.remove('on'));
+            btn.classList.add('on');
+            root.setAttribute(attr, btn.dataset.val);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

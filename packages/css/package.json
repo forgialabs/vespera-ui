@@ -13,7 +13,10 @@
   "exports": {
     ".": "./src/vespera.css",
     "./vespera.css": "./src/vespera.css",
-    "./tokens.css": "./src/tokens.css"
+    "./tokens.css": "./src/tokens.css",
+    "./base.css": "./src/base.css",
+    "./shell.css": "./src/shell.css",
+    "./components.css": "./src/components.css"
   },
   "publishConfig": {
     "access": "public"

@@ -22,3 +22,7 @@ coverage/
 
 # the pristine prototype zip (kept locally; sources live extracted in prototype/)
 prototype/_original-zip/
+
+# local preview helpers (not part of the project)
+_preview-server.cjs
+.claude/launch.json
