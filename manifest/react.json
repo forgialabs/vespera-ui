@@ -248,6 +248,42 @@
       ]
     },
     {
+      "name": "Calendar",
+      "description": "The month grid. Usually used via `DatePicker` / `DateRangePicker`.",
+      "props": [
+        {
+          "name": "isInRange",
+          "type": "((d: Date) => boolean)",
+          "required": false
+        },
+        {
+          "name": "isRangeEnd",
+          "type": "((d: Date) => RangeEdge)",
+          "required": false
+        },
+        {
+          "name": "isSelected",
+          "type": "(d: Date) => boolean",
+          "required": true
+        },
+        {
+          "name": "onPick",
+          "type": "(d: Date) => void",
+          "required": true
+        },
+        {
+          "name": "setView",
+          "type": "(v: MonthView) => void",
+          "required": true
+        },
+        {
+          "name": "view",
+          "type": "MonthView",
+          "required": true
+        }
+      ]
+    },
+    {
       "name": "Card",
       "props": [
         {
@@ -420,6 +456,49 @@
           "name": "text",
           "type": "string",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "DatePicker",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "((date: Date) => void)",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Pick a date"
+        },
+        {
+          "name": "value",
+          "type": "Date | null",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "DateRangePicker",
+      "props": [
+        {
+          "name": "onChange",
+          "type": "((range: DateRange) => void)",
+          "required": false
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "required": false,
+          "defaultValue": "Pick a range"
+        },
+        {
+          "name": "value",
+          "type": "DateRange",
+          "required": false,
+          "defaultValue": "{ start: null, end: null }"
         }
       ]
     },

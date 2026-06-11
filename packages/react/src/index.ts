@@ -32,3 +32,4 @@ export * from './Tree';
 export * from './Avatar';
 export * from './Segmented';
 export * from './FormExtras';
+export * from './DatePicker';
