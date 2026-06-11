@@ -28,8 +28,11 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-      - name: Type-check
-        run: pnpm typecheck
-
+      # Build first: `@vespera-ui/react` type-checks against the built
+      # `@vespera-ui/icons` declarations, so packages must be built (topologically)
+      # before type-checking.
       - name: Build
         run: pnpm build
+
+      - name: Type-check
+        run: pnpm typecheck

@@ -28,8 +28,10 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build docs
-        run: pnpm --filter @vespera-ui/docs build
+      # Build the workspace packages (topologically) before the docs, since the
+      # docs import the built `@vespera-ui/react` / `@vespera-ui/css` packages.
+      - name: Build
+        run: pnpm build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
