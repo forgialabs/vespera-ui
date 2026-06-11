@@ -1,5 +1,13 @@
 # @vespera-ui/vue
 
+## 0.3.0
+
+### Minor Changes
+
+- 5c2e08d: Add structural components to the Vue and Svelte wrappers: `Banner`, `EmptyState`, and
+  `Accordion` (multi/single-open). (Angular gains the same — `vsp-banner`, `vsp-empty-state`,
+  `vsp-accordion` — published separately.) Default banner/empty icons are inlined as SVG.
+
 ## 0.2.0
 
 ### Minor Changes
