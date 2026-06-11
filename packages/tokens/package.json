@@ -1,6 +1,6 @@
 {
   "name": "@vespera-ui/tokens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Vespera design system — design tokens as data (TS/ESM/CJS + tokens.json).",
   "license": "Apache-2.0",
   "type": "module",
