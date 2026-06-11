@@ -23,3 +23,4 @@ export * from './Sheet';
 export * from './Anchored';
 export * from './Toast';
 export * from './CommandPalette';
+export * from './Select';

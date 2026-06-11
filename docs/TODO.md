@@ -27,7 +27,9 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
 - [x] `ToastHost` + `toast()` API (replaces `window.toast`)
 - [x] `CommandPalette` + `useCmdK`
 - [x] Stories for the overlays
-- [ ] Themed `Select` (searchable, native-compatible), `Combobox`, `MultiSelect`, `TokenInput`
+- [x] Themed `Select` (auto-search ≥8), `Combobox`, `MultiSelect`, `TokenInput` (+ `NativeSelect`)
+
+✅ **Iteration 1 complete.**
 
 ### Iteration 2 — AI-consumable layer (Phase 3)
 

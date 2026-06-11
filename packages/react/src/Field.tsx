@@ -46,14 +46,17 @@ export function Textarea({ className, ...rest }: TextareaHTMLAttributes<HTMLText
   return <textarea className={cx('ui-textarea', className)} {...rest} />;
 }
 
-export type SelectOption = string | { value: string; label: string };
+export type NativeSelectOption = string | { value: string; label: string };
 
-export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  options?: SelectOption[];
+export interface NativeSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  options?: NativeSelectOption[];
 }
 
-/** Native themed `<select>`. (A custom searchable Select ships later.) */
-export function Select({ options = [], className, children, ...rest }: SelectProps) {
+/**
+ * A styled real `<select>` element. For the richer searchable dropdown, use the
+ * themed `Select` from `./Select`.
+ */
+export function NativeSelect({ options = [], className, children, ...rest }: NativeSelectProps) {
   return (
     <select className={cx('ui-select', className)} {...rest}>
       {children ??
