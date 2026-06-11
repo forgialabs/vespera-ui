@@ -1,0 +1,41 @@
+---
+title: Vespera
+description: A deep-space, weightless design system.
+template: splash
+hero:
+  tagline: A deep-space, weightless design system — framework-agnostic CSS, themed entirely through CSS variables on .vsp-root.
+  actions:
+    - text: Get started
+      link: /guides/installation/
+      icon: right-arrow
+    - text: Live demo
+      link: /demo
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why Vespera
+
+<CardGrid stagger>
+  <Card title="Framework-agnostic" icon="puzzle">
+    The entire look lives in CSS variables on `.vsp-root`. Use it in React, Vue, Svelte,
+    Angular — or plain HTML.
+  </Card>
+  <Card title="Themed by tokens" icon="setting">
+    Swap theme, accent, density, and corners with data-attributes. No rebuild, no recompile.
+  </Card>
+  <Card title="Modular" icon="open-book">
+    Ship the whole bundle, or import just the tokens / base / shell / components you need.
+  </Card>
+  <Card title="AI-consumable" icon="rocket">
+    Built so coding agents can author and theme it correctly from a machine-readable manifest.
+  </Card>
+</CardGrid>
+
+:::note[Pre-release]
+Vespera is being productized from a working prototype. APIs and class names may change
+until `1.0`. The framework-agnostic CSS (`@vespera-ui/css`) is available now; React
+components are next.
+:::

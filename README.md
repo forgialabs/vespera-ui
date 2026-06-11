@@ -9,11 +9,16 @@ Deep navy surfaces · electric cornflower accent · hairline borders · glassy d
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 [![Status](<https://img.shields.io/badge/status-pre--release%20(0.x)-orange.svg>)](./docs/ROADMAP.md)
 
+📖 **[Documentation & live demo →](https://forgialabs.github.io/vespera-ui/)**
+
 </div>
 
 > ⚠️ **Pre-release.** Vespera is being productized from a working prototype into modular,
 > framework-agnostic packages. APIs and class names will change until `1.0`. See the
 > [roadmap](./docs/ROADMAP.md).
+>
+> The docs site (`apps/docs`) auto-deploys to GitHub Pages from `main` once Pages is enabled
+> (Settings → Pages → Source: **GitHub Actions**).
 
 ---
 

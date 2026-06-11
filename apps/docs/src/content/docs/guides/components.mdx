@@ -1,0 +1,56 @@
+---
+title: Components
+description: A live look at Vespera's components, plus the class reference.
+---
+
+Below is the live kitchen-sink — try the theme, accent, density, and corners switchers and
+watch every component retheme at once. Open it [full-page here](/vespera-ui/demo).
+
+<iframe
+  src={`${import.meta.env.BASE_URL}demo`}
+  title="Vespera live demo"
+  loading="lazy"
+  style={{
+    width: '100%',
+    height: '720px',
+    border: '1px solid var(--sl-color-gray-5)',
+    borderRadius: '12px',
+    marginTop: '1rem',
+  }}
+></iframe>
+
+## Class reference
+
+Vespera ships two families of classes, both scoped under `.vsp-root`:
+
+- **Primitives** — unprefixed: `.btn` (`.btn-primary/-ghost/-outline/-subtle/-danger`),
+  `.card`, `.badge` (`.badge-pos/-neg/-warn/-info/-muted`), `.chip`, `.meter`.
+- **Components** — `.ui-*`: `.ui-input`, `.ui-textarea`, `.ui-selectbtn`, `.ui-field`,
+  `.ui-label`, `.ui-check`, `.ui-switch`, `.ui-slider`, `.ui-alert`, `.ui-tabs`, `.ui-steps`,
+  `.ui-table`, `.ui-menu`, `.ui-dialog`, and many more.
+
+### Examples
+
+```html
+<!-- Buttons -->
+<button class="btn btn-primary">Primary</button>
+<button class="btn btn-ghost">Ghost</button>
+<button class="btn btn-danger">Danger</button>
+
+<!-- Badge -->
+<span class="badge badge-pos"><i></i>Active</span>
+
+<!-- Field -->
+<div class="ui-field">
+  <label class="ui-label">Email</label>
+  <input class="ui-input" placeholder="you@example.com" />
+</div>
+
+<!-- Switch -->
+<button class="ui-switch on" aria-label="toggle"></button>
+```
+
+:::tip[React is coming]
+These are CSS classes today. `@vespera-ui/react` will wrap them as typed components
+(`<Button variant="primary">`) — see the [roadmap](https://github.com/forgialabs/vespera-ui/blob/main/docs/ROADMAP.md).
+:::
