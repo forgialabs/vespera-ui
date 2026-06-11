@@ -1,6 +1,6 @@
-# @vespera-ui/svelte
+# @vespera-ui/vue
 
-## 0.3.0
+## 0.2.0
 
 ### Minor Changes
 
@@ -17,10 +17,3 @@
   and `Stepper`. (Angular gains the same — `vsp-tabs`, `vsp-breadcrumb`, `vsp-pagination`,
   `vsp-stepper` — published separately.) Chevron/check icons are inlined as SVG, so the wrappers
   stay dependency-free.
-
-## 0.2.0
-
-### Minor Changes
-
-- d4c747c: Add `Tag`, `Kbd`, `Divider`, and `Textarea` to `@vespera-ui/svelte`, bringing its core component
-  set to parity with `@vespera-ui/vue`.
