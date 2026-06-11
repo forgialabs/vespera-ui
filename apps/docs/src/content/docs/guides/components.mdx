@@ -1,56 +1,161 @@
 ---
 title: Components
-description: A live look at Vespera's components, plus the class reference.
+description: Live, interactive examples of Vespera components — with the code to add them.
 ---
 
-Below is the live kitchen-sink — try the theme, accent, density, and corners switchers and
-watch every component retheme at once. Open it [full-page here](/vespera-ui/demo).
+import Preview from '../../../components/Preview.astro';
+import {
+  ButtonExample,
+  BadgeExample,
+  AlertExample,
+  SelectExample,
+  ToggleExample,
+  TabsExample,
+  OverlayExample,
+  DataExample,
+  DatePickerExample,
+} from '../../../components/examples';
 
-<iframe
-  src={`${import.meta.env.BASE_URL}demo`}
-  title="Vespera live demo"
-  loading="lazy"
-  style={{
-    width: '100%',
-    height: '720px',
-    border: '1px solid var(--sl-color-gray-5)',
-    borderRadius: '12px',
-    marginTop: '1rem',
-  }}
-></iframe>
+Live examples you can interact with, each with the code to copy. Everything renders inside a
+themed `.vsp-root` — see [Installation](/vespera-ui/guides/installation/) to set up, and the
+[API reference](/vespera-ui/reference/react/) for the full props of all 65 components.
 
-## Class reference
+## Buttons
 
-Vespera ships two families of classes, both scoped under `.vsp-root`:
+<Preview
+  code={`import { Button, Tooltip } from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
 
-- **Primitives** — unprefixed: `.btn` (`.btn-primary/-ghost/-outline/-subtle/-danger`),
-  `.card`, `.badge` (`.badge-pos/-neg/-warn/-info/-muted`), `.chip`, `.meter`.
-- **Components** — `.ui-*`: `.ui-input`, `.ui-textarea`, `.ui-selectbtn`, `.ui-field`,
-  `.ui-label`, `.ui-check`, `.ui-switch`, `.ui-slider`, `.ui-alert`, `.ui-tabs`, `.ui-steps`,
-  `.ui-table`, `.ui-menu`, `.ui-dialog`, and many more.
+<Button variant="primary" leadingIcon={<Icon.check />}>Save</Button>
+<Button variant="ghost">Cancel</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="danger">Delete</Button>
+<Button variant="primary" loading>Saving…</Button>
+<Tooltip label="Notifications">
+  <Button variant="ghost" leadingIcon={<Icon.bell />}>Hover me</Button>
+</Tooltip>`}
+>
+  <ButtonExample client:visible />
+</Preview>
 
-### Examples
+## Badges & tags
 
-```html
-<!-- Buttons -->
-<button class="btn btn-primary">Primary</button>
-<button class="btn btn-ghost">Ghost</button>
-<button class="btn btn-danger">Danger</button>
+<Preview
+  code={`import { Badge, Tag } from '@vespera-ui/react';
 
-<!-- Badge -->
-<span class="badge badge-pos"><i></i>Active</span>
+<Badge tone="pos" dot>Active</Badge>
+<Badge tone="neg" dot>Failed</Badge>
+<Badge tone="warn" dot>Pending</Badge>
+<Badge tone="info" dot>Beta</Badge>
+<Badge tone="muted">Draft</Badge>
+<Tag onRemove={() => {}}>Removable</Tag>`}
+>
+  <BadgeExample client:visible />
+</Preview>
 
-<!-- Field -->
-<div class="ui-field">
-  <label class="ui-label">Email</label>
-  <input class="ui-input" placeholder="you@example.com" />
-</div>
+## Alerts
 
-<!-- Switch -->
-<button class="ui-switch on" aria-label="toggle"></button>
-```
+<Preview
+  code={`import { Alert } from '@vespera-ui/react';
 
-:::tip[Prefer React?]
-`@vespera-ui/react` wraps all of these as typed components (`<Button variant="primary">`).
-See the [React components API](/vespera-ui/reference/react/) for the full list and props.
-:::
+<Alert tone="info" title="Heads up">Your trial ends in 3 days.</Alert>
+<Alert tone="pos" title="Saved">Your changes are live.</Alert>
+<Alert tone="warn" title="Usage high">You're near your API limit.</Alert>`}
+>
+  <AlertExample client:visible />
+</Preview>
+
+## Selects
+
+<Preview
+  code={`import { Select, Combobox, MultiSelect, Field } from '@vespera-ui/react';
+
+const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
+
+<Field label="Select"><Select options={fruits} value={a} onChange={setA} /></Field>
+<Field label="Combobox"><Combobox options={fruits} value={b} onChange={setB} clearable /></Field>
+<Field label="Multi-select"><MultiSelect options={fruits} value={c} onChange={setC} max={4} /></Field>`}
+>
+  <SelectExample client:visible />
+</Preview>
+
+## Toggles
+
+<Preview
+  code={`import { Checkbox, Switch, Slider } from '@vespera-ui/react';
+
+<Checkbox checked={check} onChange={setCheck} label="Email notifications" sub="Activity updates" />
+<Switch checked={on} onChange={setOn} aria-label="Two-factor" />
+<Slider value={vol} onChange={setVol} />`}
+>
+  <ToggleExample client:visible />
+</Preview>
+
+## Tabs
+
+<Preview
+  code={`import { Tabs } from '@vespera-ui/react';
+
+<Tabs
+  tabs={[
+    { value: 'overview', label: 'Overview' },
+    { value: 'activity', label: 'Activity', count: 3 },
+    { value: 'settings', label: 'Settings' },
+  ]}
+  value={tab}
+  onChange={setTab}
+/>`}
+>
+  <TabsExample client:visible />
+</Preview>
+
+## Overlays
+
+<Preview
+  code={`import { Button, Dialog, DropdownMenu, ToastHost, toast } from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
+
+<Button variant="primary" onClick={() => setOpen(true)}>Open dialog</Button>
+<DropdownMenu trigger={<Button trailingIcon={<Icon.chevDown />}>Menu</Button>} items={[
+  { label: 'Profile', icon: <Icon.user /> },
+  { sep: true },
+  { label: 'Log out', icon: <Icon.logout />, danger: true },
+]} />
+<Button onClick={() => toast({ tone: 'pos', title: 'Saved' })}>Fire a toast</Button>
+<Dialog open={open} onClose={() => setOpen(false)} tone="neg" title="Delete workspace?" /* … */ />
+<ToastHost />`}
+>
+  <OverlayExample client:visible />
+</Preview>
+
+## Data display
+
+<Preview
+  code={`import { Stat, Timeline } from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
+
+<Stat icon={<Icon.dollar />} label="Revenue" value="$48,200" delta="12%" deltaDir="up" />
+<Timeline items={[
+  { title: 'Workspace created', time: '2d ago', tone: 'pos', icon: <Icon.check /> },
+  { title: 'Member invited', time: '1d ago', tone: 'info', icon: <Icon.user /> },
+]} />`}
+>
+  <DataExample client:visible />
+</Preview>
+
+## Date picker
+
+<Preview
+  code={`import { DatePicker, Field } from '@vespera-ui/react';
+
+<Field label="Date"><DatePicker value={d} onChange={setD} /></Field>`}
+>
+  <DatePickerExample client:visible />
+</Preview>
+
+---
+
+That's a slice — there are **65 components**. Browse them all in the
+[API reference](/vespera-ui/reference/react/), see the full
+[component library showcase](/vespera-ui/examples/library.html), or open the
+[interactive playground](/vespera-ui/demo).

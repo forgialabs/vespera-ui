@@ -1,0 +1,53 @@
+---
+// Live component preview: renders Vespera components in a themed .vsp-root stage,
+// with their source shown below. @vespera-ui/css is scoped to .vsp-root, so it
+// does not affect the docs chrome.
+import '@vespera-ui/css';
+import { Code } from '@astrojs/starlight/components';
+
+interface Props {
+  code?: string;
+  theme?: 'dark' | 'light';
+  center?: boolean;
+}
+const { code, theme = 'dark', center = false } = Astro.props;
+---
+
+<div class="vsp-pv">
+  <div
+    class:list={['vsp-root', 'vsp-pv-stage', { 'is-center': center }]}
+    data-theme={theme}
+    data-density="comfortable"
+    data-corners="round"
+  >
+    <slot />
+  </div>
+  {code && <Code code={code} lang="tsx" />}
+</div>
+
+<style>
+  .vsp-pv {
+    margin: 1.25rem 0 1.75rem;
+  }
+  .vsp-pv-stage {
+    border: 1px solid var(--sl-color-gray-5);
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    padding: 32px 28px;
+    min-height: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .vsp-pv-stage.is-center {
+    justify-content: center;
+  }
+  /* square off the code block under the stage */
+  .vsp-pv :global(.expressive-code) {
+    margin-top: 0;
+  }
+  .vsp-pv :global(.expressive-code .frame pre) {
+    border-radius: 0 0 12px 12px;
+  }
+</style>
