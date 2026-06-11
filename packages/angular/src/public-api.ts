@@ -8,3 +8,4 @@ export * from './alert.component';
 export * from './field.component';
 export * from './toggle.component';
 export * from './forms.component';
+export * from './nav.component';

@@ -526,3 +526,197 @@ export const Segmented = defineComponent({
       );
   },
 });
+
+const ICON_PATHS = { chevL: 'M15 18l-6-6 6-6', chevR: 'M9 18l6-6-6-6', check: 'M20 6L9 17l-5-5' };
+const svgIcon = (d: string, size = 14) =>
+  h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    },
+    [h('path', { d })],
+  );
+
+export type TabItem = string | { value: string; label: string; count?: number };
+
+export const Tabs = defineComponent({
+  name: 'VspTabs',
+  props: {
+    tabs: { type: Array as PropType<TabItem[]>, default: () => [] },
+    modelValue: { type: String, default: undefined },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit, slots }) {
+    return () =>
+      h('div', { class: 'ui-tabs', style: { alignItems: 'center' } }, [
+        ...props.tabs.map((t) => {
+          const id = typeof t === 'string' ? t : t.value;
+          const label = typeof t === 'string' ? t : t.label;
+          const count = typeof t === 'object' ? t.count : undefined;
+          return h(
+            'button',
+            {
+              key: id,
+              type: 'button',
+              class: cx('ui-tab', props.modelValue === id && 'on'),
+              onClick: () => emit('update:modelValue', id),
+            },
+            [
+              label,
+              count != null
+                ? h('span', { class: 'badge badge-muted', style: { marginLeft: '7px' } }, count)
+                : null,
+            ],
+          );
+        }),
+        slots.right ? h('div', { style: { flex: 1 } }) : null,
+        slots.right?.(),
+      ]);
+  },
+});
+
+export const Breadcrumb = defineComponent({
+  name: 'VspBreadcrumb',
+  props: { items: { type: Array as PropType<string[]>, default: () => [] } },
+  setup(props) {
+    return () =>
+      h(
+        'nav',
+        { style: { display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px' } },
+        props.items.flatMap((it, i) => {
+          const last = i === props.items.length - 1;
+          return [
+            i > 0
+              ? h(
+                  'span',
+                  { key: `s${i}`, style: { color: 'var(--text-faint)', display: 'flex' } },
+                  [svgIcon(ICON_PATHS.chevR, 13)],
+                )
+              : null,
+            h(
+              'span',
+              {
+                key: i,
+                style: {
+                  color: last ? 'var(--text)' : 'var(--text-dim)',
+                  fontWeight: last ? 600 : 500,
+                },
+              },
+              it,
+            ),
+          ];
+        }),
+      );
+  },
+});
+
+export const Pagination = defineComponent({
+  name: 'VspPagination',
+  props: {
+    modelValue: { type: Number, default: 0 },
+    pages: { type: Number, default: 1 },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () => {
+      const page = props.modelValue;
+      const nums: (number | '…')[] = [];
+      for (let i = 0; i < props.pages; i++) {
+        if (i === 0 || i === props.pages - 1 || Math.abs(i - page) <= 1) nums.push(i);
+        else if (nums[nums.length - 1] !== '…') nums.push('…');
+      }
+      return h('div', { style: { display: 'flex', gap: '4px', alignItems: 'center' } }, [
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'btn btn-ghost btn-sm',
+            disabled: page === 0,
+            'aria-label': 'Previous page',
+            onClick: () => emit('update:modelValue', page - 1),
+          },
+          [svgIcon(ICON_PATHS.chevL)],
+        ),
+        ...nums.map((n, i) =>
+          n === '…'
+            ? h(
+                'span',
+                {
+                  key: `g${i}`,
+                  class: 'mono',
+                  style: { padding: '0 6px', color: 'var(--text-faint)' },
+                },
+                '…',
+              )
+            : h(
+                'button',
+                {
+                  key: n,
+                  type: 'button',
+                  class: cx('btn', 'btn-sm', n === page ? 'btn-primary' : 'btn-subtle'),
+                  style: { minWidth: '32px', padding: 0 },
+                  onClick: () => emit('update:modelValue', n),
+                },
+                n + 1,
+              ),
+        ),
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'btn btn-ghost btn-sm',
+            disabled: page >= props.pages - 1,
+            'aria-label': 'Next page',
+            onClick: () => emit('update:modelValue', page + 1),
+          },
+          [svgIcon(ICON_PATHS.chevR)],
+        ),
+      ]);
+    };
+  },
+});
+
+export const Stepper = defineComponent({
+  name: 'VspStepper',
+  props: {
+    steps: { type: Array as PropType<string[]>, default: () => [] },
+    current: { type: Number, default: 0 },
+  },
+  setup(props) {
+    return () =>
+      h(
+        'div',
+        { class: 'ui-steps' },
+        props.steps.flatMap((s, i) => [
+          i > 0
+            ? h('div', { key: `b${i}`, class: cx('ui-step-bar', i <= props.current && 'done') })
+            : null,
+          h(
+            'div',
+            {
+              key: i,
+              class: cx(
+                'ui-step',
+                i < props.current && 'done',
+                i === props.current && 'active',
+                i > props.current && 'pending',
+              ),
+            },
+            [
+              h('span', { class: 'ui-step-dot' }, [
+                i < props.current ? svgIcon(ICON_PATHS.check) : i + 1,
+              ]),
+              h('span', { class: 'ui-step-label' }, s),
+            ],
+          ),
+        ]),
+      );
+  },
+});
