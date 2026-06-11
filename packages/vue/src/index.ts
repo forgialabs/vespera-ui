@@ -5,7 +5,7 @@
  * as `@vespera-ui/react`, so theming via `.vsp-root` data-attributes works
  * identically. Import the CSS once and wrap your app in a themed root.
  */
-import { defineComponent, h, type PropType } from 'vue';
+import { defineComponent, h, ref, type PropType } from 'vue';
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -955,6 +955,171 @@ export const DescriptionList = defineComponent({
             h('dd', { key: `v${i}`, class: last }, v),
           ];
         }),
+      );
+  },
+});
+
+const BANNER_ICON: Record<string, string> = {
+  info: 'M12 3l1.6 5L19 9.6l-5 1.6L12 16l-1.6-4.8L5 9.6l5.4-1.6z',
+  warn: 'M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9',
+  accent: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+};
+const X_PATH = 'M18 6L6 18M6 6l12 12';
+const INBOX_PATH =
+  'M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z';
+
+export const Banner = defineComponent({
+  name: 'VspBanner',
+  props: {
+    tone: { type: String as PropType<'info' | 'warn' | 'accent'>, default: 'info' },
+    dismissible: Boolean,
+  },
+  emits: ['dismiss'],
+  setup(props, { slots, emit }) {
+    return () =>
+      h('div', { class: cx('ui-banner', props.tone) }, [
+        slots.icon ? slots.icon() : svgIcon(BANNER_ICON[props.tone]!, 18),
+        h('div', { style: { flex: 1, fontSize: '13px', fontWeight: 500 } }, slots.default?.()),
+        slots.action?.(),
+        props.dismissible
+          ? h(
+              'button',
+              {
+                type: 'button',
+                class: 'ui-banner-x',
+                'aria-label': 'Dismiss',
+                onClick: () => emit('dismiss'),
+              },
+              [svgIcon(X_PATH, 15)],
+            )
+          : null,
+      ]);
+  },
+});
+
+export const EmptyState = defineComponent({
+  name: 'VspEmptyState',
+  props: {
+    title: { type: String, default: undefined },
+    desc: { type: String, default: undefined },
+    compact: Boolean,
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        'div',
+        {
+          style: {
+            display: 'grid',
+            placeItems: 'center',
+            textAlign: 'center',
+            padding: props.compact ? '32px 20px' : '56px 24px',
+          },
+        },
+        [
+          h('div', { style: { maxWidth: '340px' } }, [
+            h(
+              'span',
+              {
+                style: {
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  margin: '0 auto 18px',
+                  background: 'color-mix(in oklab, var(--accent) 12%, transparent)',
+                  color: 'var(--accent)',
+                  border: '1px solid color-mix(in oklab, var(--accent) 22%, transparent)',
+                },
+              },
+              slots.icon ? slots.icon() : [svgIcon(INBOX_PATH, 26)],
+            ),
+            h('div', { style: { fontSize: '17px', fontWeight: 700 } }, props.title),
+            props.desc
+              ? h(
+                  'p',
+                  {
+                    style: {
+                      margin: '7px 0 0',
+                      color: 'var(--text-dim)',
+                      fontSize: '13.5px',
+                      lineHeight: 1.6,
+                    },
+                  },
+                  props.desc,
+                )
+              : null,
+            slots.action
+              ? h(
+                  'div',
+                  {
+                    style: {
+                      marginTop: '20px',
+                      display: 'flex',
+                      gap: '8px',
+                      justifyContent: 'center',
+                    },
+                  },
+                  slots.action(),
+                )
+              : null,
+          ]),
+        ],
+      );
+  },
+});
+
+export interface AccordionItem {
+  title: string;
+  body: string;
+}
+
+export const Accordion = defineComponent({
+  name: 'VspAccordion',
+  props: {
+    items: { type: Array as PropType<AccordionItem[]>, default: () => [] },
+    multiple: Boolean,
+    defaultOpen: { type: Array as PropType<number[]>, default: () => [] },
+  },
+  setup(props) {
+    const open = ref(new Set<number>(props.defaultOpen));
+    const toggle = (i: number) => {
+      const s = open.value;
+      const n = new Set<number>(props.multiple ? s : []);
+      if (s.has(i)) n.delete(i);
+      else n.add(i);
+      open.value = n;
+    };
+    return () =>
+      h(
+        'div',
+        { class: 'ui-acc' },
+        props.items.map((it, i) =>
+          h('div', { key: i, class: cx('ui-acc-item', open.value.has(i) && 'open') }, [
+            h('button', { type: 'button', class: 'ui-acc-head', onClick: () => toggle(i) }, [
+              it.title,
+              h(
+                'svg',
+                {
+                  class: 'chev',
+                  viewBox: '0 0 24 24',
+                  width: 17,
+                  height: 17,
+                  fill: 'none',
+                  stroke: 'currentColor',
+                  'stroke-width': 2,
+                  'stroke-linecap': 'round',
+                  'stroke-linejoin': 'round',
+                },
+                [h('path', { d: ICON_PATHS.chevR })],
+              ),
+            ]),
+            h('div', { class: 'ui-acc-bodywrap' }, [
+              h('div', null, [h('div', { class: 'ui-acc-body' }, it.body)]),
+            ]),
+          ]),
+        ),
       );
   },
 });
