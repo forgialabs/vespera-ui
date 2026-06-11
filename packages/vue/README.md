@@ -39,7 +39,10 @@ Form components support `v-model` (`Input`, `Textarea`, `Switch`, `Checkbox`). B
 ## Components
 
 `Button`, `IconButton`, `Badge`, `Tag`, `Kbd`, `Divider`, `Spinner`, `Card`, `CardHead`, `Alert`,
-`Field`, `Input`, `Textarea`, `Switch`, `Checkbox`. More are being ported — the CSS layer already
-supports every Vespera component, so wrappers are thin.
+`Field`, `Input`, `Textarea`, `NativeSelect`, `Switch`, `Checkbox`, `Radio`, `RadioGroup`,
+`Slider`, `Progress`, `Skeleton`, `Avatar`, `AvatarGroup`, `Segmented`, `Tabs`, `Breadcrumb`,
+`Pagination`, `Stepper`, `CircularProgress`, `Stat`, `Timeline`, `DescriptionList`, `Banner`,
+`EmptyState`, `Accordion`. The overlay/portal components (dialogs, menus, toasts, the themed
+select, date pickers) are React-only for now — use the raw classes for those in other frameworks.
 
 License: Apache-2.0

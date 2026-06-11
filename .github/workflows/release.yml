@@ -45,6 +45,7 @@ jobs:
       - name: Build packages
         run: pnpm build
       - name: Create Release PR or publish
+        id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm version-packages
@@ -54,3 +55,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true' # attach build provenance to each publish
+      - name: Publish @vespera-ui/angular
+        # ng-packagr publishes from dist/ (its own manifest), which doesn't fit
+        # changeset-publish-from-root, so @vespera-ui/angular is excluded from
+        # Changesets and published here via OIDC when its version is new. Only on
+        # the publish path (no pending changesets), idempotent against the registry.
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          VER=$(node -p "require('./packages/angular/package.json').version")
+          if npm view "@vespera-ui/angular@$VER" version >/dev/null 2>&1; then
+            echo "@vespera-ui/angular@$VER already published — skipping"
+          else
+            echo "Publishing @vespera-ui/angular@$VER"
+            npm publish ./packages/angular/dist --access public
+          fi
+        env:
+          NPM_CONFIG_PROVENANCE: 'true'
