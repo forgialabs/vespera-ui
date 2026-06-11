@@ -15,6 +15,18 @@ import {
   DataExample,
   DatePickerExample,
 } from '../../../components/examples';
+import {
+  ChartsExample,
+  FeedbackExample,
+  StructureExample,
+  CommandExample,
+  SheetExample,
+  DateRangeExample,
+  NavExample,
+  MessagingExample,
+  MoreFormsExample,
+  AvatarExample,
+} from '../../../components/examples-more';
 
 Live examples you can interact with, each with the code to copy. Everything renders inside a
 themed `.vsp-root` — see [Installation](/vespera-ui/guides/installation/) to set up, and the
@@ -153,9 +165,148 @@ import { Icon } from '@vespera-ui/icons';
   <DatePickerExample client:visible />
 </Preview>
 
+## Charts
+
+<Preview
+  code={`import { AreaChart, BarChart, Donut, Sparkline } from '@vespera-ui/react';
+
+<AreaChart series={[revenue]} labels={months} />
+<BarChart data={[40, 65, 52, 78, 61, 90, 72]} labels={['M','T','W','T','F','S','S']} />
+<Donut data={[
+  { label: 'Organic', value: 48, color: 'var(--accent)' },
+  { label: 'Referral', value: 30, color: 'var(--accent-2)' },
+  { label: 'Direct', value: 22, color: 'var(--success)' },
+]} />
+<Sparkline data={revenue} />`}
+>
+  <ChartsExample client:visible />
+</Preview>
+
+## Progress & steps
+
+<Preview
+  code={`import { Progress, CircularProgress, Spinner, Stepper } from '@vespera-ui/react';
+
+<Progress value={64} />
+<CircularProgress value={72} />
+<Spinner size="lg" />
+<Stepper steps={['Account', 'Profile', 'Done']} current={1} />`}
+>
+  <FeedbackExample client:visible />
+</Preview>
+
+## Accordion & tree
+
+<Preview
+  code={`import { Accordion, Tree } from '@vespera-ui/react';
+
+<Accordion defaultOpen={[0]} items={[
+  { title: 'What is Vespera?', body: 'A deep-space, weightless design system.' },
+  { title: 'Is it free?', body: 'Yes — Apache-2.0.' },
+]} />
+<Tree defaultExpanded={['src']} data={[
+  { label: 'src', children: [{ label: 'index.ts', badge: 'ts' }] },
+  { label: 'package.json' },
+]} />`}
+>
+  <StructureExample client:visible />
+</Preview>
+
+## Command palette
+
+<Preview
+  code={`import { CommandPalette, useCmdK } from '@vespera-ui/react';
+
+const [open, setOpen] = useState(false);
+useCmdK(setOpen); // ⌘K / Ctrl+K
+
+<CommandPalette open={open} onClose={() => setOpen(false)} groups={[
+  { label: 'Actions', items: [
+    { label: 'New project', icon: <Icon.plus />, meta: '⌘N' },
+    { label: 'Search docs', icon: <Icon.doc />, keywords: 'help' },
+  ]},
+]} />`}
+>
+  <CommandExample client:visible />
+</Preview>
+
+## Sheet & popover
+
+<Preview
+  code={`import { Button, Sheet, Popover } from '@vespera-ui/react';
+
+<Popover trigger={<Button>Popover</Button>}>…anything…</Popover>
+<Sheet open={open} onClose={() => setOpen(false)} title="Settings" desc="Manage your workspace.">
+  Drawer content
+</Sheet>`}
+>
+  <SheetExample client:visible />
+</Preview>
+
+## Date range
+
+<Preview
+  code={`import { DateRangePicker } from '@vespera-ui/react';
+
+<DateRangePicker value={range} onChange={setRange} />`}
+>
+  <DateRangeExample client:visible />
+</Preview>
+
+## Breadcrumb & pagination
+
+<Preview
+  code={`import { Breadcrumb, Pagination } from '@vespera-ui/react';
+
+<Breadcrumb items={['Home', 'Projects', 'Vespera']} />
+<Pagination page={page} pages={8} onPage={setPage} />`}
+>
+  <NavExample client:visible />
+</Preview>
+
+## Banner & empty state
+
+<Preview
+  code={`import { Banner, EmptyState, Button, Card } from '@vespera-ui/react';
+
+<Banner tone="accent" action={<Button size="sm">Upgrade</Button>} onDismiss={() => {}}>
+  You're on the free plan — upgrade for more.
+</Banner>
+<Card><EmptyState icon={<Icon.inbox />} title="No messages" action={<Button variant="primary">Compose</Button>} compact /></Card>`}
+>
+  <MessagingExample client:visible />
+</Preview>
+
+## More form controls
+
+<Preview
+  code={`import { NumberStepper, InlineEdit, CopyButton, OTPInput } from '@vespera-ui/react';
+
+<NumberStepper value={qty} onChange={setQty} min={0} max={10} />
+<InlineEdit value={name} onSave={setName} />
+<CopyButton text="npm i @vespera-ui/react" label="Copy install" />
+<OTPInput value={otp} onChange={setOtp} length={6} />`}
+>
+  <MoreFormsExample client:visible />
+</Preview>
+
+## Avatars
+
+<Preview
+  code={`import { AvatarGroup } from '@vespera-ui/react';
+
+<AvatarGroup max={4} size={40} people={[
+  { name: 'Ada Lovelace', hue: 220 },
+  { name: 'Alan Turing', hue: 160 },
+  // …
+]} />`}
+>
+  <AvatarExample client:visible />
+</Preview>
+
 ---
 
-That's a slice — there are **65 components**. Browse them all in the
+That covers most of the library. Browse every component in the
 [API reference](/vespera-ui/reference/react/), see the full
 [component library showcase](/vespera-ui/examples/library.html), or open the
 [interactive playground](/vespera-ui/demo).
