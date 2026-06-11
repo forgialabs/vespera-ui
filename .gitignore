@@ -36,3 +36,7 @@ _preview-server.cjs
 
 # ad-hoc temp files (CI polling, etc.)
 /_*.json
+
+# @vespera-ui/cli generated registry (rebuilt from react source on build)
+packages/cli/registry/
+packages/cli/registry.json

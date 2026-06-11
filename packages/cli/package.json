@@ -1,0 +1,34 @@
+{
+  "name": "@vespera-ui/cli",
+  "version": "0.1.0",
+  "description": "Vespera design system — copy components into your project (shadcn-style).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "vespera": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "registry",
+    "registry.json"
+  ],
+  "scripts": {
+    "build": "node scripts/build-registry.mjs && tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forgialabs/vespera-ui.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "vespera",
+    "cli",
+    "design-system",
+    "components",
+    "copy-in"
+  ]
+}

@@ -66,6 +66,8 @@ importers:
         specifier: ^0.33.5
         version: 0.33.5
 
+  packages/cli: {}
+
   packages/css: {}
 
   packages/icons:
