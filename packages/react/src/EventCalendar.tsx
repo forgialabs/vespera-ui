@@ -139,12 +139,8 @@ export function EventCalendar({ initialEvents = DEFAULT_EVENTS, onChange }: Even
   while (cells.length % 7) cells.push({ day: cells.length - (first + dim) + 1, muted: true });
 
   const isToday = (d: number, muted?: boolean) =>
-    !muted &&
-    d === today.getDate() &&
-    vm.m === today.getMonth() &&
-    vm.y === today.getFullYear();
-  const inSel = (d: number) =>
-    sel && d >= Math.min(sel.a, sel.b) && d <= Math.max(sel.a, sel.b);
+    !muted && d === today.getDate() && vm.m === today.getMonth() && vm.y === today.getFullYear();
+  const inSel = (d: number) => sel && d >= Math.min(sel.a, sel.b) && d <= Math.max(sel.a, sel.b);
 
   const openAdd = (days: number[], hour?: number) =>
     setAdd({
@@ -378,8 +374,7 @@ export function EventCalendar({ initialEvents = DEFAULT_EVENTS, onChange }: Even
                   </div>
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {evByDay[day]!
-                    .slice()
+                  {evByDay[day]!.slice()
                     .sort((a, b) => a.hour - b.hour)
                     .map((e, j) => (
                       <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -411,9 +406,7 @@ export function EventCalendar({ initialEvents = DEFAULT_EVENTS, onChange }: Even
         open={!!add}
         onClose={() => setAdd(null)}
         icon={<Icon.calendar />}
-        title={
-          add && add.days.length > 1 ? `New event · ${add.days.length} days` : 'New event'
-        }
+        title={add && add.days.length > 1 ? `New event · ${add.days.length} days` : 'New event'}
         desc={
           add
             ? `${MONTHS[vm.m]} ${add.days[0]}${
