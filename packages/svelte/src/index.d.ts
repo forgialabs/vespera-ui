@@ -65,3 +65,8 @@ export interface Person {
 }
 export const AvatarGroup: Component<{ people?: Person[]; max?: number; size?: number }>;
 export const Segmented: Component<{ value?: string; options?: string[] }>;
+export type TabItem = string | { value: string; label: string; count?: number };
+export const Tabs: Component<{ value?: string; tabs?: TabItem[]; right?: unknown }>;
+export const Breadcrumb: Component<{ items?: string[] }>;
+export const Pagination: Component<{ page?: number; pages?: number }>;
+export const Stepper: Component<{ steps?: string[]; current?: number }>;
