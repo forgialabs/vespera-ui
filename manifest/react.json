@@ -1,7 +1,7 @@
 {
   "$schema": "https://forgialabs.github.io/vespera-ui/manifest.schema.json",
   "package": "@vespera-ui/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "framework": "react",
   "note": "Auto-generated from packages/react/src by scripts/build-manifest.mjs. Components render inside a themed `.vsp-root` element and consume @vespera-ui/css classes. Icon props accept any ReactNode (use @vespera-ui/icons).",
   "components": [
@@ -725,6 +725,25 @@
           "name": "title",
           "type": "ReactNode",
           "required": false
+        }
+      ]
+    },
+    {
+      "name": "EventCalendar",
+      "description": "A month / week / agenda calendar with click-and-drag day selection and an\ninline \"new event\" dialog. Events are kept in local state; `onChange` reports\nevery change so a host can persist them.",
+      "props": [
+        {
+          "name": "initialEvents",
+          "type": "CalendarEvent[]",
+          "required": false,
+          "defaultValue": "[\n  { d: 2, title: 'Q2 board review', tone: 'info', time: '10:00' },\n  { d: 5, title: 'Northwind renewal', tone: 'success', time: '09:30' },\n  { d: 5, title: 'Webhook deploy', tone: 'warning', time: '14:00' },\n  { d: 9, title: 'Payment retry · Cobalt', tone: 'danger', time: '08:00' },\n  { d: 12, title: 'Onboarding · Halcyon', tone: 'violet', time: '11:00' },\n  { d: 12, title: 'Team sync', tone: 'info', time: '15:30' },\n  { d: 12, title: 'Invoice run', tone: 'success', time: '17:00' },\n  { d: 18, title: 'Security audit', tone: 'warning', time: '13:00' },\n  { d: 21, title: 'Expansion call · Vertex', tone: 'success', time: '10:30' },\n  { d: 24, title: 'Quarterly close', tone: 'info', time: 'All day' },\n  { d: 24, title: 'Roadmap review', tone: 'violet', time: '16:00' },\n  { d: 28, title: 'SLA report due', tone: 'danger', time: '12:00' },\n]",
+          "description": "Events to seed the calendar with."
+        },
+        {
+          "name": "onChange",
+          "type": "((events: CalendarEvent[]) => void)",
+          "required": false,
+          "description": "Called with the full event list whenever events are added."
         }
       ]
     },
