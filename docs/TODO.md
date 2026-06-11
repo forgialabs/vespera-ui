@@ -21,13 +21,13 @@ contributors can see what's planned and in flight).
 Port the components that carry real logic (from `prototype/aether-overlays.jsx` +
 `prototype/aether-select.jsx`).
 
-- [ ] Overlay foundation: `getPortalTarget`, `useEsc`, `Anchored` positioning
-- [ ] `Dialog`, `Sheet`
-- [ ] `DropdownMenu`, `Popover`
-- [ ] `ToastHost` + toast API
-- [ ] `CommandPalette` + `useCmdK`
+- [x] Overlay foundation: `getPortalTarget`, `useEsc`, `Anchored` positioning
+- [x] `Dialog`, `Sheet`
+- [x] `DropdownMenu`, `Popover`
+- [x] `ToastHost` + `toast()` API (replaces `window.toast`)
+- [x] `CommandPalette` + `useCmdK`
+- [x] Stories for the overlays
 - [ ] Themed `Select` (searchable, native-compatible), `Combobox`, `MultiSelect`, `TokenInput`
-- [ ] Stories for the above
 
 ### Iteration 2 — AI-consumable layer (Phase 3)
 
