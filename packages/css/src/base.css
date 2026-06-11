@@ -15,7 +15,8 @@
 }
 
 .vsp-root {
-  min-height: 100vh;
+  /* note: no forced height — wrap a full page in `.vsp-app` (or set min-height
+     yourself) for a full-bleed app; embedded subtrees stay their content height. */
   position: relative;
   isolation: isolate;
   font-family: var(--font-sans);

@@ -3,8 +3,7 @@ name: Publish to npm
 # Publishes the public packages to npm. Runs automatically when a version tag
 # (e.g. v0.2.0) is pushed, and can be run manually from the Actions tab.
 # Requires an `NPM_TOKEN` repository secret with publish rights to @vespera-ui.
-# pnpm skips any package version that is already on the registry, so re-running
-# is safe.
+# pnpm skips any package version already on the registry, so re-running is safe.
 on:
   push:
     tags:
@@ -24,12 +23,14 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build packages
         run: pnpm build
       - name: Publish to npm
-        run: pnpm -r publish --access public --no-git-checks
+        # Write the token straight into .npmrc so pnpm authenticates reliably.
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
+          pnpm -r publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
