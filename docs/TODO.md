@@ -50,8 +50,9 @@ Port the components that carry real logic (from `prototype/aether-overlays.jsx` 
       live theme/accent/density/corners controls. Verified hydrated + interactive.
 - [x] Theme the docs to feel like Vespera — Starlight tokens mapped to the Vespera palette +
       typefaces, deep-space glow background, brand logo + favicon (`src/styles/vespera.css`).
-- [~] Expand Storybook coverage — stories exist for Button, Badge, Alert, Field, Select
-  family, and overlays; remaining primitives still to get stories.
+- [~] Expand Storybook coverage — stories for Button, Badge, Alert, Field, Select family,
+  overlays, **all six blocks, EventCalendar, charts, and date pickers**; remaining primitives
+  (toggles, nav, data display) still to get stories.
 
 ✅ **Iteration 3 complete** (API reference, React docs, interactive playground, Vespera theme).
 
