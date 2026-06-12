@@ -4789,3 +4789,332 @@ export const ApiKeysBlock = defineComponent({
     };
   },
 });
+
+/* ===================== Kanban board ===================== */
+
+export interface KanbanCard {
+  id: string;
+  title: string;
+  tag: string;
+  tone: BadgeTone;
+}
+export interface KanbanColumn {
+  name: string;
+  /** CSS colour for the column's status dot. */
+  tone: string;
+  cards: KanbanCard[];
+}
+interface DragState {
+  card: KanbanCard;
+  from: number;
+  origIndex: number;
+  w: number;
+  offX: number;
+  offY: number;
+}
+interface DropTarget {
+  col: number;
+  index: number;
+}
+const DEFAULT_COLUMNS: KanbanColumn[] = [
+  {
+    name: 'Triage',
+    tone: 'var(--text-faint)',
+    cards: [
+      { id: 'k1', title: 'Cobalt payment failed', tag: 'Billing', tone: 'neg' },
+      { id: 'k2', title: 'Verify SSO config', tag: 'Security', tone: 'warn' },
+    ],
+  },
+  {
+    name: 'In progress',
+    tone: 'var(--accent)',
+    cards: [
+      { id: 'k3', title: 'Migrate Halcyon seats', tag: 'Accounts', tone: 'info' },
+      { id: 'k4', title: 'Q2 expansion review', tag: 'Revenue', tone: 'info' },
+      { id: 'k5', title: 'Webhook retry logic', tag: 'Product', tone: 'warn' },
+    ],
+  },
+  {
+    name: 'Done',
+    tone: 'var(--success)',
+    cards: [
+      { id: 'k6', title: 'Ship usage billing', tag: 'Product', tone: 'pos' },
+      { id: 'k7', title: 'Reconcile invoices', tag: 'Finance', tone: 'pos' },
+    ],
+  },
+];
+
+const kanbanCardInner = (card: KanbanCard) => [
+  h(
+    'div',
+    { style: { fontSize: '13px', fontWeight: 600, marginBottom: '9px', lineHeight: 1.4 } },
+    card.title,
+  ),
+  h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } }, [
+    h(Badge, { tone: card.tone }, () => card.tag),
+    h(Avatar, { name: 'A Q', hue: 250, size: 22 }),
+  ]),
+];
+
+/** A lightweight kanban — drag cards to reorder or move between columns. */
+export const KanbanBlock = defineComponent({
+  name: 'VspKanbanBlock',
+  props: {
+    columns: { type: Array as PropType<KanbanColumn[]>, default: () => DEFAULT_COLUMNS },
+  },
+  emits: ['change'],
+  setup(props, { emit }) {
+    const cols = ref<KanbanColumn[]>(props.columns.map((c) => ({ ...c, cards: [...c.cards] })));
+    const drag = ref<DragState | null>(null);
+    const pt = ref({ x: 0, y: 0 });
+    const target = ref<DropTarget | null>(null);
+    const colEls: (HTMLElement | null)[] = [];
+    let dragData: DragState | null = null;
+    let targetData: DropTarget | null = null;
+    let cleanup: (() => void) | null = null;
+
+    const startDrag = (e: PointerEvent, card: KanbanCard, ci: number) => {
+      if (e.button !== 0) return;
+      const el = e.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
+      const origIndex = cols.value[ci]!.cards.findIndex((c) => c.id === card.id);
+      const d: DragState = {
+        card,
+        from: ci,
+        origIndex,
+        w: rect.width,
+        offX: e.clientX - rect.left,
+        offY: e.clientY - rect.top,
+      };
+      const home = { col: ci, index: origIndex };
+      dragData = d;
+      targetData = home;
+      drag.value = d;
+      pt.value = { x: e.clientX, y: e.clientY };
+      target.value = home;
+      e.preventDefault();
+    };
+
+    watch(drag, (d) => {
+      cleanup?.();
+      cleanup = null;
+      if (!d) return;
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'grabbing';
+      const move = (e: PointerEvent) => {
+        pt.value = { x: e.clientX, y: e.clientY };
+        let found: DropTarget | null = null;
+        colEls.forEach((el, ci) => {
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          if (
+            e.clientX >= r.left &&
+            e.clientX <= r.right &&
+            e.clientY >= r.top - 60 &&
+            e.clientY <= r.bottom + 80
+          ) {
+            const cards = Array.from(el.querySelectorAll('[data-kcard]'));
+            let idx = cards.length;
+            for (let i = 0; i < cards.length; i++) {
+              const cr = cards[i]!.getBoundingClientRect();
+              if (e.clientY < cr.top + cr.height / 2) {
+                idx = i;
+                break;
+              }
+            }
+            found = { col: ci, index: idx };
+          }
+        });
+        if (!found) found = { col: d.from, index: d.origIndex };
+        targetData = found;
+        target.value = found;
+      };
+      const up = () => {
+        const dd = dragData;
+        const tg = targetData;
+        if (dd && tg) {
+          const next = cols.value.map((c) => ({
+            ...c,
+            cards: c.cards.filter((x) => x.id !== dd.card.id),
+          }));
+          next[tg.col]!.cards.splice(tg.index, 0, dd.card);
+          cols.value = next;
+          emit('change', next);
+        }
+        dragData = null;
+        targetData = null;
+        drag.value = null;
+        target.value = null;
+      };
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+      cleanup = () => {
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      };
+    });
+    onBeforeUnmount(() => cleanup?.());
+
+    const placeholder = () =>
+      h('div', {
+        style: {
+          border: '1.6px dashed color-mix(in oklab, var(--accent) 50%, var(--border))',
+          background: 'color-mix(in oklab, var(--accent) 8%, transparent)',
+          borderRadius: 'var(--r-md)',
+          height: '56px',
+        },
+      });
+
+    const renderCard = (card: KanbanCard, ci: number) =>
+      h(
+        'div',
+        {
+          key: card.id,
+          'data-kcard': '',
+          class: 'card',
+          style: { padding: '13px', cursor: 'grab', touchAction: 'none' },
+          onPointerdown: (e: PointerEvent) => startDrag(e, card, ci),
+        },
+        kanbanCardInner(card),
+      );
+
+    return () => {
+      const d = drag.value;
+      const tg = target.value;
+      const portalTarget = getPortalTarget();
+      return h(
+        Block,
+        {
+          title: 'Operations board',
+          desc: 'A lightweight kanban — drag a card to reorder it or move it between columns.',
+        },
+        () => [
+          h(
+            'div',
+            {
+              style: {
+                padding: '14px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '16px',
+              },
+            },
+            cols.value.map((col, ci) => {
+              const items = col.cards.filter((c) => !(d && c.id === d.card.id));
+              const showPh = !!d && !!tg && tg.col === ci;
+              const stack: ReturnType<typeof h>[] = [];
+              items.forEach((card, i) => {
+                if (showPh && tg!.index === i) stack.push(placeholder());
+                stack.push(renderCard(card, ci));
+              });
+              if (showPh && tg!.index >= items.length) stack.push(placeholder());
+              if (items.length === 0 && !showPh)
+                stack.push(
+                  h(
+                    'div',
+                    {
+                      style: {
+                        border: '1.5px dashed var(--border)',
+                        borderRadius: 'var(--r-sm)',
+                        padding: '18px 0',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        color: 'var(--text-faint)',
+                      },
+                    },
+                    'Drop here',
+                  ),
+                );
+              return h(
+                'div',
+                {
+                  key: col.name,
+                  ref: (el) => {
+                    colEls[ci] = el as HTMLElement | null;
+                  },
+                },
+                [
+                  h(
+                    'div',
+                    {
+                      style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '12px',
+                        padding: '0 2px',
+                      },
+                    },
+                    [
+                      h('span', {
+                        style: {
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '99px',
+                          background: col.tone,
+                        },
+                      }),
+                      h('b', { style: { fontSize: '12.5px' } }, col.name),
+                      h(
+                        'span',
+                        { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)' } },
+                        String(col.cards.length),
+                      ),
+                    ],
+                  ),
+                  h(
+                    'div',
+                    {
+                      style: {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                        minHeight: '64px',
+                      },
+                    },
+                    stack,
+                  ),
+                ],
+              );
+            }),
+          ),
+          d && portalTarget
+            ? h(Teleport, { to: portalTarget }, [
+                h(
+                  'div',
+                  {
+                    style: {
+                      position: 'fixed',
+                      left: `${pt.value.x - d.offX}px`,
+                      top: `${pt.value.y - d.offY}px`,
+                      width: `${d.w}px`,
+                      zIndex: 600,
+                      pointerEvents: 'none',
+                      transform: 'rotate(2.5deg) scale(1.03)',
+                      opacity: 0.96,
+                    },
+                  },
+                  [
+                    h(
+                      'div',
+                      {
+                        class: 'card',
+                        style: {
+                          padding: '13px',
+                          boxShadow: 'var(--shadow-lg)',
+                          borderColor: 'color-mix(in oklab, var(--accent) 40%, var(--border))',
+                        },
+                      },
+                      kanbanCardInner(d.card),
+                    ),
+                  ],
+                ),
+              ])
+            : null,
+        ],
+      );
+    };
+  },
+});
