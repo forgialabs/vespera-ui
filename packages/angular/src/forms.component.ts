@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-export type SelectOption = string | { value: string; label: string; sub?: string };
+export type NativeSelectOption = string | { value: string; label: string; sub?: string };
 
-const val = (o: SelectOption): string => (typeof o === 'string' ? o : o.value);
-const lbl = (o: SelectOption): string => (typeof o === 'string' ? o : o.label);
-const subOf = (o: SelectOption): string | undefined => (typeof o === 'object' ? o.sub : undefined);
+const val = (o: NativeSelectOption): string => (typeof o === 'string' ? o : o.value);
+const lbl = (o: NativeSelectOption): string => (typeof o === 'string' ? o : o.label);
+const subOf = (o: NativeSelectOption): string | undefined =>
+  typeof o === 'object' ? o.sub : undefined;
 
 @Component({
   selector: 'vsp-radio',
@@ -57,7 +58,7 @@ export class VspRadio {
 export class VspRadioGroup {
   @Input() value?: string;
   @Output() valueChange = new EventEmitter<string>();
-  @Input() options: SelectOption[] = [];
+  @Input() options: NativeSelectOption[] = [];
   @Input() name = 'vsp-radio';
   val = val;
   lbl = lbl;
@@ -103,7 +104,7 @@ export class VspSlider {
 export class VspNativeSelect {
   @Input() value?: string;
   @Output() valueChange = new EventEmitter<string>();
-  @Input() options: SelectOption[] = [];
+  @Input() options: NativeSelectOption[] = [];
   val = val;
   lbl = lbl;
   onChange(e: Event): void {
