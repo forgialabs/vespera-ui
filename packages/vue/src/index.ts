@@ -5,7 +5,7 @@
  * as `@vespera-ui/react`, so theming via `.vsp-root` data-attributes works
  * identically. Import the CSS once and wrap your app in a themed root.
  */
-import { defineComponent, h, ref, useId, type PropType } from 'vue';
+import { defineComponent, h, ref, useId, type PropType, type Component } from 'vue';
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -1517,5 +1517,139 @@ export const InlineEdit = defineComponent({
               ]),
             ],
           );
+  },
+});
+
+const svgIconClass = (d: string, size: number, cls: string) =>
+  h(
+    'svg',
+    {
+      class: cls,
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    },
+    [h('path', { d })],
+  );
+
+const ICON_LAYERS = 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5';
+
+export interface TreeNodeData {
+  id?: string;
+  label: string;
+  badge?: string;
+  children?: TreeNodeData[];
+}
+const treeNodeId = (n: TreeNodeData) => n.id ?? n.label;
+
+const VspTreeNode: Component = defineComponent({
+  name: 'VspTreeNode',
+  props: {
+    node: { type: Object as PropType<TreeNodeData>, required: true },
+    expanded: { type: Object as PropType<Set<string>>, required: true },
+    selected: { type: String as PropType<string | null>, default: null },
+    toggle: { type: Function as PropType<(id: string) => void>, required: true },
+    select: { type: Function as PropType<(id: string) => void>, required: true },
+  },
+  setup(props) {
+    return () => {
+      const node = props.node;
+      const id = treeNodeId(node);
+      const kids = node.children ?? [];
+      const hasKids = kids.length > 0;
+      const open = props.expanded.has(id);
+      return h('div', null, [
+        h(
+          'div',
+          {
+            class: cx('ui-tree-row', open && 'open', props.selected === id && 'sel'),
+            onClick: () => {
+              if (hasKids) props.toggle(id);
+              props.select(id);
+            },
+          },
+          [
+            hasKids
+              ? svgIconClass(ICON_PATHS.chevR, 16, 'tw-chev')
+              : h('span', { style: { width: '16px', flexShrink: 0 } }),
+            svgIconClass(hasKids ? ICON_LAYERS : ICON_DOC, 16, 'tw-icon'),
+            h(
+              'span',
+              {
+                style: {
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                },
+              },
+              node.label,
+            ),
+            node.badge != null
+              ? h(
+                  'span',
+                  { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)' } },
+                  node.badge,
+                )
+              : null,
+          ],
+        ),
+        hasKids && open
+          ? h(
+              'div',
+              { class: 'ui-tree-children' },
+              kids.map((c, i) =>
+                h(VspTreeNode, {
+                  key: i,
+                  node: c,
+                  expanded: props.expanded,
+                  selected: props.selected,
+                  toggle: props.toggle,
+                  select: props.select,
+                }),
+              ),
+            )
+          : null,
+      ]);
+    };
+  },
+});
+
+export const Tree = defineComponent({
+  name: 'VspTree',
+  props: {
+    data: { type: Array as PropType<TreeNodeData[]>, default: () => [] },
+    defaultExpanded: { type: Array as PropType<string[]>, default: () => [] },
+  },
+  setup(props) {
+    const expanded = ref(new Set<string>(props.defaultExpanded));
+    const selected = ref<string | null>(null);
+    const toggle = (id: string) => {
+      const n = new Set(expanded.value);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      expanded.value = n;
+    };
+    return () =>
+      h(
+        'div',
+        { class: 'ui-tree' },
+        props.data.map((n, i) =>
+          h(VspTreeNode, {
+            key: i,
+            node: n,
+            expanded: expanded.value,
+            selected: selected.value,
+            toggle,
+            select: (id: string) => (selected.value = id),
+          }),
+        ),
+      );
   },
 });

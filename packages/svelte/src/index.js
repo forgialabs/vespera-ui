@@ -43,3 +43,4 @@ export { default as StatCard } from './StatCard.svelte';
 export { default as NumberStepper } from './NumberStepper.svelte';
 export { default as CopyButton } from './CopyButton.svelte';
 export { default as InlineEdit } from './InlineEdit.svelte';
+export { default as Tree } from './Tree.svelte';
