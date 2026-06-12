@@ -31,4 +31,19 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
+  {
+    // Svelte 5 rune macros are compiler keywords, not runtime imports, in
+    // `.svelte.js` module-state files (e.g. the shared toast store).
+    files: ['**/*.svelte.js'],
+    languageOptions: {
+      globals: {
+        $state: 'readonly',
+        $derived: 'readonly',
+        $effect: 'readonly',
+        $props: 'readonly',
+        $bindable: 'readonly',
+        $inspect: 'readonly',
+      },
+    },
+  },
 );

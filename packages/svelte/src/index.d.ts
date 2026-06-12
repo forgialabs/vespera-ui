@@ -227,3 +227,13 @@ export const Popover: Component<{
   children?: unknown;
 }>;
 export const Tooltip: Component<{ label?: string; side?: 'top' | 'bottom'; children?: unknown }>;
+export type ToastTone = 'info' | 'pos' | 'neg' | 'warn';
+export interface ToastOptions {
+  title?: string;
+  body?: string;
+  tone?: ToastTone;
+  duration?: number;
+}
+export const ToastHost: Component<Record<string, never>>;
+export function toast(opts: ToastOptions | string): void;
+export function dismissToast(id: string): void;

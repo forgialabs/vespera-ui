@@ -2261,3 +2261,71 @@ export const Tooltip = defineComponent({
     };
   },
 });
+
+export type ToastTone = 'info' | 'pos' | 'neg' | 'warn';
+export interface ToastOptions {
+  title?: string;
+  body?: string;
+  tone?: ToastTone;
+  duration?: number;
+}
+interface ToastItem extends ToastOptions {
+  id: string;
+}
+const TOAST_ICON: Record<ToastTone, string> = {
+  pos: 'M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3',
+  neg: 'M18 6L6 18M6 6l12 12',
+  warn: 'M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0',
+  info: 'M12 3l1.6 5L19 9.6l-5 1.6L12 16l-1.6-4.8L5 9.6l5.4-1.6z',
+};
+const toastList = ref<ToastItem[]>([]);
+let toastCounter = 0;
+
+/** Show a toast. Requires a `<ToastHost />` mounted inside your `.vsp-root`. */
+export function toast(opts: ToastOptions | string): void {
+  const o: ToastOptions = typeof opts === 'string' ? { title: opts } : opts;
+  const item: ToastItem = { id: `toast-${toastCounter++}`, tone: 'info', ...o };
+  toastList.value = [...toastList.value, item];
+  setTimeout(() => {
+    toastList.value = toastList.value.filter((x) => x.id !== item.id);
+  }, o.duration ?? 3600);
+}
+
+export const ToastHost = defineComponent({
+  name: 'VspToastHost',
+  setup() {
+    const dismiss = (id: string) => {
+      toastList.value = toastList.value.filter((x) => x.id !== id);
+    };
+    return () => {
+      const target = getPortalTarget();
+      if (!target) return null;
+      return h(Teleport, { to: target }, [
+        h(
+          'div',
+          { class: 'ui-toast-region' },
+          toastList.value.map((t) =>
+            h('div', { key: t.id, class: cx('ui-toast', t.tone) }, [
+              svgIcon(TOAST_ICON[t.tone ?? 'info'], 18),
+              h('div', { style: { flex: 1 } }, [
+                h('div', { class: 'ui-toast-title' }, t.title),
+                t.body ? h('div', { class: 'ui-toast-body' }, t.body) : null,
+              ]),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  class: 'vsp-icon-btn',
+                  style: { border: 0, background: 'transparent', width: '26px', height: '26px' },
+                  'aria-label': 'Dismiss',
+                  onClick: () => dismiss(t.id),
+                },
+                [svgIcon('M18 6L6 18M6 6l12 12', 15)],
+              ),
+            ]),
+          ),
+        ),
+      ]);
+    };
+  },
+});
