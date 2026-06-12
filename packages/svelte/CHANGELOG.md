@@ -1,5 +1,18 @@
 # @vespera-ui/svelte
 
+## 0.7.0
+
+### Minor Changes
+
+- 6c9c964: Add `AreaChart` and `BarChart` (fixed-`width` static versions — axes, grid, smooth area, dual
+  series, bars) to the Vue and Svelte wrappers, completing the chart family. (Angular gains
+  `vsp-area-chart` / `vsp-bar-chart` — published separately.) The responsive/hover behavior of the
+  React originals isn't included; pass an explicit `width`.
+- 123164f: Add `OTPInput` (one-time-code field with auto-advance + backspace navigation) to the Vue and
+  Svelte wrappers. (Angular gains `vsp-otp-input` — published separately.)
+- a420f93: Add `Tree` (recursive, expand/collapse + selection) to the Vue and Svelte wrappers. (Angular
+  gains `vsp-tree` — via a recursive `ng-template` — published separately.)
+
 ## 0.6.0
 
 ### Minor Changes
