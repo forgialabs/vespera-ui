@@ -1,6 +1,6 @@
 {
   "name": "@vespera-ui/svelte",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Vespera design system — Svelte components.",
   "license": "Apache-2.0",
   "type": "module",

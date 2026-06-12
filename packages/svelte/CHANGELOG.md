@@ -1,5 +1,14 @@
 # @vespera-ui/svelte
 
+## 0.14.0
+
+### Minor Changes
+
+- 9f82f17: Blocks batch 2 — add the interactive blocks `OrdersBlock` (tab-filtered table with bulk selection, status badges, and a row action menu), `TeamRolesBlock` (member list with inline role selects), and `ApiKeysBlock` (reveal / copy / revoke credentials) to the Vue and Svelte packages. `MenuItem` (used by `DropdownMenu`) gains an optional `icon` name. (Angular ships the same as `vsp-orders-block` / `vsp-team-roles-block` / `vsp-api-keys-block`, version 0.18.0.)
+- c036d35: Add `KanbanBlock` to the Vue and Svelte packages — the final component, completing **full parity** with `@vespera-ui/react`. A lightweight kanban board with custom pointer-based drag-and-drop: drag a card to reorder it within a column or move it between columns, with a live drop-placeholder and a floating drag ghost. Emits the full column set via `change` after each move. (Angular ships the same as `vsp-kanban-block`, version 0.19.0.)
+
+  🎉 With this, every component in `@vespera-ui/react` now has a matching Vue, Svelte, and Angular implementation.
+
 ## 0.13.0
 
 ### Minor Changes
