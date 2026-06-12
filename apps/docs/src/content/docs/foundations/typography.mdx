@@ -1,0 +1,50 @@
+---
+title: Typography
+description: Vespera's type — Plus Jakarta Sans for UI, JetBrains Mono for code and numbers, plus the text helpers.
+---
+
+import Preview from '../../../components/Preview.astro';
+
+Vespera uses two typefaces, both as tokens so you can swap them in one place:
+
+| Token | Default | Use for |
+| --- | --- | --- |
+| `--font-sans` | Plus Jakarta Sans | All UI text and headings |
+| `--font-mono` | JetBrains Mono | Code, IDs, the `.eyebrow` label, tabular numbers |
+
+The base size is `--fs-base` (14px), which scales with
+[density](/vespera-ui/foundations/spacing/). Body line-height is `1.45`.
+
+<Preview>
+  <div style="width:100%">
+    <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Weightless by design</div>
+    <div style="font-size:15px;font-weight:700;margin-top:14px">A section heading</div>
+    <p style="font-size:var(--fs-base);color:var(--text-dim);margin:6px 0 0;max-width:48ch">
+      Body copy sits at <code>--fs-base</code> in <code>--text-dim</code> for comfortable reading,
+      with full-strength <span style="color:var(--text)">--text</span> reserved for emphasis.
+    </p>
+  </div>
+</Preview>
+
+## Text helpers
+
+| Class | Effect |
+| --- | --- |
+| `.eyebrow` | Uppercase mono micro-label in `--text-faint` — section kickers, table headers |
+| `.mono` | Switch to `--font-mono` (tokens, code, key combos) |
+| `.tnum` | Tabular figures so numbers align in columns — stats, tables, money |
+
+<Preview>
+  <div style="display:flex;flex-direction:column;gap:12px;width:100%">
+    <div class="eyebrow">Recent activity</div>
+    <div class="mono" style="font-size:13px">vsp_live_8f2a39c4e7b1d91c</div>
+    <div class="tnum" style="font-size:22px;font-weight:800">$48,200.00</div>
+  </div>
+</Preview>
+
+For text **color** levels (`--text` / `--text-dim` / `--text-faint`), see
+[Color](/vespera-ui/foundations/color/).
+
+That's the foundation set — from here, browse the
+[Components](/vespera-ui/guides/components/) or the
+[API reference](/vespera-ui/reference/react/).

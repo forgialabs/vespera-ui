@@ -1,0 +1,86 @@
+---
+title: Layout & grids
+description: The grid helpers, density-driven gaps, and the app shell that structure a Vespera screen.
+---
+
+import Preview from '../../../components/Preview.astro';
+
+Vespera ships a few thin layout helpers and a full app shell. They're plain CSS classes — use
+them with any framework, or lift the patterns into your own components.
+
+## Grids
+
+`.grid` is a CSS grid whose gutter is the density token `--gap` (so it tightens in `compact` and
+opens up in `spacious` — see [Spacing & density](/vespera-ui/foundations/spacing/)). Set the
+columns yourself:
+
+```html
+<div class="grid" style="grid-template-columns: repeat(3, 1fr)">
+  <div class="card">…</div>
+  <div class="card">…</div>
+  <div class="card">…</div>
+</div>
+```
+
+<Preview>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);width:100%">
+    <div class="card" style="padding:16px">One</div>
+    <div class="card" style="padding:16px">Two</div>
+    <div class="card" style="padding:16px">Three</div>
+  </div>
+</Preview>
+
+### `.stat-grid`
+
+A ready-made responsive grid for KPI rows — four across, collapsing to two then one as space
+runs out. It's what the dashboard uses for its stat cards.
+
+```html
+<div class="grid stat-grid">
+  <div class="card">…</div>
+  <!-- 4 → 2 → 1 columns automatically -->
+</div>
+```
+
+## Clusters & stacks
+
+A horizontal **cluster** (wrap a row of controls) or a vertical **stack** are one-liners — no
+class needed, so you stay in control of the gap:
+
+```html
+<!-- cluster -->
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">…</div>
+<!-- stack -->
+<div style="display:flex;flex-direction:column;gap:14px">…</div>
+```
+
+## The app shell
+
+For a full-screen app, `@vespera-ui/css/shell.css` provides the frame: a fixed sidebar next to a
+scrolling main column. The structure:
+
+```html
+<div class="vsp-root vsp-app" data-theme="dark">
+  <aside class="vsp-side">…nav…</aside>
+  <div class="vsp-main">
+    <header class="vsp-top">…top bar…</header>
+    <div class="vsp-content">
+      <div class="vsp-content-inner">…your screen…</div>
+    </div>
+  </div>
+</div>
+```
+
+| Class | Role |
+| --- | --- |
+| `.vsp-app` | Grid frame — `auto 1fr` (sidebar + main), full viewport height |
+| `.vsp-side` | 248px sidebar; `data-sidebar="rail"` collapses it to an icon rail, `="float"` detaches it |
+| `.vsp-main` | The main column — flex, owns the scroll |
+| `.vsp-top` | Sticky top bar (pairs well with `--glass`) |
+| `.vsp-content` / `.vsp-content-inner` | Scroll region + a centered, padded, `max-width: 1480px` inner |
+
+Below `900px` the sidebar slides off-canvas automatically. See the
+[Admin console](/vespera-ui/admin) for the shell in action, and
+[Examples & templates](/vespera-ui/examples/) for screens built inside it.
+
+Next: [Typography](/vespera-ui/foundations/typography/).

@@ -1,0 +1,61 @@
+---
+// A single color/token swatch. `name` is the CSS variable (without --); the chip
+// fills with var(--name) so it renders the live token. `value` shows the resolved
+// dark-theme hex/value for reference; `note` is an optional role description.
+interface Props {
+  name: string;
+  value?: string;
+  note?: string;
+  /** Render a border instead of a fill (for hairline/border tokens). */
+  outline?: boolean;
+}
+const { name, value, note, outline = false } = Astro.props;
+---
+
+<div class="sw">
+  <div
+    class:list={['sw-chip', { 'is-outline': outline }]}
+    style={outline ? `border-color: var(--${name})` : `background: var(--${name})`}
+  >
+  </div>
+  <div class="sw-meta">
+    <code>--{name}</code>
+    {value && <span class="sw-val">{value}</span>}
+    {note && <span class="sw-note">{note}</span>}
+  </div>
+</div>
+
+<style>
+  .sw {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sw-chip {
+    height: 56px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+  }
+  .sw-chip.is-outline {
+    background: var(--surface-1);
+    border-width: 2px;
+  }
+  .sw-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    line-height: 1.3;
+  }
+  .sw-meta code {
+    font-size: 0.78rem;
+  }
+  .sw-val {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .sw-note {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+</style>

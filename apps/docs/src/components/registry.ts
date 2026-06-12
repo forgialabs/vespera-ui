@@ -21,6 +21,7 @@ import {
   TeamRolesBlockExample,
   DashboardTemplate,
 } from './templates';
+import { BackgroundDemo } from './foundations-demos';
 
 export interface Demo {
   Comp: ComponentType;
@@ -46,6 +47,8 @@ export const DEMOS: Record<string, Demo> = {
   systemstatus: { Comp: SystemStatusBlockExample, minH: 360 },
   teamroles: { Comp: TeamRolesBlockExample, minH: 380 },
   dashboard: { Comp: DashboardTemplate, minH: 720 },
+  // Foundations.
+  background: { Comp: BackgroundDemo, minH: 440 },
 };
 
 export type DemoName = keyof typeof DEMOS;

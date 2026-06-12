@@ -39,6 +39,17 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Foundations',
+          items: [
+            { label: 'Color', link: '/foundations/color/' },
+            { label: 'Surfaces & background', link: '/foundations/surfaces/' },
+            { label: 'Elevation & shadows', link: '/foundations/elevation/' },
+            { label: 'Spacing & density', link: '/foundations/spacing/' },
+            { label: 'Layout & grids', link: '/foundations/layout/' },
+            { label: 'Typography', link: '/foundations/typography/' },
+          ],
+        },
+        {
           label: 'Guides',
           items: [
             { label: 'Theming', link: '/guides/theming/' },
