@@ -153,3 +153,10 @@ export const InlineEdit: Component<{
   placeholder?: string;
   onsave?: (value: string) => void;
 }>;
+export interface TreeNodeData {
+  id?: string;
+  label: string;
+  badge?: string;
+  children?: TreeNodeData[];
+}
+export const Tree: Component<{ data?: TreeNodeData[]; defaultExpanded?: string[] }>;
