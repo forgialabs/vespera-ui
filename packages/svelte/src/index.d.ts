@@ -226,3 +226,4 @@ export const Popover: Component<{
   trigger?: unknown;
   children?: unknown;
 }>;
+export const Tooltip: Component<{ label?: string; side?: 'top' | 'bottom'; children?: unknown }>;
