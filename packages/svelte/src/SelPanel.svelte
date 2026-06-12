@@ -1,7 +1,15 @@
 <script>
   import { portal } from './portal.js';
 
-  let { open = false, anchor = null, width = undefined, onclose, children } = $props();
+  let {
+    open = false,
+    anchor = null,
+    width = undefined,
+    menuClass = 'ui-menu ui-combo',
+    auto = false,
+    onclose,
+    children,
+  } = $props();
 
   let rect = $state(null);
   let panelEl = $state();
@@ -39,10 +47,15 @@
 {#if open && rect}
   <div
     bind:this={panelEl}
-    class="ui-menu ui-combo"
+    class={menuClass}
     use:portal
-    style="position:fixed;top:{rect.bottom + 6}px;left:{rect.left}px;width:{width ??
-      rect.width}px;z-index:330;max-height:{Math.max(220, window.innerHeight - rect.bottom - 16)}px"
+    style={auto
+      ? `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;z-index:330;padding:0;width:auto`
+      : `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;width:${width ??
+          rect.width}px;z-index:330;max-height:${Math.max(
+          220,
+          window.innerHeight - rect.bottom - 16,
+        )}px`}
   >
     {@render children?.()}
   </div>
