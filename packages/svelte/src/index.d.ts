@@ -352,3 +352,30 @@ export interface AuditEntry {
   icon: string;
 }
 export const AuditLogBlock: Component<{ entries?: AuditEntry[] }>;
+export type OrderState = 'fulfilled' | 'processing' | 'pending' | 'refunded';
+export interface Order {
+  id: string;
+  company: string;
+  hue: number;
+  item: string;
+  state: OrderState;
+  amount: number;
+}
+export const OrdersBlock: Component<{ orders?: Order[] }>;
+export interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  hue: number;
+  role: string;
+}
+export const TeamRolesBlock: Component<{ members?: TeamMember[] }>;
+export interface ApiKey {
+  id: number;
+  name: string;
+  token: string;
+  secret: string;
+  created: string;
+  last: string;
+}
+export const ApiKeysBlock: Component<{ keys?: ApiKey[] }>;
