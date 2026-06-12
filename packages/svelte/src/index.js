@@ -49,3 +49,6 @@ export { default as AreaChart } from './AreaChart.svelte';
 export { default as BarChart } from './BarChart.svelte';
 export { default as Dialog } from './Dialog.svelte';
 export { default as Sheet } from './Sheet.svelte';
+export { default as Anchored } from './Anchored.svelte';
+export { default as DropdownMenu } from './DropdownMenu.svelte';
+export { default as Popover } from './Popover.svelte';

@@ -198,3 +198,31 @@ export const Sheet: Component<{
   children?: unknown;
   onclose?: () => void;
 }>;
+export type AnchoredAlign = 'start' | 'end';
+export const Anchored: Component<{
+  align?: AnchoredAlign;
+  width?: number;
+  layerClass?: string;
+  trigger?: unknown;
+  children?: unknown;
+}>;
+export interface MenuItem {
+  label?: string;
+  kbd?: string;
+  danger?: boolean;
+  heading?: boolean;
+  sep?: boolean;
+  onClick?: () => void;
+}
+export const DropdownMenu: Component<{
+  items?: MenuItem[];
+  align?: AnchoredAlign;
+  width?: number;
+  trigger?: unknown;
+}>;
+export const Popover: Component<{
+  align?: AnchoredAlign;
+  width?: number;
+  trigger?: unknown;
+  children?: unknown;
+}>;
