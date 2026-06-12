@@ -19,3 +19,4 @@ export * from './area-bar.component';
 export * from './overlay.component';
 export * from './anchored.component';
 export * from './tooltip.component';
+export * from './toast.component';
