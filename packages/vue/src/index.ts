@@ -2329,3 +2329,186 @@ export const ToastHost = defineComponent({
     };
   },
 });
+
+export interface CommandItem {
+  label: string;
+  meta?: string;
+  keywords?: string;
+  /** Optional leading icon as an SVG path `d` string. */
+  icon?: string;
+  onRun?: () => void;
+}
+export interface CommandGroup {
+  label: string;
+  items: CommandItem[];
+}
+type FlatCmd = CommandItem & { group: string; idx: number };
+
+const cmdHaystack = (it: CommandItem): string =>
+  [it.label, it.keywords ?? '', it.meta ?? ''].join(' ').toLowerCase();
+
+const searchIcon = (size: number) =>
+  h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    },
+    [h('circle', { cx: 11, cy: 11, r: 7 }), h('path', { d: 'm21 21-4.3-4.3' })],
+  );
+
+export const CommandPalette = defineComponent({
+  name: 'VspCommandPalette',
+  props: {
+    open: Boolean,
+    groups: { type: Array as PropType<CommandGroup[]>, default: () => [] },
+  },
+  emits: ['close'],
+  setup(props, { emit }) {
+    const q = ref('');
+    const active = ref(0);
+    const inputRef = ref<HTMLInputElement | null>(null);
+
+    const onKeydownWin = (e: KeyboardEvent) => {
+      if (props.open && e.key === 'Escape') emit('close');
+    };
+    onMounted(() => window.addEventListener('keydown', onKeydownWin));
+    onBeforeUnmount(() => window.removeEventListener('keydown', onKeydownWin));
+
+    watch(
+      () => props.open,
+      (isOpen) => {
+        if (!isOpen) return;
+        q.value = '';
+        active.value = 0;
+        nextTick(() => setTimeout(() => inputRef.value?.focus(), 30));
+      },
+    );
+
+    return () => {
+      if (!props.open) return null;
+      const target = getPortalTarget();
+      if (!target) return null;
+
+      const query = q.value.toLowerCase();
+      const flat: FlatCmd[] = [];
+      props.groups.forEach((g) => {
+        g.items.forEach((it) => {
+          if (!query || cmdHaystack(it).includes(query)) {
+            flat.push({ ...it, group: g.label, idx: flat.length });
+          }
+        });
+      });
+      const groupOrder: string[] = [];
+      const byGroup = new Map<string, FlatCmd[]>();
+      flat.forEach((it) => {
+        let bucket = byGroup.get(it.group);
+        if (!bucket) {
+          bucket = [];
+          byGroup.set(it.group, bucket);
+          groupOrder.push(it.group);
+        }
+        bucket.push(it);
+      });
+
+      const run = (it: FlatCmd | undefined) => {
+        it?.onRun?.();
+        emit('close');
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          active.value = Math.min(flat.length - 1, active.value + 1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          active.value = Math.max(0, active.value - 1);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          run(flat[active.value]);
+        }
+      };
+
+      return h(Teleport, { to: target }, [
+        h(
+          'div',
+          {
+            class: 'ui-overlay ui-cmd-wrap',
+            onMousedown: (e: MouseEvent) => {
+              if (e.target === e.currentTarget) emit('close');
+            },
+          },
+          [
+            h('div', { class: 'ui-cmd', role: 'dialog', 'aria-modal': 'true' }, [
+              h('div', { class: 'ui-cmd-input' }, [
+                searchIcon(16),
+                h('input', {
+                  ref: inputRef,
+                  value: q.value,
+                  placeholder: 'Type a command or search…',
+                  onInput: (e: Event) => {
+                    q.value = (e.target as HTMLInputElement).value;
+                    active.value = 0;
+                  },
+                  onKeydown: onKey,
+                }),
+                h('kbd', { class: 'ui-kbd' }, 'ESC'),
+              ]),
+              h('div', { class: 'ui-cmd-list vsp-scroll' }, [
+                flat.length === 0
+                  ? h(
+                      'div',
+                      {
+                        style: {
+                          padding: '28px 12px',
+                          textAlign: 'center',
+                          color: 'var(--text-faint)',
+                          fontSize: '13px',
+                        },
+                      },
+                      `No results for “${q.value}”`,
+                    )
+                  : null,
+                ...groupOrder.map((g) =>
+                  h('div', { key: g }, [
+                    h('div', { class: 'ui-cmd-group' }, g),
+                    ...(byGroup.get(g) ?? []).map((it) =>
+                      h(
+                        'div',
+                        {
+                          key: it.idx,
+                          class: cx('ui-cmd-item', it.idx === active.value && 'active'),
+                          onMouseenter: () => (active.value = it.idx),
+                          onClick: () => run(it),
+                        },
+                        [
+                          it.icon ? svgIcon(it.icon, 16) : null,
+                          h('span', it.label),
+                          it.meta ? h('span', { class: 'ui-cmd-meta' }, it.meta) : null,
+                        ],
+                      ),
+                    ),
+                  ]),
+                ),
+              ]),
+              h('div', { class: 'ui-cmd-foot' }, [
+                h('span', { class: 'k' }, [
+                  h('kbd', { class: 'ui-kbd' }, '↑'),
+                  h('kbd', { class: 'ui-kbd' }, '↓'),
+                  ' navigate',
+                ]),
+                h('span', { class: 'k' }, [h('kbd', { class: 'ui-kbd' }, '↵'), ' select']),
+                h('span', { class: 'k', style: { marginLeft: 'auto' } }, 'Vespera Command'),
+              ]),
+            ]),
+          ],
+        ),
+      ]);
+    };
+  },
+});
