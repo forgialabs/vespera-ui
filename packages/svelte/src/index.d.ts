@@ -160,3 +160,4 @@ export interface TreeNodeData {
   children?: TreeNodeData[];
 }
 export const Tree: Component<{ data?: TreeNodeData[]; defaultExpanded?: string[] }>;
+export const OTPInput: Component<{ length?: number; value?: string }>;
