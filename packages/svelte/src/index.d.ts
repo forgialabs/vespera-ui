@@ -322,3 +322,16 @@ export const DateRangePicker: Component<{
   placeholder?: string;
   onchange?: (range: DateRange) => void;
 }>;
+export type EventTone = 'info' | 'success' | 'warning' | 'danger' | 'violet';
+export interface CalendarEvent {
+  id?: string;
+  d: number;
+  title: string;
+  tone: EventTone;
+  time: string;
+  hour?: number;
+}
+export const EventCalendar: Component<{
+  initialEvents?: CalendarEvent[];
+  onchange?: (events: CalendarEvent[]) => void;
+}>;

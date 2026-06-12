@@ -3460,3 +3460,485 @@ export const DateRangePicker = defineComponent({
     };
   },
 });
+
+/* ---------------- EventCalendar ---------------- */
+
+const DOW_FULL = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export type EventTone = 'info' | 'success' | 'warning' | 'danger' | 'violet';
+
+const EVENT_TONE: Record<EventTone, string> = {
+  info: 'var(--accent)',
+  success: 'var(--success)',
+  warning: 'var(--warning)',
+  danger: 'var(--danger)',
+  violet: 'var(--accent-2)',
+};
+
+const TONE_OPTIONS = [
+  { value: 'info', label: 'Blue' },
+  { value: 'success', label: 'Green' },
+  { value: 'warning', label: 'Amber' },
+  { value: 'danger', label: 'Red' },
+  { value: 'violet', label: 'Violet' },
+];
+
+export interface CalendarEvent {
+  id?: string;
+  /** Day of the month (1–31). */
+  d: number;
+  title: string;
+  tone: EventTone;
+  /** Display time, e.g. `"10:00"` or `"All day"`. */
+  time: string;
+  /** Hour (8–18) used to place the event in the week grid. */
+  hour?: number;
+}
+type InternalEvent = Required<Pick<CalendarEvent, 'id' | 'hour'>> & CalendarEvent;
+interface Draft {
+  days: number[];
+  hour: number;
+  title: string;
+  tone: EventTone;
+  time: string;
+}
+
+const DEFAULT_EVENTS: CalendarEvent[] = [
+  { d: 2, title: 'Q2 board review', tone: 'info', time: '10:00' },
+  { d: 5, title: 'Northwind renewal', tone: 'success', time: '09:30' },
+  { d: 5, title: 'Webhook deploy', tone: 'warning', time: '14:00' },
+  { d: 9, title: 'Payment retry · Cobalt', tone: 'danger', time: '08:00' },
+  { d: 12, title: 'Onboarding · Halcyon', tone: 'violet', time: '11:00' },
+  { d: 12, title: 'Team sync', tone: 'info', time: '15:30' },
+  { d: 12, title: 'Invoice run', tone: 'success', time: '17:00' },
+  { d: 18, title: 'Security audit', tone: 'warning', time: '13:00' },
+  { d: 21, title: 'Expansion call · Vertex', tone: 'success', time: '10:30' },
+  { d: 24, title: 'Quarterly close', tone: 'info', time: 'All day' },
+  { d: 24, title: 'Roadmap review', tone: 'violet', time: '16:00' },
+  { d: 28, title: 'SLA report due', tone: 'danger', time: '12:00' },
+];
+
+type View = 'month' | 'week' | 'agenda';
+
+/**
+ * A month / week / agenda calendar with click-and-drag day selection and an
+ * inline "new event" dialog. Events are kept in local state; the `change` event
+ * reports every change so a host can persist them.
+ */
+export const EventCalendar = defineComponent({
+  name: 'VspEventCalendar',
+  props: {
+    initialEvents: { type: Array as PropType<CalendarEvent[]>, default: () => DEFAULT_EVENTS },
+  },
+  emits: ['change'],
+  setup(props, { emit }) {
+    const today = new Date();
+    const view = ref<View>('month');
+    const vm = ref({ m: today.getMonth(), y: today.getFullYear() });
+    const events = ref<InternalEvent[]>(
+      props.initialEvents.map((e, i) => ({ id: `e${i}`, hour: 9, ...e })),
+    );
+    const sel = ref<{ a: number; b: number } | null>(null);
+    let dragging = false;
+    const add = ref<Draft | null>(null);
+
+    const commit = (next: InternalEvent[]) => {
+      events.value = next;
+      emit('change', next);
+    };
+    const nav = (delta: number) => {
+      let m = vm.value.m + delta;
+      let y = vm.value.y;
+      if (m < 0) {
+        m = 11;
+        y--;
+      }
+      if (m > 11) {
+        m = 0;
+        y++;
+      }
+      vm.value = { m, y };
+    };
+    const openAdd = (days: number[], hour?: number) => {
+      add.value = {
+        days,
+        hour: hour ?? 9,
+        title: '',
+        tone: 'info',
+        time: hour != null ? `${String(hour).padStart(2, '0')}:00` : '10:00',
+      };
+    };
+    const saveAdd = () => {
+      const a = add.value;
+      if (!a) return;
+      if (!a.title.trim()) {
+        add.value = null;
+        return;
+      }
+      const stamp = Date.now();
+      commit([
+        ...events.value,
+        ...a.days.map((d, i) => ({
+          id: `n${stamp}${i}`,
+          d,
+          hour: a.hour,
+          title: a.title,
+          tone: a.tone,
+          time: a.time,
+        })),
+      ]);
+      add.value = null;
+      toast({
+        tone: 'pos',
+        title: a.days.length > 1 ? `${a.days.length} events added` : 'Event added',
+      });
+    };
+    const cap = (v: View) => v[0]!.toUpperCase() + v.slice(1);
+
+    return () => {
+      const evByDay: Record<number, InternalEvent[]> = {};
+      events.value.forEach((e) => {
+        (evByDay[e.d] = evByDay[e.d] || []).push(e);
+      });
+      const first = new Date(vm.value.y, vm.value.m, 1).getDay();
+      const dim = new Date(vm.value.y, vm.value.m + 1, 0).getDate();
+      const prevDim = new Date(vm.value.y, vm.value.m, 0).getDate();
+      const cells: { day: number; muted?: boolean }[] = [];
+      for (let i = first - 1; i >= 0; i--) cells.push({ day: prevDim - i, muted: true });
+      for (let d = 1; d <= dim; d++) cells.push({ day: d });
+      while (cells.length % 7) cells.push({ day: cells.length - (first + dim) + 1, muted: true });
+
+      const isToday = (d: number, muted?: boolean) =>
+        !muted &&
+        d === today.getDate() &&
+        vm.value.m === today.getMonth() &&
+        vm.value.y === today.getFullYear();
+      const inSel = (d: number) =>
+        sel.value &&
+        d >= Math.min(sel.value.a, sel.value.b) &&
+        d <= Math.max(sel.value.a, sel.value.b);
+
+      const HOURS: number[] = [];
+      for (let h = 8; h <= 18; h++) HOURS.push(h);
+      const weekDays: Date[] = [];
+      const d0 = new Date(vm.value.y, vm.value.m, today.getDate() - today.getDay());
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(d0);
+        d.setDate(d0.getDate() + i);
+        weekDays.push(d);
+      }
+
+      const head = h('div', { class: 'ui-cb-head' }, [
+        h('div', { style: { display: 'flex', gap: '4px' } }, [
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'vsp-icon-btn',
+              style: { width: '32px', height: '32px' },
+              'aria-label': 'Previous month',
+              onClick: () => nav(-1),
+            },
+            [svgIcon('M15 18l-6-6 6-6', 18)],
+          ),
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'vsp-icon-btn',
+              style: { width: '32px', height: '32px' },
+              'aria-label': 'Next month',
+              onClick: () => nav(1),
+            },
+            [svgIcon('M9 18l6-6-6-6', 18)],
+          ),
+        ]),
+        h('div', { class: 'ui-cb-title' }, `${MONTHS[vm.value.m]} ${vm.value.y}`),
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'btn btn-ghost btn-sm',
+            onClick: () => (vm.value = { m: today.getMonth(), y: today.getFullYear() }),
+          },
+          'Today',
+        ),
+        h('div', { style: { flex: 1 } }),
+        h(Segmented, {
+          options: ['Month', 'Week', 'Agenda'],
+          modelValue: cap(view.value),
+          'onUpdate:modelValue': (v: string) => (view.value = v.toLowerCase() as View),
+        }),
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'btn btn-primary btn-sm',
+            onClick: () => openAdd([today.getDate()]),
+          },
+          [svgIcon('M12 5v14M5 12h14', 16), 'Event'],
+        ),
+      ]);
+
+      const monthView = [
+        h(
+          'div',
+          { class: 'ui-cb-grid' },
+          DOW_FULL.map((d) => h('div', { key: d, class: 'ui-cb-dow' }, d)),
+        ),
+        h(
+          'div',
+          {
+            class: 'ui-cb-grid',
+            onMouseleave: () => {
+              if (!dragging) sel.value = null;
+            },
+          },
+          cells.map((c, i) => {
+            const evs = c.muted ? [] : evByDay[c.day] || [];
+            return h(
+              'div',
+              {
+                key: i,
+                class: cx('ui-cb-cell', c.muted && 'muted', !c.muted && inSel(c.day) && 'sel'),
+                style: i >= cells.length - 7 ? { borderBottom: 0 } : undefined,
+                onMousedown: () => {
+                  if (!c.muted) {
+                    dragging = true;
+                    sel.value = { a: c.day, b: c.day };
+                  }
+                },
+                onMouseenter: () => {
+                  if (dragging && !c.muted)
+                    sel.value = sel.value ? { a: sel.value.a, b: c.day } : sel.value;
+                },
+                onMouseup: () => {
+                  if (dragging && sel.value) {
+                    dragging = false;
+                    const lo = Math.min(sel.value.a, c.day);
+                    const hi = Math.max(sel.value.a, c.day);
+                    const days: number[] = [];
+                    for (let d = lo; d <= hi; d++) days.push(d);
+                    openAdd(days);
+                    sel.value = null;
+                  }
+                },
+              },
+              [
+                h(
+                  'span',
+                  { class: cx('ui-cb-date', isToday(c.day, c.muted) && 'today') },
+                  String(c.day),
+                ),
+                ...evs.slice(0, 3).map((e, j) =>
+                  h(
+                    'div',
+                    {
+                      key: j,
+                      class: 'ui-cb-event',
+                      style: {
+                        color: EVENT_TONE[e.tone],
+                        background: `color-mix(in oklab, ${EVENT_TONE[e.tone]} 14%, transparent)`,
+                      },
+                    },
+                    [h('i'), e.title],
+                  ),
+                ),
+                evs.length > 3
+                  ? h('span', { class: 'ui-cb-more' }, `+${evs.length - 3} more`)
+                  : null,
+              ],
+            );
+          }),
+        ),
+      ];
+
+      const weekView = h(
+        'div',
+        { class: 'ui-cb-week', style: { maxHeight: '420px', overflowY: 'auto' } },
+        [
+          h('div', { class: 'ui-cb-wk-corner' }),
+          ...weekDays.map((d, i) =>
+            h('div', { key: `dh${i}`, class: 'ui-cb-wk-dh' }, [
+              h('div', { class: 'eyebrow' }, DOW_FULL[d.getDay()]),
+              h(
+                'div',
+                {
+                  style: {
+                    fontWeight: 700,
+                    fontSize: '15px',
+                    color: d.getDate() === today.getDate() ? 'var(--accent)' : 'var(--text)',
+                  },
+                },
+                String(d.getDate()),
+              ),
+            ]),
+          ),
+          ...HOURS.flatMap((hr) => [
+            h('div', { key: `hr${hr}`, class: 'ui-cb-wk-hr' }, `${String(hr).padStart(2, '0')}:00`),
+            ...weekDays.map((d, i) => {
+              const appt = events.value.find(
+                (e) => e.d === d.getDate() && e.hour === hr && d.getMonth() === vm.value.m,
+              );
+              return h(
+                'div',
+                {
+                  key: `slot${hr}-${i}`,
+                  class: 'ui-cb-slot',
+                  onClick: () => !appt && openAdd([d.getDate()], hr),
+                },
+                appt
+                  ? [
+                      h(
+                        'div',
+                        {
+                          class: 'ui-cb-appt',
+                          style: {
+                            color: EVENT_TONE[appt.tone],
+                            background: `color-mix(in oklab, ${EVENT_TONE[appt.tone]} 18%, transparent)`,
+                          },
+                        },
+                        appt.title,
+                      ),
+                    ]
+                  : undefined,
+              );
+            }),
+          ]),
+        ],
+      );
+
+      const agendaView = h(
+        'div',
+        {},
+        Object.keys(evByDay)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((day) =>
+            h('div', { key: day, class: 'ui-cb-agenda-day' }, [
+              h('div', { style: { width: '56px', flexShrink: 0, textAlign: 'center' } }, [
+                h(
+                  'div',
+                  { class: 'eyebrow' },
+                  DOW_FULL[new Date(vm.value.y, vm.value.m, day).getDay()],
+                ),
+                h(
+                  'div',
+                  { class: 'tnum', style: { fontSize: '22px', fontWeight: 800, lineHeight: 1.1 } },
+                  String(day),
+                ),
+              ]),
+              h(
+                'div',
+                { style: { flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' } },
+                evByDay[day]!.slice()
+                  .sort((a, b) => a.hour - b.hour)
+                  .map((e, j) =>
+                    h(
+                      'div',
+                      { key: j, style: { display: 'flex', alignItems: 'center', gap: '10px' } },
+                      [
+                        h('span', {
+                          style: {
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '99px',
+                            background: EVENT_TONE[e.tone],
+                            flexShrink: 0,
+                          },
+                        }),
+                        h('span', { style: { fontWeight: 600, fontSize: '13.5px' } }, e.title),
+                        h(
+                          'span',
+                          {
+                            class: 'mono',
+                            style: {
+                              marginLeft: 'auto',
+                              fontSize: '11.5px',
+                              color: 'var(--text-faint)',
+                            },
+                          },
+                          e.time,
+                        ),
+                      ],
+                    ),
+                  ),
+              ),
+            ]),
+          ),
+      );
+
+      const a = add.value;
+      const dialog = h(
+        Dialog,
+        {
+          open: !!a,
+          maxWidth: 420,
+          title: a && a.days.length > 1 ? `New event · ${a.days.length} days` : 'New event',
+          desc: a
+            ? `${MONTHS[vm.value.m]} ${a.days[0]}${
+                a.days.length > 1 ? `–${a.days[a.days.length - 1]}` : ''
+              }, ${vm.value.y}`
+            : '',
+          onClose: () => (add.value = null),
+        },
+        {
+          icon: () => calendarIcon(20),
+          footer: () => [
+            h(
+              Button,
+              { variant: 'ghost', size: 'sm', onClick: () => (add.value = null) },
+              () => 'Cancel',
+            ),
+            h(Button, { variant: 'primary', size: 'sm', onClick: saveAdd }, () => 'Add event'),
+          ],
+          default: () =>
+            a
+              ? h('div', { style: { display: 'grid', gap: '14px' } }, [
+                  h(Field, { label: 'Title', required: true }, () =>
+                    h(Input, {
+                      modelValue: a.title,
+                      placeholder: 'Meeting, review, booking…',
+                      'onUpdate:modelValue': (v: string) => {
+                        if (add.value) add.value = { ...add.value, title: v };
+                      },
+                    }),
+                  ),
+                  h(
+                    'div',
+                    { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' } },
+                    [
+                      h(Field, { label: 'Time' }, () =>
+                        h(Input, {
+                          modelValue: a.time,
+                          'onUpdate:modelValue': (v: string) => {
+                            if (add.value) add.value = { ...add.value, time: v };
+                          },
+                        }),
+                      ),
+                      h(Field, { label: 'Color' }, () =>
+                        h(Select, {
+                          modelValue: a.tone,
+                          options: TONE_OPTIONS,
+                          'onUpdate:modelValue': (v: SelectValue) => {
+                            if (add.value) add.value = { ...add.value, tone: v as EventTone };
+                          },
+                        }),
+                      ),
+                    ],
+                  ),
+                ])
+              : null,
+        },
+      );
+
+      return h('div', { class: 'ui-cb' }, [
+        head,
+        view.value === 'month' ? monthView : null,
+        view.value === 'week' ? weekView : null,
+        view.value === 'agenda' ? agendaView : null,
+        dialog,
+      ]);
+    };
+  },
+});
