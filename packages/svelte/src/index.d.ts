@@ -253,3 +253,39 @@ export const CommandPalette: Component<{
   groups?: CommandGroup[];
   onclose?: () => void;
 }>;
+export type SelectValue = string | number;
+export interface SelectOption {
+  value: SelectValue;
+  label: string;
+  swatch?: string;
+}
+export type SelectOptionInput = SelectValue | SelectOption;
+export const Select: Component<{
+  options?: SelectOptionInput[];
+  value?: SelectValue;
+  placeholder?: string;
+  disabled?: boolean;
+  searchable?: boolean;
+  onchange?: (value: SelectValue) => void;
+}>;
+export const Combobox: Component<{
+  options?: SelectOptionInput[];
+  value?: SelectValue | null;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  clearable?: boolean;
+  onchange?: (value: SelectValue | null) => void;
+}>;
+export const MultiSelect: Component<{
+  options?: SelectOptionInput[];
+  value?: SelectValue[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+  max?: number;
+  onchange?: (value: SelectValue[]) => void;
+}>;
+export const TokenInput: Component<{
+  value?: string[];
+  placeholder?: string;
+  onchange?: (value: string[]) => void;
+}>;

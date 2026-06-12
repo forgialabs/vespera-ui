@@ -273,9 +273,9 @@ export const Checkbox = defineComponent({
   },
 });
 
-export type SelectOption = string | { value: string; label: string; sub?: string };
-const optValue = (o: SelectOption) => (typeof o === 'string' ? o : o.value);
-const optLabel = (o: SelectOption) => (typeof o === 'string' ? o : o.label);
+export type NativeSelectOption = string | { value: string; label: string; sub?: string };
+const optValue = (o: NativeSelectOption) => (typeof o === 'string' ? o : o.value);
+const optLabel = (o: NativeSelectOption) => (typeof o === 'string' ? o : o.label);
 
 export const Radio = defineComponent({
   name: 'VspRadio',
@@ -311,7 +311,7 @@ export const RadioGroup = defineComponent({
   name: 'VspRadioGroup',
   props: {
     modelValue: { type: String, default: undefined },
-    options: { type: Array as PropType<SelectOption[]>, default: () => [] },
+    options: { type: Array as PropType<NativeSelectOption[]>, default: () => [] },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -360,7 +360,7 @@ export const NativeSelect = defineComponent({
   name: 'VspNativeSelect',
   props: {
     modelValue: { type: String, default: undefined },
-    options: { type: Array as PropType<SelectOption[]>, default: () => [] },
+    options: { type: Array as PropType<NativeSelectOption[]>, default: () => [] },
   },
   emits: ['update:modelValue'],
   setup(props, { emit, attrs }) {
@@ -2509,6 +2509,549 @@ export const CommandPalette = defineComponent({
           ],
         ),
       ]);
+    };
+  },
+});
+
+/* ---------------- Select family (Select, Combobox, MultiSelect, TokenInput) ---------------- */
+
+export type SelectValue = string | number;
+export interface SelectOption {
+  value: SelectValue;
+  label: string;
+  /** Optional color swatch shown before the label. */
+  swatch?: string;
+}
+export type SelectOptionInput = SelectValue | SelectOption;
+
+const normalizeOption = (o: SelectOptionInput): SelectOption =>
+  typeof o === 'object' ? o : { value: o, label: String(o) };
+
+const swatchSpan = (color: string) =>
+  h('span', {
+    style: { width: '9px', height: '9px', borderRadius: '3px', background: color, flexShrink: 0 },
+  });
+
+/** Anchored, portal-rendered floating panel that tracks its trigger on scroll/resize. */
+const SelPanel = defineComponent({
+  name: 'VspSelPanel',
+  props: {
+    open: Boolean,
+    anchor: { type: Object as PropType<HTMLElement | null>, default: null },
+    width: { type: Number, default: undefined },
+  },
+  emits: ['close'],
+  setup(props, { slots, emit }) {
+    const rect = ref<DOMRect | null>(null);
+    const panelRef = ref<HTMLElement | null>(null);
+    let cleanup: (() => void) | null = null;
+    const place = () => {
+      if (props.anchor) rect.value = props.anchor.getBoundingClientRect();
+    };
+    watch(
+      () => props.open,
+      (o) => {
+        if (o) {
+          nextTick(place);
+          const onDoc = (e: MouseEvent) => {
+            const t = e.target as Node;
+            if (!panelRef.value?.contains(t) && !props.anchor?.contains(t)) emit('close');
+          };
+          const onEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') emit('close');
+          };
+          document.addEventListener('mousedown', onDoc);
+          window.addEventListener('keydown', onEsc);
+          window.addEventListener('resize', place);
+          window.addEventListener('scroll', place, true);
+          cleanup = () => {
+            document.removeEventListener('mousedown', onDoc);
+            window.removeEventListener('keydown', onEsc);
+            window.removeEventListener('resize', place);
+            window.removeEventListener('scroll', place, true);
+          };
+        } else {
+          cleanup?.();
+          cleanup = null;
+          rect.value = null;
+        }
+      },
+    );
+    onBeforeUnmount(() => cleanup?.());
+    return () => {
+      if (!props.open || !rect.value) return null;
+      const target = getPortalTarget();
+      if (!target) return null;
+      const r = rect.value;
+      const maxBelow = window.innerHeight - r.bottom - 16;
+      return h(Teleport, { to: target }, [
+        h(
+          'div',
+          {
+            ref: panelRef,
+            class: 'ui-menu ui-combo',
+            style: {
+              position: 'fixed',
+              top: `${r.bottom + 6}px`,
+              left: `${r.left}px`,
+              width: `${props.width ?? r.width}px`,
+              zIndex: 330,
+              maxHeight: `${Math.max(220, maxBelow)}px`,
+            },
+          },
+          slots.default?.(),
+        ),
+      ]);
+    };
+  },
+});
+
+/** Search box + filtered option list used inside SelPanel. */
+const ComboList = defineComponent({
+  name: 'VspComboList',
+  props: {
+    q: { type: String, default: '' },
+    items: { type: Array as PropType<SelectOption[]>, default: () => [] },
+    activeIdx: { type: Number, default: 0 },
+    isSel: { type: Function as PropType<(o: SelectOption) => boolean>, default: () => false },
+    searchPlaceholder: { type: String, default: undefined },
+  },
+  emits: ['update:q', 'update:activeIdx', 'pick'],
+  setup(props, { slots, emit }) {
+    const inputRef = ref<HTMLInputElement | null>(null);
+    onMounted(() => setTimeout(() => inputRef.value?.focus(), 30));
+    const onKey = (e: KeyboardEvent) => {
+      const items = props.items;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        emit('update:activeIdx', Math.min(items.length - 1, props.activeIdx + 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        emit('update:activeIdx', Math.max(0, props.activeIdx - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const it = items[props.activeIdx];
+        if (it) emit('pick', it);
+      }
+    };
+    return () => [
+      h('div', { class: 'ui-combo-search' }, [
+        searchIcon(16),
+        h('input', {
+          ref: inputRef,
+          value: props.q,
+          placeholder: props.searchPlaceholder ?? 'Search…',
+          onInput: (e: Event) => {
+            emit('update:q', (e.target as HTMLInputElement).value);
+            emit('update:activeIdx', 0);
+          },
+          onKeydown: onKey,
+        }),
+      ]),
+      h('div', { class: 'ui-combo-list' }, [
+        props.items.length === 0
+          ? h('div', { class: 'ui-combo-empty' }, `No matches for “${props.q}”`)
+          : null,
+        ...props.items.map((o, i) =>
+          h(
+            'div',
+            {
+              key: String(o.value),
+              class: cx('ui-combo-item', i === props.activeIdx && 'active'),
+              onMouseenter: () => emit('update:activeIdx', i),
+              onClick: () => emit('pick', o),
+            },
+            [
+              o.swatch ? swatchSpan(o.swatch) : null,
+              h('span', o.label),
+              props.isSel(o) ? svgIconClass('M20 6L9 17l-5-5', 14, 'tick') : null,
+            ],
+          ),
+        ),
+      ]),
+      slots.footer?.(),
+    ];
+  },
+});
+
+const CHEV_DOWN = 'M6 9l6 6 6-6';
+
+export const Select = defineComponent({
+  name: 'VspSelect',
+  props: {
+    options: { type: Array as PropType<SelectOptionInput[]>, default: () => [] },
+    modelValue: { type: [String, Number] as PropType<SelectValue>, default: undefined },
+    placeholder: { type: String, default: 'Select…' },
+    disabled: Boolean,
+    searchable: { type: Boolean, default: undefined },
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const q = ref('');
+    const active = ref(0);
+    const anchor = ref<HTMLButtonElement | null>(null);
+    const internal = ref<SelectValue | undefined>(undefined);
+    return () => {
+      const opts = props.options.map(normalizeOption);
+      const cur = props.modelValue ?? internal.value ?? opts[0]?.value;
+      const sel = opts.find((o) => String(o.value) === String(cur));
+      const useSearch = props.searchable ?? opts.length >= 8;
+      const items = useSearch
+        ? opts.filter((o) => o.label.toLowerCase().includes(q.value.toLowerCase()))
+        : opts;
+      const choose = (o: SelectOption) => {
+        internal.value = o.value;
+        emit('update:modelValue', o.value);
+        emit('change', o.value);
+        open.value = false;
+        q.value = '';
+      };
+      return [
+        h(
+          'button',
+          {
+            type: 'button',
+            ref: anchor,
+            disabled: props.disabled,
+            class: cx('ui-selectbtn', open.value && 'open'),
+            onClick: () => (open.value = !open.value),
+          },
+          [h('span', { class: cx('val', !sel && 'ph') }, sel ? sel.label : props.placeholder)],
+        ),
+        h(
+          SelPanel,
+          { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
+          {
+            default: () =>
+              useSearch
+                ? h(ComboList, {
+                    q: q.value,
+                    'onUpdate:q': (v: string) => (q.value = v),
+                    items,
+                    activeIdx: active.value,
+                    'onUpdate:activeIdx': (v: number) => (active.value = v),
+                    isSel: (o: SelectOption) => String(o.value) === String(cur),
+                    onPick: choose,
+                  })
+                : h('div', { class: 'ui-combo-list' }, [
+                    items.length === 0 ? h('div', { class: 'ui-combo-empty' }, 'No options') : null,
+                    ...items.map((o) =>
+                      h(
+                        'div',
+                        {
+                          key: String(o.value),
+                          class: cx('ui-combo-item', String(o.value) === String(cur) && 'active'),
+                          onClick: () => choose(o),
+                        },
+                        [
+                          o.swatch ? swatchSpan(o.swatch) : null,
+                          h('span', o.label),
+                          String(o.value) === String(cur)
+                            ? svgIconClass('M20 6L9 17l-5-5', 14, 'tick')
+                            : null,
+                        ],
+                      ),
+                    ),
+                  ]),
+          },
+        ),
+      ];
+    };
+  },
+});
+
+export const Combobox = defineComponent({
+  name: 'VspCombobox',
+  props: {
+    options: { type: Array as PropType<SelectOptionInput[]>, default: () => [] },
+    modelValue: {
+      type: [String, Number] as PropType<SelectValue | null>,
+      default: null,
+    },
+    placeholder: { type: String, default: 'Select…' },
+    searchPlaceholder: { type: String, default: undefined },
+    clearable: Boolean,
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const q = ref('');
+    const active = ref(0);
+    const anchor = ref<HTMLButtonElement | null>(null);
+    return () => {
+      const opts = props.options.map(normalizeOption);
+      const sel = opts.find((o) => o.value === props.modelValue);
+      const items = opts.filter((o) => o.label.toLowerCase().includes(q.value.toLowerCase()));
+      const set = (v: SelectValue | null) => {
+        emit('update:modelValue', v);
+        emit('change', v);
+      };
+      const pick = (o: SelectOption) => {
+        set(o.value);
+        open.value = false;
+        q.value = '';
+      };
+      return [
+        h(
+          'button',
+          {
+            type: 'button',
+            ref: anchor,
+            class: cx('ui-trigger', open.value && 'open'),
+            onClick: () => (open.value = !open.value),
+          },
+          [
+            h('span', { class: cx('val', !sel && 'ph') }, sel ? sel.label : props.placeholder),
+            props.clearable && sel
+              ? h(
+                  'span',
+                  {
+                    style: { display: 'grid', placeItems: 'center', color: 'var(--text-faint)' },
+                    onClick: (e: MouseEvent) => {
+                      e.stopPropagation();
+                      set(null);
+                    },
+                  },
+                  [svgIcon('M18 6L6 18M6 6l12 12', 14)],
+                )
+              : null,
+            svgIconClass(CHEV_DOWN, 16, 'chev'),
+          ],
+        ),
+        h(
+          SelPanel,
+          { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
+          {
+            default: () =>
+              h(ComboList, {
+                q: q.value,
+                'onUpdate:q': (v: string) => (q.value = v),
+                items,
+                activeIdx: active.value,
+                'onUpdate:activeIdx': (v: number) => (active.value = v),
+                isSel: (o: SelectOption) => o.value === props.modelValue,
+                searchPlaceholder: props.searchPlaceholder,
+                onPick: pick,
+              }),
+          },
+        ),
+      ];
+    };
+  },
+});
+
+export const MultiSelect = defineComponent({
+  name: 'VspMultiSelect',
+  props: {
+    options: { type: Array as PropType<SelectOptionInput[]>, default: () => [] },
+    modelValue: { type: Array as PropType<SelectValue[]>, default: () => [] },
+    placeholder: { type: String, default: 'Select…' },
+    searchPlaceholder: { type: String, default: undefined },
+    max: { type: Number, default: undefined },
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const q = ref('');
+    const active = ref(0);
+    const anchor = ref<HTMLElement | null>(null);
+    return () => {
+      const opts = props.options.map(normalizeOption);
+      const value = props.modelValue;
+      const items = opts.filter((o) => o.label.toLowerCase().includes(q.value.toLowerCase()));
+      const has = (v: SelectValue) => value.includes(v);
+      const set = (next: SelectValue[]) => {
+        emit('update:modelValue', next);
+        emit('change', next);
+      };
+      const toggle = (o: SelectOption) => {
+        if (has(o.value)) set(value.filter((v) => v !== o.value));
+        else if (!props.max || value.length < props.max) set([...value, o.value]);
+      };
+      const selOpts = opts.filter((o) => has(o.value));
+      return [
+        h(
+          'div',
+          {
+            role: 'button',
+            tabindex: 0,
+            ref: anchor,
+            class: cx('ui-trigger', open.value && 'open'),
+            style: { minHeight: 'var(--ctrl-h)' },
+            onClick: () => (open.value = !open.value),
+            onKeydown: (e: KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                open.value = !open.value;
+              }
+            },
+          },
+          [
+            selOpts.length === 0
+              ? h('span', { class: 'val ph' }, props.placeholder)
+              : h(
+                  'span',
+                  { class: 'tags' },
+                  selOpts.map((o) =>
+                    h(
+                      'span',
+                      {
+                        key: String(o.value),
+                        class: 'ui-tag',
+                        onClick: (e: MouseEvent) => e.stopPropagation(),
+                      },
+                      [
+                        o.label,
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            'aria-label': `Remove ${o.label}`,
+                            onClick: () => set(value.filter((v) => v !== o.value)),
+                          },
+                          [svgIcon('M18 6L6 18M6 6l12 12', 11)],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            svgIconClass(CHEV_DOWN, 16, 'chev'),
+          ],
+        ),
+        h(
+          SelPanel,
+          { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
+          {
+            default: () =>
+              h(
+                ComboList,
+                {
+                  q: q.value,
+                  'onUpdate:q': (v: string) => (q.value = v),
+                  items,
+                  activeIdx: active.value,
+                  'onUpdate:activeIdx': (v: number) => (active.value = v),
+                  isSel: (o: SelectOption) => has(o.value),
+                  searchPlaceholder: props.searchPlaceholder,
+                  onPick: toggle,
+                },
+                {
+                  footer: () =>
+                    h('div', { class: 'ui-combo-foot' }, [
+                      h(
+                        'span',
+                        {
+                          class: 'mono',
+                          style: { fontSize: '11px', color: 'var(--text-faint)' },
+                        },
+                        `${value.length} selected${props.max ? ` / ${props.max}` : ''}`,
+                      ),
+                      h('div', { style: { flex: 1 } }),
+                      value.length > 0
+                        ? h(
+                            'button',
+                            {
+                              type: 'button',
+                              class: 'btn btn-subtle btn-sm',
+                              onClick: () => set([]),
+                            },
+                            'Clear',
+                          )
+                        : null,
+                    ]),
+                },
+              ),
+          },
+        ),
+      ];
+    };
+  },
+});
+
+export const TokenInput = defineComponent({
+  name: 'VspTokenInput',
+  props: {
+    modelValue: { type: Array as PropType<string[]>, default: () => [] },
+    placeholder: { type: String, default: 'Type and press Enter…' },
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const draft = ref('');
+    return () => {
+      const value = props.modelValue;
+      const set = (next: string[]) => {
+        emit('update:modelValue', next);
+        emit('change', next);
+      };
+      const add = () => {
+        const t = draft.value.trim();
+        if (t && !value.includes(t)) set([...value, t]);
+        draft.value = '';
+      };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          add();
+        } else if (e.key === 'Backspace' && !draft.value && value.length) {
+          set(value.slice(0, -1));
+        }
+      };
+      return h(
+        'div',
+        {
+          class: 'ui-trigger',
+          style: {
+            cursor: 'text',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: '6px',
+            paddingTop: '5px',
+            paddingBottom: '5px',
+          },
+          onClick: (e: MouseEvent) =>
+            (e.currentTarget as HTMLElement).querySelector('input')?.focus(),
+        },
+        [
+          ...value.map((t) =>
+            h('span', { key: t, class: 'ui-tag', style: { maxWidth: '100%' } }, [
+              h(
+                'span',
+                {
+                  style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+                },
+                t,
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  'aria-label': `Remove ${t}`,
+                  onClick: () => set(value.filter((v) => v !== t)),
+                },
+                [svgIcon('M18 6L6 18M6 6l12 12', 11)],
+              ),
+            ]),
+          ),
+          h('input', {
+            value: draft.value,
+            placeholder: value.length ? '' : props.placeholder,
+            onInput: (e: Event) => (draft.value = (e.target as HTMLInputElement).value),
+            onKeydown: onKey,
+            onBlur: add,
+            style: {
+              flex: '1 1 80px',
+              minWidth: '80px',
+              border: 0,
+              background: 'transparent',
+              outline: 'none',
+              font: 'inherit',
+              fontSize: '13.5px',
+              color: 'var(--text)',
+            },
+          }),
+        ],
+      );
     };
   },
 });
