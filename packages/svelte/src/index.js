@@ -66,3 +66,7 @@ export { default as DatePicker } from './DatePicker.svelte';
 export { default as DateRangePicker } from './DateRangePicker.svelte';
 export { fmtDate } from './dates.js';
 export { default as EventCalendar } from './EventCalendar.svelte';
+export { default as Icon } from './Icon.svelte';
+export { default as Block } from './Block.svelte';
+export { default as SystemStatusBlock } from './SystemStatusBlock.svelte';
+export { default as AuditLogBlock } from './AuditLogBlock.svelte';

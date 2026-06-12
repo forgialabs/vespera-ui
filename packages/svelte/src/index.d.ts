@@ -335,3 +335,20 @@ export const EventCalendar: Component<{
   initialEvents?: CalendarEvent[];
   onchange?: (events: CalendarEvent[]) => void;
 }>;
+export const Icon: Component<{ name: string; size?: number }>;
+export const Block: Component<{ title?: string; desc?: string; children?: unknown }>;
+export type ServiceStatus = 'operational' | 'degraded' | 'maintenance' | 'down';
+export interface Service {
+  name: string;
+  status: ServiceStatus;
+  uptime: number;
+}
+export const SystemStatusBlock: Component<{ services?: Service[] }>;
+export interface AuditEntry {
+  who: string;
+  action: string;
+  tag: string;
+  time: string;
+  icon: string;
+}
+export const AuditLogBlock: Component<{ entries?: AuditEntry[] }>;
