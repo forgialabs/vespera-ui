@@ -3942,3 +3942,360 @@ export const EventCalendar = defineComponent({
     };
   },
 });
+
+/* ---------------- Blocks ---------------- */
+
+type IconChild = ReturnType<typeof h>;
+const BLOCK_ICONS: Record<string, () => IconChild[]> = {
+  plus: () => [h('path', { d: 'M12 5v14M5 12h14' })],
+  check: () => [h('path', { d: 'm20 6-11 11-5-5' })],
+  x: () => [h('path', { d: 'M6 6l12 12M18 6 6 18' })],
+  filter: () => [h('path', { d: 'M3 5h18l-7 8v6l-4-2v-4z' })],
+  bolt: () => [h('path', { d: 'M13 2 4 14h7l-1 8 9-12h-7z' })],
+  shield: () => [h('path', { d: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z' })],
+  arrowUp: () => [h('path', { d: 'M12 19V5M6 11l6-6 6 6' })],
+  more: () => [
+    h('circle', { cx: 5, cy: 12, r: 1.4 }),
+    h('circle', { cx: 12, cy: 12, r: 1.4 }),
+    h('circle', { cx: 19, cy: 12, r: 1.4 }),
+  ],
+  download: () => [h('path', { d: 'M12 4v11M7 11l5 5 5-5' }), h('path', { d: 'M5 20h14' })],
+  eye: () => [
+    h('path', { d: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z' }),
+    h('circle', { cx: 12, cy: 12, r: 3 }),
+  ],
+  refresh: () => [h('path', { d: 'M21 12a9 9 0 1 1-2.6-6.4' }), h('path', { d: 'M21 4v5h-5' })],
+  doc: () => [
+    h('path', { d: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z' }),
+    h('path', { d: 'M14 3v5h5M9 13h6M9 17h6' }),
+  ],
+  mail: () => [
+    h('rect', { x: 3, y: 5, width: 18, height: 14, rx: 2 }),
+    h('path', { d: 'm3 7 9 6 9-6' }),
+  ],
+  users: () => [
+    h('circle', { cx: 9, cy: 8, r: 3 }),
+    h('path', { d: 'M3 20a6 6 0 0 1 12 0' }),
+    h('path', { d: 'M16 5.2a3 3 0 0 1 0 5.6M21 20a6 6 0 0 0-4-5.6' }),
+  ],
+  bell: () => [
+    h('path', { d: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9' }),
+    h('path', { d: 'M13.7 21a2 2 0 0 1-3.4 0' }),
+  ],
+  clock: () => [h('circle', { cx: 12, cy: 12, r: 9 }), h('path', { d: 'M12 7v5l3 2' })],
+  settings: () => [
+    h('circle', { cx: 12, cy: 12, r: 3 }),
+    h('path', {
+      d: 'M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1H2a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 3.6 8.6a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H8a1.7 1.7 0 0 0 1-1.56V2a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V8a1.7 1.7 0 0 0 1.56 1H22a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z',
+    }),
+  ],
+};
+
+/** Inline icon by name (the Vue wrapper stays free of the icons package). */
+export const blockIcon = (name: string, size = 16) =>
+  h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    },
+    BLOCK_ICONS[name]?.() ?? [],
+  );
+
+/** A titled section wrapping its content in a Vespera `card`. */
+export const Block = defineComponent({
+  name: 'VspBlock',
+  props: {
+    title: { type: String, default: undefined },
+    desc: { type: String, default: undefined },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h('div', {}, [
+        props.title
+          ? h('div', { style: { marginBottom: '12px' } }, [
+              h(
+                'div',
+                { style: { fontSize: '16px', fontWeight: 700, letterSpacing: '-.01em' } },
+                props.title,
+              ),
+              props.desc
+                ? h(
+                    'div',
+                    { style: { fontSize: '13px', marginTop: '3px', color: 'var(--text-dim)' } },
+                    props.desc,
+                  )
+                : null,
+            ])
+          : null,
+        h('div', { class: 'card' }, slots.default?.()),
+      ]);
+  },
+});
+
+const blockBarStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  padding: '11px 14px',
+  borderBottom: '1px solid var(--border)',
+};
+
+export type ServiceStatus = 'operational' | 'degraded' | 'maintenance' | 'down';
+export interface Service {
+  name: string;
+  status: ServiceStatus;
+  uptime: number;
+}
+const STATUS_TONE: Record<ServiceStatus, BadgeTone> = {
+  operational: 'pos',
+  degraded: 'warn',
+  maintenance: 'info',
+  down: 'neg',
+};
+const DEFAULT_SERVICES: Service[] = [
+  { name: 'API gateway', status: 'operational', uptime: 99.98 },
+  { name: 'Database', status: 'operational', uptime: 99.95 },
+  { name: 'Webhooks', status: 'degraded', uptime: 98.2 },
+  { name: 'Auth service', status: 'operational', uptime: 100 },
+  { name: 'Billing', status: 'maintenance', uptime: 99.8 },
+];
+
+/** Live service health with 30-day uptime bars. */
+export const SystemStatusBlock = defineComponent({
+  name: 'VspSystemStatusBlock',
+  props: {
+    services: { type: Array as PropType<Service[]>, default: () => DEFAULT_SERVICES },
+  },
+  setup(props) {
+    return () => {
+      const allOk = props.services.every((s) => s.status === 'operational');
+      const accent = allOk ? 'var(--success)' : 'var(--warning)';
+      return h(
+        Block,
+        { title: 'System status', desc: 'Live service health with 30-day uptime bars.' },
+        () => [
+          h('div', { style: blockBarStyle }, [
+            h('span', {
+              style: {
+                width: '8px',
+                height: '8px',
+                borderRadius: '99px',
+                background: accent,
+                boxShadow: `0 0 8px ${accent}`,
+              },
+            }),
+            h(
+              'b',
+              { style: { fontSize: '13.5px' } },
+              allOk ? 'All systems operational' : 'Partial degradation',
+            ),
+            h('div', { style: { flex: 1 } }),
+            h('span', { class: 'eyebrow' }, 'Updated 30s ago'),
+          ]),
+          h(
+            'div',
+            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '8px' } },
+            props.services.map((s) =>
+              h('div', { key: s.name, class: 'ui-row', style: { alignItems: 'center' } }, [
+                h('div', { style: { width: '150px', flexShrink: 0 } }, [
+                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, s.name),
+                ]),
+                h(
+                  'div',
+                  {
+                    style: {
+                      flex: 1,
+                      display: 'flex',
+                      gap: '2px',
+                      alignItems: 'flex-end',
+                      height: '26px',
+                    },
+                  },
+                  Array.from({ length: 44 }).map((_, i) => {
+                    const bad =
+                      (s.status === 'degraded' && i > 38 && i < 42) ||
+                      (s.status === 'maintenance' && i === 43);
+                    return h('span', {
+                      key: i,
+                      style: {
+                        flex: 1,
+                        height: bad ? '60%' : '100%',
+                        borderRadius: '2px',
+                        background: bad
+                          ? s.status === 'degraded'
+                            ? 'var(--warning)'
+                            : 'var(--accent)'
+                          : 'color-mix(in oklab, var(--success) 70%, transparent)',
+                      },
+                    });
+                  }),
+                ),
+                h(
+                  'span',
+                  {
+                    class: 'mono tnum',
+                    style: {
+                      width: '56px',
+                      textAlign: 'right',
+                      fontSize: '12px',
+                      color: 'var(--text-dim)',
+                    },
+                  },
+                  `${s.uptime}%`,
+                ),
+                h(Badge, { tone: STATUS_TONE[s.status], dot: true }, () => s.status),
+              ]),
+            ),
+          ),
+        ],
+      );
+    };
+  },
+});
+
+export interface AuditEntry {
+  who: string;
+  action: string;
+  tag: string;
+  time: string;
+  /** Icon name (see `blockIcon`). */
+  icon: string;
+}
+const DEFAULT_AUDIT: AuditEntry[] = [
+  {
+    who: 'Avery Quinn',
+    action: 'updated billing settings',
+    tag: 'Settings',
+    time: '2 min ago',
+    icon: 'settings',
+  },
+  {
+    who: 'Maya Okafor',
+    action: 'upgraded to Enterprise',
+    tag: 'Billing',
+    time: '38 min ago',
+    icon: 'arrowUp',
+  },
+  {
+    who: 'System',
+    action: 'rotated production API key',
+    tag: 'Security',
+    time: '1 hr ago',
+    icon: 'shield',
+  },
+  { who: 'Leo Vega', action: 'invited 4 members', tag: 'Team', time: '3 hr ago', icon: 'users' },
+  {
+    who: 'Billing',
+    action: 'flagged failed payment · Cobalt',
+    tag: 'Billing',
+    time: '5 hr ago',
+    icon: 'bell',
+  },
+];
+
+/** A chronological trail of privileged actions, as a timeline. */
+export const AuditLogBlock = defineComponent({
+  name: 'VspAuditLogBlock',
+  props: {
+    entries: { type: Array as PropType<AuditEntry[]>, default: () => DEFAULT_AUDIT },
+  },
+  setup(props) {
+    return () =>
+      h(
+        Block,
+        { title: 'Audit log', desc: 'A chronological trail of every privileged action.' },
+        () => [
+          h('div', { style: blockBarStyle }, [
+            blockIcon('clock', 17),
+            h('b', { style: { fontSize: '13.5px' } }, 'Recent activity'),
+            h('div', { style: { flex: 1 } }),
+            h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, [
+              blockIcon('download', 15),
+              'Export log',
+            ]),
+          ]),
+          h('div', { style: { padding: '14px' } }, [
+            h(
+              'div',
+              { style: { position: 'relative', paddingLeft: '8px' } },
+              props.entries.map((e, i) =>
+                h(
+                  'div',
+                  {
+                    key: i,
+                    style: {
+                      display: 'flex',
+                      gap: '14px',
+                      paddingBottom: i < props.entries.length - 1 ? '20px' : '0',
+                      position: 'relative',
+                    },
+                  },
+                  [
+                    i < props.entries.length - 1
+                      ? h('span', {
+                          style: {
+                            position: 'absolute',
+                            left: '15px',
+                            top: '32px',
+                            bottom: 0,
+                            width: '1.5px',
+                            background: 'var(--border)',
+                          },
+                        })
+                      : null,
+                    h(
+                      'span',
+                      {
+                        style: {
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '9px',
+                          flexShrink: 0,
+                          display: 'grid',
+                          placeItems: 'center',
+                          background: 'var(--surface-3)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-dim)',
+                          zIndex: 1,
+                        },
+                      },
+                      [blockIcon(e.icon, 16)],
+                    ),
+                    h('div', { style: { flex: 1, paddingTop: '5px' } }, [
+                      h('div', { style: { fontSize: '13.5px' } }, [
+                        h('b', { style: { fontWeight: 700 } }, e.who),
+                        ' ',
+                        h('span', { style: { color: 'var(--text-dim)' } }, e.action),
+                      ]),
+                      h(
+                        'div',
+                        {
+                          style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginTop: '5px',
+                          },
+                        },
+                        [
+                          h(Badge, { tone: 'muted' }, () => e.tag),
+                          h('span', { class: 'eyebrow' }, e.time),
+                        ],
+                      ),
+                    ]),
+                  ],
+                ),
+              ),
+            ),
+          ]),
+        ],
+      );
+  },
+});
