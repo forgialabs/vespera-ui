@@ -1,25 +1,19 @@
 ---
 title: Examples & templates
-description: Full, real-world UIs built with Vespera — a complete component library showcase and a flagship admin console.
+description: Real-world UIs built with Vespera — a live admin dashboard, ready-made blocks, and a full navigable console.
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 import Preview from '../../components/Preview.astro';
-import {
-  DashboardTemplate,
-  OrdersBlockExample,
-  KanbanBlockExample,
-  ApiKeysBlockExample,
-  AuditLogBlockExample,
-  SystemStatusBlockExample,
-  TeamRolesBlockExample,
-} from '../../components/templates';
+
+Everything on this page is rendered live from the published `@vespera-ui/react` packages —
+not screenshots. Each interactive demo runs in its own isolated frame, so dropdowns, dialogs,
+and drag interactions stay inside their preview.
 
 ## Admin dashboard
 
-A complete dashboard built **only from `@vespera-ui/react`** — header with a range switch, KPI
-cards, a revenue area chart, a traffic donut, and a recent-orders table. This is rendered live
-below (not a screenshot) from the published components.
+A complete dashboard composed **only from `@vespera-ui/react`** — KPI stat cards, a revenue
+area chart, a traffic donut, and a recent-orders table.
 
 <Preview
   code={`import {
@@ -29,79 +23,70 @@ import { Icon } from '@vespera-ui/icons';
 
 // KPI cards + AreaChart + Donut + a <table className="ui-table"> — see the
 // full source at apps/docs/src/components/templates.tsx`}
->
-  <DashboardTemplate client:visible />
-</Preview>
+  demo="dashboard"
+/>
 
 ## Blocks
 
-Composed, ready-to-use sections — each a single component from `@vespera-ui/react`, all
-open source. Every block takes its data via props (with the sensible defaults shown here) and
-is fully interactive below.
+Composed, ready-to-use sections — each a single component from `@vespera-ui/react`. Every block
+takes its data via props (with the sensible defaults shown here) and is fully interactive below.
 
 ### Orders table
 
-<Preview code={`import { OrdersBlock } from '@vespera-ui/react';\n\n<OrdersBlock orders={orders} />`}>
-  <OrdersBlockExample client:visible />
-</Preview>
+Tab filters, bulk selection, inline status, and a per-row action menu.
+
+<Preview code={`import { OrdersBlock } from '@vespera-ui/react';\n\n<OrdersBlock orders={orders} />`} demo="orders" />
 
 ### Operations board (kanban)
 
 Drag a card to reorder it or move it between columns.
 
-<Preview code={`import { KanbanBlock } from '@vespera-ui/react';\n\n<KanbanBlock onChange={(cols) => save(cols)} />`}>
-  <KanbanBlockExample client:visible />
-</Preview>
+<Preview code={`import { KanbanBlock } from '@vespera-ui/react';\n\n<KanbanBlock onChange={(cols) => save(cols)} />`} demo="kanban" />
 
 ### API keys
 
-<Preview code={`import { ApiKeysBlock } from '@vespera-ui/react';\n\n<ApiKeysBlock keys={keys} />`}>
-  <ApiKeysBlockExample client:visible />
-</Preview>
+Reveal, copy, and revoke credentials; secrets stay masked by default.
+
+<Preview code={`import { ApiKeysBlock } from '@vespera-ui/react';\n\n<ApiKeysBlock keys={keys} />`} demo="apikeys" />
 
 ### Audit log
 
-<Preview code={`import { AuditLogBlock } from '@vespera-ui/react';\n\n<AuditLogBlock entries={entries} />`}>
-  <AuditLogBlockExample client:visible />
-</Preview>
+<Preview code={`import { AuditLogBlock } from '@vespera-ui/react';\n\n<AuditLogBlock entries={entries} />`} demo="auditlog" />
 
 ### System status
 
-<Preview code={`import { SystemStatusBlock } from '@vespera-ui/react';\n\n<SystemStatusBlock services={services} />`}>
-  <SystemStatusBlockExample client:visible />
-</Preview>
+<Preview code={`import { SystemStatusBlock } from '@vespera-ui/react';\n\n<SystemStatusBlock services={services} />`} demo="systemstatus" />
 
 ### Team & roles
 
-<Preview code={`import { TeamRolesBlock } from '@vespera-ui/react';\n\n<TeamRolesBlock members={members} />`}>
-  <TeamRolesBlockExample client:visible />
-</Preview>
+<Preview code={`import { TeamRolesBlock } from '@vespera-ui/react';\n\n<TeamRolesBlock members={members} />`} demo="teamroles" />
 
-## Admin console
+## See it running full-screen
 
-A complete, navigable admin console — sidebar nav, top bar, and switchable views (dashboard,
-orders, kanban, team, API keys, audit log, system status) — built **entirely from
-`@vespera-ui/react`**. This is the published components, running live.
+The blocks above come together into two full experiences — both the published packages, live.
 
 <CardGrid>
-  <Card title="Admin console (real packages)" icon="laptop">
-    Open it full-screen and click through the views. Everything you see is `@vespera-ui/react`
-    composed together — try the live theme/density/corner controls too.
+  <Card title="Admin console" icon="laptop">
+    A complete, navigable console — sidebar nav, top bar, and switchable views (dashboard,
+    orders, kanban, team, API keys, audit log, system status), all `@vespera-ui/react`. Try the
+    live theme / density / corner controls too.
 
     <p><a href="/vespera-ui/admin" target="_blank" rel="noopener">Open the admin console →</a></p>
+
   </Card>
 
-  <Card title="Component library (prototype)" icon="open-book">
-    The original showcase — every component, block, and pattern with copy-paste code. Compiles
-    in the browser, so give it a second on first load.
+  <Card title="Interactive playground" icon="rocket">
+    Every component on one page — click, toggle, and theme it live. The fastest way to feel how
+    Vespera responds to theme, accent, density, and corner changes.
 
-    <p><a href="/vespera-ui/examples/library.html" target="_blank" rel="noopener">Open the library showcase →</a></p>
+    <p><a href="/vespera-ui/demo" target="_blank" rel="noopener">Open the playground →</a></p>
+
   </Card>
 </CardGrid>
 
 ## Build it with the packages
 
-The admin console above is composed from the productized packages — here's the shape of it:
+These templates are composed from the productized packages — here's the shape of it:
 
 ```tsx
 import '@vespera-ui/css';
@@ -119,6 +104,6 @@ function DashboardCard() {
 }
 ```
 
-See [Installation](/vespera-ui/guides/installation/) to get started, the
-[React components API](/vespera-ui/reference/react/) for every component, and the
-[interactive playground](/vespera-ui/demo) to experiment live.
+Next: [Installation](/vespera-ui/guides/installation/) to get started, the
+[Components guide](/vespera-ui/guides/components/) for live examples with code, and the
+[React components API](/vespera-ui/reference/react/) for every prop.
