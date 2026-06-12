@@ -15,3 +15,4 @@ export * from './charts.component';
 export * from './extras.component';
 export * from './tree.component';
 export * from './otp.component';
+export * from './area-bar.component';

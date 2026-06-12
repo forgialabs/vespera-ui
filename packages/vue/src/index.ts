@@ -1692,3 +1692,184 @@ export const OTPInput = defineComponent({
       );
   },
 });
+
+export function niceNum(n: number): string {
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(n % 1e3 === 0 ? 0 : 1) + 'k';
+  return String(n);
+}
+
+export const AreaChart = defineComponent({
+  name: 'VspAreaChart',
+  props: {
+    series: { type: Array as PropType<number[][]>, default: () => [] },
+    labels: { type: Array as PropType<string[]>, default: undefined },
+    width: { type: Number, default: 760 },
+    height: { type: Number, default: 260 },
+    color: { type: String, default: 'var(--accent)' },
+    color2: { type: String, default: 'var(--accent-2)' },
+    dual: Boolean,
+  },
+  setup(props) {
+    const gid = 'ac' + useId().replace(/[^a-zA-Z0-9]/g, '');
+    const txt = (x: number, y: number, anchor: string, val: string) =>
+      h(
+        'text',
+        {
+          x,
+          y,
+          'text-anchor': anchor,
+          'font-size': '10',
+          fill: 'var(--text-faint)',
+          'font-family': 'var(--font-mono)',
+        },
+        val,
+      );
+    return () => {
+      const w = props.width;
+      const height = props.height;
+      const padL = 38;
+      const padB = 26;
+      const padT = 12;
+      const padR = 8;
+      const innerW = Math.max(10, w - padL - padR);
+      const innerH = height - padB - padT;
+      const s0 = props.series[0] ?? [];
+      const s1 = props.series[1];
+      const all = props.dual && s1 ? [...s0, ...s1] : s0;
+      const max = Math.max(...all, 0) * 1.12;
+      const rng = max || 1;
+      const sx = (i: number, len: number) => padL + (i / Math.max(1, len - 1)) * innerW;
+      const sy = (v: number) => padT + innerH - (v / rng) * innerH;
+      const mkPts = (arr: number[]): Pt[] => arr.map((v, i) => [sx(i, arr.length), sy(v)]);
+      const lines = (props.dual && s1 ? [s0, s1] : [s0]).map(mkPts);
+      const yTicks = 4;
+      const grid = Array.from({ length: yTicks + 1 }, (_, i) => {
+        const y = sy((max / yTicks) * i);
+        return h('g', { key: 'g' + i }, [
+          h('line', {
+            x1: padL,
+            x2: w - padR,
+            y1: y,
+            y2: y,
+            stroke: 'var(--grid-line)',
+            'stroke-width': '1',
+          }),
+          txt(padL - 8, y + 3.5, 'end', niceNum(Math.round((max / yTicks) * i))),
+        ]);
+      });
+      const lbls = props.labels
+        ? props.labels.map((lb, i) =>
+            i % Math.ceil(props.labels!.length / 7) === 0
+              ? txt(sx(i, props.labels!.length), height - 8, 'middle', lb)
+              : null,
+          )
+        : [];
+      const lineEls = lines.map((pts, li) => {
+        const stroke = li === 0 ? props.color : props.color2;
+        const lastPt = pts[pts.length - 1];
+        const firstPt = pts[0];
+        return h('g', { key: 'ln' + li }, [
+          li === 0 && firstPt && lastPt
+            ? h('path', {
+                d: `${smoothPath(pts)} L ${lastPt[0]} ${padT + innerH} L ${firstPt[0]} ${padT + innerH} Z`,
+                fill: `url(#${gid})`,
+              })
+            : null,
+          h('path', {
+            d: smoothPath(pts),
+            fill: 'none',
+            stroke,
+            'stroke-width': '2.4',
+            'stroke-linecap': 'round',
+            'stroke-dasharray': li === 1 ? '5 5' : undefined,
+            style: { opacity: li === 1 ? 0.7 : 1 },
+          }),
+        ]);
+      });
+      return h('svg', { width: w, height, style: { display: 'block' } }, [
+        h('defs', null, [
+          h('linearGradient', { id: gid, x1: '0', x2: '0', y1: '0', y2: '1' }, [
+            h('stop', { offset: '0', 'stop-color': props.color, 'stop-opacity': '0.22' }),
+            h('stop', { offset: '1', 'stop-color': props.color, 'stop-opacity': '0' }),
+          ]),
+        ]),
+        ...grid,
+        ...lbls,
+        ...lineEls,
+      ]);
+    };
+  },
+});
+
+export const BarChart = defineComponent({
+  name: 'VspBarChart',
+  props: {
+    data: { type: Array as PropType<number[]>, default: () => [] },
+    labels: { type: Array as PropType<string[]>, default: undefined },
+    width: { type: Number, default: 620 },
+    height: { type: Number, default: 240 },
+    color: { type: String, default: 'var(--accent)' },
+  },
+  setup(props) {
+    return () => {
+      const w = props.width;
+      const height = props.height;
+      const padL = 34;
+      const padB = 26;
+      const padT = 10;
+      const innerW = Math.max(10, w - padL - 8);
+      const innerH = height - padB - padT;
+      const max = Math.max(...props.data, 0) * 1.15 || 1;
+      const bw = innerW / (props.data.length || 1);
+      const grid = [0, 0.5, 1].map((f, i) => {
+        const y = padT + innerH - f * innerH;
+        return h('g', { key: 'g' + i }, [
+          h('line', { x1: padL, x2: w - 8, y1: y, y2: y, stroke: 'var(--grid-line)' }),
+          h(
+            'text',
+            {
+              x: padL - 8,
+              y: y + 3.5,
+              'text-anchor': 'end',
+              'font-size': '10',
+              fill: 'var(--text-faint)',
+              'font-family': 'var(--font-mono)',
+            },
+            niceNum(Math.round(max * f)),
+          ),
+        ]);
+      });
+      const bars = props.data.map((v, i) => {
+        const bh = (v / max) * innerH;
+        const x = padL + i * bw + bw * 0.18;
+        const bwi = bw * 0.64;
+        return h('g', { key: 'b' + i }, [
+          h('rect', {
+            x,
+            y: padT + innerH - bh,
+            width: bwi,
+            height: bh,
+            rx: '4',
+            fill: `color-mix(in oklab, ${props.color} 78%, transparent)`,
+          }),
+          props.labels?.[i] != null
+            ? h(
+                'text',
+                {
+                  x: x + bwi / 2,
+                  y: height - 8,
+                  'text-anchor': 'middle',
+                  'font-size': '10',
+                  fill: 'var(--text-faint)',
+                  'font-family': 'var(--font-mono)',
+                },
+                props.labels[i],
+              )
+            : null,
+        ]);
+      });
+      return h('svg', { width: w, height, style: { display: 'block' } }, [...grid, ...bars]);
+    };
+  },
+});
