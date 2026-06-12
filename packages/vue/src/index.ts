@@ -2143,6 +2143,8 @@ export const Anchored = defineComponent({
 export interface MenuItem {
   label?: string;
   kbd?: string;
+  /** Optional leading icon name (see `blockIcon`). */
+  icon?: string;
   danger?: boolean;
   heading?: boolean;
   sep?: boolean;
@@ -2178,7 +2180,11 @@ export const DropdownMenu = defineComponent({
                     close();
                   },
                 },
-                [it.label, it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null],
+                [
+                  it.icon ? blockIcon(it.icon, 15) : null,
+                  it.label,
+                  it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null,
+                ],
               );
             }),
         },
@@ -4297,5 +4303,489 @@ export const AuditLogBlock = defineComponent({
           ]),
         ],
       );
+  },
+});
+
+/* ===================== Orders ===================== */
+
+export type OrderState = 'fulfilled' | 'processing' | 'pending' | 'refunded';
+export interface Order {
+  id: string;
+  company: string;
+  hue: number;
+  item: string;
+  state: OrderState;
+  amount: number;
+}
+const ORDER_TONE: Record<OrderState, BadgeTone> = {
+  fulfilled: 'pos',
+  processing: 'info',
+  pending: 'warn',
+  refunded: 'neg',
+};
+const DEFAULT_ORDERS: Order[] = [
+  {
+    id: 'ORD-90210',
+    company: 'Northwind',
+    hue: 220,
+    item: 'Annual license',
+    state: 'fulfilled',
+    amount: 2400,
+  },
+  {
+    id: 'ORD-90211',
+    company: 'Halcyon',
+    hue: 150,
+    item: 'Seat add-on',
+    state: 'processing',
+    amount: 320,
+  },
+  {
+    id: 'ORD-90212',
+    company: 'Vertex',
+    hue: 280,
+    item: 'Pro upgrade',
+    state: 'pending',
+    amount: 980,
+  },
+  {
+    id: 'ORD-90213',
+    company: 'Cobalt',
+    hue: 12,
+    item: 'API overage',
+    state: 'refunded',
+    amount: 140,
+  },
+  {
+    id: 'ORD-90214',
+    company: 'Beacon',
+    hue: 95,
+    item: 'Support plan',
+    state: 'fulfilled',
+    amount: 3120,
+  },
+  {
+    id: 'ORD-90215',
+    company: 'Lumen',
+    hue: 320,
+    item: 'Onboarding',
+    state: 'processing',
+    amount: 1500,
+  },
+];
+const ROW_MENU: MenuItem[] = [
+  { label: 'View order', icon: 'eye' },
+  { label: 'Refund', icon: 'refresh' },
+  { sep: true },
+  { label: 'Cancel', icon: 'x', danger: true },
+];
+
+/** Operational table: tab filters, bulk selection, status badges, row menu. */
+export const OrdersBlock = defineComponent({
+  name: 'VspOrdersBlock',
+  props: {
+    orders: { type: Array as PropType<Order[]>, default: () => DEFAULT_ORDERS },
+  },
+  setup(props) {
+    const tab = ref('all');
+    const sel = ref<Set<string>>(new Set());
+    return () => {
+      const rows = props.orders.filter((o) => tab.value === 'all' || o.state === tab.value);
+      const allSel = rows.length > 0 && rows.every((r) => sel.value.has(r.id));
+      const toggleAll = () => {
+        const n = new Set(sel.value);
+        if (allSel) rows.forEach((r) => n.delete(r.id));
+        else rows.forEach((r) => n.add(r.id));
+        sel.value = n;
+      };
+      const toggle = (id: string) => {
+        const n = new Set(sel.value);
+        if (n.has(id)) n.delete(id);
+        else n.add(id);
+        sel.value = n;
+      };
+      const check = (on: boolean, onClick: () => void) =>
+        h(
+          'span',
+          { class: cx('ui-check', on && 'on'), role: 'checkbox', 'aria-checked': on, onClick },
+          [blockIcon('check', 14)],
+        );
+      return h(
+        Block,
+        {
+          title: 'Orders',
+          desc: 'Operational table with tab filters, bulk selection, inline status and a row action menu.',
+        },
+        () => [
+          h('div', { style: blockBarStyle }, [
+            h(Tabs, {
+              modelValue: tab.value,
+              'onUpdate:modelValue': (v: string) => (tab.value = v),
+              tabs: [
+                { value: 'all', label: 'All', count: props.orders.length },
+                { value: 'processing', label: 'Processing' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'refunded', label: 'Refunded' },
+              ],
+            }),
+            h('div', { style: { flex: 1 } }),
+            ...(sel.value.size > 0
+              ? [
+                  h(Badge, { tone: 'info' }, () => `${sel.value.size} selected`),
+                  h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, [
+                    blockIcon('download', 15),
+                    'Export',
+                  ]),
+                  h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, [
+                    blockIcon('check', 15),
+                    'Fulfill',
+                  ]),
+                ]
+              : [
+                  h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, [
+                    blockIcon('filter', 15),
+                    'Filter',
+                  ]),
+                  h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, [
+                    blockIcon('plus', 15),
+                    'New order',
+                  ]),
+                ]),
+          ]),
+          h('div', { style: { overflowX: 'auto' } }, [
+            h('table', { class: 'ui-table', style: { minWidth: '720px' } }, [
+              h('thead', {}, [
+                h('tr', {}, [
+                  h('th', { style: { width: '44px' } }, [check(allSel, toggleAll)]),
+                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Order')]),
+                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Customer')]),
+                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Item')]),
+                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Status')]),
+                  h('th', { style: { textAlign: 'right' } }, [
+                    h('span', { class: 'eyebrow' }, 'Amount'),
+                  ]),
+                  h('th', { style: { width: '44px' } }),
+                ]),
+              ]),
+              h(
+                'tbody',
+                {},
+                rows.map((o) =>
+                  h(
+                    'tr',
+                    {
+                      key: o.id,
+                      style: {
+                        background: sel.value.has(o.id)
+                          ? 'color-mix(in oklab, var(--accent) 7%, transparent)'
+                          : undefined,
+                      },
+                    },
+                    [
+                      h('td', {}, [check(sel.value.has(o.id), () => toggle(o.id))]),
+                      h('td', { class: 'mono', style: { fontWeight: 600 } }, o.id),
+                      h('td', {}, [
+                        h(
+                          'div',
+                          { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
+                          [
+                            h(Avatar, { name: o.company, hue: o.hue, size: 28 }),
+                            h('span', { style: { fontWeight: 500 } }, o.company),
+                          ],
+                        ),
+                      ]),
+                      h('td', { style: { color: 'var(--text-dim)' } }, o.item),
+                      h('td', {}, [
+                        h(Badge, { tone: ORDER_TONE[o.state], dot: true }, () => o.state),
+                      ]),
+                      h(
+                        'td',
+                        { class: 'tnum', style: { textAlign: 'right', fontWeight: 700 } },
+                        `$${o.amount.toLocaleString()}`,
+                      ),
+                      h('td', {}, [
+                        h(
+                          DropdownMenu,
+                          { items: ROW_MENU },
+                          {
+                            trigger: () =>
+                              h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  class: 'vsp-icon-btn',
+                                  style: {
+                                    width: '30px',
+                                    height: '30px',
+                                    border: 0,
+                                    background: 'transparent',
+                                  },
+                                  'aria-label': 'Row actions',
+                                },
+                                [blockIcon('more', 18)],
+                              ),
+                          },
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+          ]),
+        ],
+      );
+    };
+  },
+});
+
+/* ===================== Team & roles ===================== */
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  email: string;
+  hue: number;
+  role: string;
+}
+const DEFAULT_MEMBERS: TeamMember[] = [
+  { id: 0, name: 'Avery Quinn', email: 'avery@vespera.dev', hue: 250, role: 'Owner' },
+  { id: 1, name: 'Maya Okafor', email: 'maya@northwind.com', hue: 220, role: 'Admin' },
+  { id: 2, name: 'Leo Vega', email: 'leo@halcyon.com', hue: 150, role: 'Editor' },
+  { id: 3, name: 'Noor Haddad', email: 'noor@beacon.com', hue: 40, role: 'Viewer' },
+];
+const MEMBER_MENU: MenuItem[] = [
+  { label: 'Resend invite', icon: 'mail' },
+  { label: 'Transfer ownership', icon: 'shield' },
+  { sep: true },
+  { label: 'Remove', icon: 'x', danger: true },
+];
+
+/** Member list with inline role selects and a per-row action menu. */
+export const TeamRolesBlock = defineComponent({
+  name: 'VspTeamRolesBlock',
+  props: {
+    members: { type: Array as PropType<TeamMember[]>, default: () => DEFAULT_MEMBERS },
+  },
+  setup(props) {
+    const members = ref<TeamMember[]>(props.members.map((m) => ({ ...m })));
+    return () =>
+      h(
+        Block,
+        { title: 'Team & roles', desc: 'Manage members and permissions with inline role selects.' },
+        () => [
+          h('div', { style: blockBarStyle }, [
+            blockIcon('users', 17),
+            h('b', { style: { fontSize: '13.5px' } }, 'Members'),
+            h(Badge, { tone: 'muted' }, () => String(members.value.length)),
+            h('div', { style: { flex: 1 } }),
+            h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, [
+              blockIcon('mail', 15),
+              'Invite',
+            ]),
+          ]),
+          h(
+            'div',
+            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
+            members.value.map((m) =>
+              h('div', { key: m.id, class: 'ui-row' }, [
+                h(Avatar, { name: m.name, hue: m.hue, size: 38 }),
+                h('div', { style: { flex: 1, minWidth: 0 } }, [
+                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, m.name),
+                  h(
+                    'div',
+                    { class: 'mono', style: { fontSize: '11.5px', color: 'var(--text-faint)' } },
+                    m.email,
+                  ),
+                ]),
+                m.role === 'Owner'
+                  ? h(Badge, { tone: 'info' }, () => 'Owner')
+                  : h('div', { style: { width: '130px' } }, [
+                      h(Select, {
+                        modelValue: m.role,
+                        options: ['Admin', 'Editor', 'Viewer'],
+                        'onUpdate:modelValue': (v: SelectValue) => {
+                          members.value = members.value.map((y) =>
+                            y.id === m.id ? { ...y, role: String(v) } : y,
+                          );
+                        },
+                      }),
+                    ]),
+                h(
+                  DropdownMenu,
+                  { items: MEMBER_MENU },
+                  {
+                    trigger: () =>
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          class: 'vsp-icon-btn',
+                          style: { width: '32px', height: '32px' },
+                          'aria-label': 'Member actions',
+                        },
+                        [blockIcon('more', 18)],
+                      ),
+                  },
+                ),
+              ]),
+            ),
+          ),
+        ],
+      );
+  },
+});
+
+/* ===================== API keys ===================== */
+
+export interface ApiKey {
+  id: number;
+  name: string;
+  token: string;
+  /** Full secret shown when revealed. */
+  secret: string;
+  created: string;
+  last: string;
+}
+const DEFAULT_KEYS: ApiKey[] = [
+  {
+    id: 1,
+    name: 'Production',
+    token: 'vsp_live_8f2a…d91c',
+    secret: 'vsp_live_8f2a39c4e7b1d91c',
+    created: 'Jan 14, 2026',
+    last: '2m ago',
+  },
+  {
+    id: 2,
+    name: 'Staging',
+    token: 'vsp_test_4b7e…02fa',
+    secret: 'vsp_test_4b7e1d9a55c302fa',
+    created: 'Mar 02, 2026',
+    last: '3d ago',
+  },
+  {
+    id: 3,
+    name: 'CI / CD',
+    token: 'vsp_live_19cc…7a4b',
+    secret: 'vsp_live_19cc8e2f0b6d7a4b',
+    created: 'Apr 21, 2026',
+    last: '12h ago',
+  },
+];
+
+/** Reveal, copy, and revoke API credentials; secrets stay masked by default. */
+export const ApiKeysBlock = defineComponent({
+  name: 'VspApiKeysBlock',
+  props: {
+    keys: { type: Array as PropType<ApiKey[]>, default: () => DEFAULT_KEYS },
+  },
+  setup(props) {
+    const keys = ref<ApiKey[]>(props.keys.map((k) => ({ ...k })));
+    const revealed = ref<Set<number>>(new Set());
+    return () => {
+      const toggleReveal = (id: number) => {
+        const n = new Set(revealed.value);
+        if (n.has(id)) n.delete(id);
+        else n.add(id);
+        revealed.value = n;
+      };
+      return h(
+        Block,
+        {
+          title: 'API keys',
+          desc: 'Reveal, copy, and revoke credentials. Secrets stay masked by default.',
+        },
+        () => [
+          h('div', { style: blockBarStyle }, [
+            blockIcon('bolt', 17),
+            h('b', { style: { fontSize: '13.5px' } }, 'Secret keys'),
+            h('div', { style: { flex: 1 } }),
+            h(
+              'button',
+              {
+                type: 'button',
+                class: 'btn btn-primary btn-sm',
+                onClick: () => toast({ tone: 'pos', title: 'API key created' }),
+              },
+              [blockIcon('plus', 15), 'Create key'],
+            ),
+          ]),
+          h(
+            'div',
+            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
+            keys.value.map((k) => {
+              const show = revealed.value.has(k.id);
+              return h('div', { key: k.id, class: 'ui-row' }, [
+                h('div', { style: { minWidth: '96px' } }, [
+                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, k.name),
+                  h('div', { class: 'eyebrow', style: { marginTop: '2px' } }, k.created),
+                ]),
+                h(
+                  'code',
+                  {
+                    class: 'mono',
+                    style: {
+                      flex: 1,
+                      fontSize: '12.5px',
+                      color: 'var(--text-dim)',
+                      background: 'var(--surface-2)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--r-sm)',
+                      padding: '7px 11px',
+                      letterSpacing: '.02em',
+                    },
+                  },
+                  show ? k.secret : k.token,
+                ),
+                h(Tooltip, { label: show ? 'Hide' : 'Reveal' }, () =>
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      class: 'vsp-icon-btn',
+                      style: { width: '34px', height: '34px' },
+                      'aria-label': show ? 'Hide secret' : 'Reveal secret',
+                      onClick: () => toggleReveal(k.id),
+                    },
+                    [blockIcon('eye', 16)],
+                  ),
+                ),
+                h(Tooltip, { label: 'Copy' }, () =>
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      class: 'vsp-icon-btn',
+                      style: { width: '34px', height: '34px' },
+                      'aria-label': 'Copy secret',
+                      onClick: () => toast({ title: 'Copied to clipboard' }),
+                    },
+                    [blockIcon('doc', 16)],
+                  ),
+                ),
+                h(
+                  'span',
+                  { class: 'eyebrow', style: { width: '66px', textAlign: 'right' } },
+                  k.last,
+                ),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    class: 'btn btn-subtle btn-sm',
+                    onClick: () => {
+                      keys.value = keys.value.filter((y) => y.id !== k.id);
+                      toast({ tone: 'neg', title: 'Key revoked' });
+                    },
+                  },
+                  'Revoke',
+                ),
+              ]);
+            }),
+          ),
+        ],
+      );
+    };
   },
 });

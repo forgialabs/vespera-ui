@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { VspIcon } from './icon.component';
 
 export type AnchoredAlign = 'start' | 'end';
 
@@ -63,6 +64,8 @@ export class VspAnchored {
 export interface MenuItem {
   label?: string;
   kbd?: string;
+  /** Optional leading icon name (see `vsp-icon`). */
+  icon?: string;
   danger?: boolean;
   heading?: boolean;
   sep?: boolean;
@@ -71,7 +74,7 @@ export interface MenuItem {
 
 @Component({
   selector: 'vsp-dropdown-menu',
-  imports: [VspAnchored],
+  imports: [VspAnchored, VspIcon],
   template: `<vsp-anchored #a [align]="align" [width]="width" layerClass="ui-menu">
     <span slot="trigger"><ng-content select="[slot=trigger]" /></span>
     @for (it of items; track $index) {
@@ -81,6 +84,9 @@ export interface MenuItem {
         <div class="ui-menu-label">{{ it.label }}</div>
       } @else {
         <button type="button" [class]="itemCls(it)" (click)="it.onClick?.(); a.close()">
+          @if (it.icon) {
+            <vsp-icon [name]="it.icon" [size]="15" />
+          }
           {{ it.label }}
           @if (it.kbd) {
             <kbd class="ui-kbd">{{ it.kbd }}</kbd>

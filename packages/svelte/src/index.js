@@ -70,3 +70,6 @@ export { default as Icon } from './Icon.svelte';
 export { default as Block } from './Block.svelte';
 export { default as SystemStatusBlock } from './SystemStatusBlock.svelte';
 export { default as AuditLogBlock } from './AuditLogBlock.svelte';
+export { default as OrdersBlock } from './OrdersBlock.svelte';
+export { default as TeamRolesBlock } from './TeamRolesBlock.svelte';
+export { default as ApiKeysBlock } from './ApiKeysBlock.svelte';
