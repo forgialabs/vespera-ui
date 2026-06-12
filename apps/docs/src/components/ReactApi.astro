@@ -1,103 +1,61 @@
 ---
 import manifest from '@manifest/react.json';
-const { components, categories } = manifest;
-// Group components by the manifest's category taxonomy, preserving its order.
-const groups = categories
-  .map((label) => ({ label, items: components.filter((c) => c.category === label) }))
-  .filter((g) => g.items.length > 0);
+// Renders the prop tables for one category's components (each as an H2 so it gets
+// its own anchor + TOC entry). Pass `category`; defaults to the whole package.
+interface Props {
+  category?: string;
+}
+const { category } = Astro.props;
+const items = category
+  ? manifest.components.filter((c) => c.category === category)
+  : manifest.components;
 ---
 
 <p>
-  <strong>{components.length} components</strong> in <code>{manifest.package}</code>, grouped by
-  category. Generated from the TypeScript source — props marked <code>*</code> are required.
+  <strong>
+    {items.length}{' '}
+    {items.length === 1 ? 'component' : 'components'}
+  </strong>
+   in <code>{manifest.package}</code>. Generated from the TypeScript source — props marked{' '}
+  <code>*</code> are required.
 </p>
 
-<nav class="api-toc" aria-label="Component categories">
-  {
-    groups.map((g) => (
-      <a href={`#cat-${g.label.replace(/[^a-z]+/gi, '-').toLowerCase()}`}>
-        {g.label} <span class="api-toc-count">{g.items.length}</span>
-      </a>
-    ))
-  }
-</nav>
-
 {
-  groups.map((g) => (
-    <section class="api-cat">
-      <h2 id={`cat-${g.label.replace(/[^a-z]+/gi, '-').toLowerCase()}`}>{g.label}</h2>
-      {g.items.map((c) => (
-        <section>
-          <h3 id={c.name}>{c.name}</h3>
-          {c.description && <p>{c.description}</p>}
-          {c.props.length > 0 ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Prop</th>
-                  <th>Type</th>
-                  <th>Default</th>
-                </tr>
-              </thead>
-              <tbody>
-                {c.props.map((p) => (
-                  <tr>
-                    <td>
-                      <code>
-                        {p.name}
-                        {p.required ? ' *' : ''}
-                      </code>
-                    </td>
-                    <td>
-                      <code>
-                        {p.values && p.values.length ? p.values.join(' | ') : (p.type ?? '—')}
-                      </code>
-                    </td>
-                    <td>{p.defaultValue ? <code>{p.defaultValue}</code> : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>
-              <em>No public props.</em>
-            </p>
-          )}
-        </section>
-      ))}
+  items.map((c) => (
+    <section>
+      <h2 id={c.name}>{c.name}</h2>
+      {c.description && <p>{c.description}</p>}
+      {c.props.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            {c.props.map((p) => (
+              <tr>
+                <td>
+                  <code>
+                    {p.name}
+                    {p.required ? ' *' : ''}
+                  </code>
+                </td>
+                <td>
+                  <code>{p.values && p.values.length ? p.values.join(' | ') : (p.type ?? '—')}</code>
+                </td>
+                <td>{p.defaultValue ? <code>{p.defaultValue}</code> : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>
+          <em>No public props.</em>
+        </p>
+      )}
     </section>
   ))
 }
-
-<style>
-  .api-toc {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1.25rem 0 2rem;
-  }
-  .api-toc a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.3rem 0.7rem;
-    border: 1px solid var(--sl-color-gray-5);
-    border-radius: 999px;
-    font-size: 0.875rem;
-    text-decoration: none;
-    color: var(--sl-color-white);
-  }
-  .api-toc a:hover {
-    background: var(--sl-color-gray-6);
-  }
-  .api-toc-count {
-    font-variant-numeric: tabular-nums;
-    font-size: 0.75rem;
-    color: var(--sl-color-gray-3);
-  }
-  .api-cat > h2 {
-    margin-top: 2.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--sl-color-gray-5);
-  }
-</style>

@@ -1,0 +1,51 @@
+---
+title: Forms & inputs
+description: Selects, toggles, and text/number controls — live examples with the code to copy.
+---
+
+import Preview from '../../../components/Preview.astro';
+import { ToggleExample } from '../../../components/examples';
+import { MoreFormsExample } from '../../../components/examples-more';
+
+Interactive demos with overlays (the selects) run in an isolated frame, so dropdowns stay inside
+their preview.
+
+## Selects
+
+<Preview
+  code={`import { Select, Combobox, MultiSelect, Field } from '@vespera-ui/react';
+
+const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
+
+<Field label="Select"><Select options={fruits} value={a} onChange={setA} /></Field>
+<Field label="Combobox"><Combobox options={fruits} value={b} onChange={setB} clearable /></Field>
+<Field label="Multi-select"><MultiSelect options={fruits} value={c} onChange={setC} max={4} /></Field>`}
+  demo="select"
+/>
+
+## Toggles
+
+<Preview
+  code={`import { Checkbox, Switch, Slider } from '@vespera-ui/react';
+
+<Checkbox checked={check} onChange={setCheck} label="Email notifications" sub="Activity updates" />
+<Switch checked={on} onChange={setOn} aria-label="Two-factor" />
+<Slider value={vol} onChange={setVol} />`}
+>
+  <ToggleExample client:visible />
+</Preview>
+
+## More form controls
+
+<Preview
+  code={`import { NumberStepper, InlineEdit, CopyButton, OTPInput } from '@vespera-ui/react';
+
+<NumberStepper value={qty} onChange={setQty} min={0} max={10} />
+<InlineEdit value={name} onSave={setName} />
+<CopyButton text="npm i @vespera-ui/react" label="Copy install" />
+<OTPInput value={otp} onChange={setOtp} length={6} />`}
+>
+  <MoreFormsExample client:visible />
+</Preview>
+
+Full props: [Forms & inputs API](/vespera-ui/reference/forms/).

@@ -1,0 +1,30 @@
+---
+title: Layout & structure
+description: Cards, accordions, and trees — live examples with the code to copy.
+---
+
+import Preview from '../../../components/Preview.astro';
+import { StructureExample } from '../../../components/examples-more';
+
+For the page-level frame (grids and the app shell), see
+[Foundations → Layout & grids](/vespera-ui/foundations/layout/). These are the structural
+components.
+
+## Accordion & tree
+
+<Preview
+  code={`import { Accordion, Tree } from '@vespera-ui/react';
+
+<Accordion defaultOpen={[0]} items={[
+  { title: 'What is Vespera?', body: 'A deep-space, weightless design system.' },
+  { title: 'Is it free?', body: 'Yes — Apache-2.0.' },
+]} />
+<Tree defaultExpanded={['src']} data={[
+  { label: 'src', children: [{ label: 'index.ts', badge: 'ts' }] },
+  { label: 'package.json' },
+]} />`}
+>
+  <StructureExample client:visible />
+</Preview>
+
+Full props: [Layout & structure API](/vespera-ui/reference/layout/).

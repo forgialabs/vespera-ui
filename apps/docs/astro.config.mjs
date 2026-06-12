@@ -60,9 +60,23 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Components',
+          items: [
+            { label: 'Overview', link: '/components/overview/' },
+            { label: 'Actions', link: '/components/actions/' },
+            { label: 'Forms & inputs', link: '/components/forms/' },
+            { label: 'Date & time', link: '/components/dates/' },
+            { label: 'Data display', link: '/components/data-display/' },
+            { label: 'Charts', link: '/components/charts/' },
+            { label: 'Navigation', link: '/components/navigation/' },
+            { label: 'Feedback & status', link: '/components/feedback/' },
+            { label: 'Overlays', link: '/components/overlays/' },
+            { label: 'Layout & structure', link: '/components/layout/' },
+          ],
+        },
+        {
           label: 'Explore',
           items: [
-            { label: 'Components', link: '/guides/components/' },
             { label: 'Examples & templates', link: '/examples/' },
             {
               label: 'Interactive playground',
@@ -79,11 +93,24 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Reference',
+          label: 'API reference',
           items: [
-            { label: 'React components API', link: '/reference/react/' },
-            { label: 'Changelog', link: '/guides/changelog/' },
+            { label: 'Overview', link: '/reference/react/' },
+            { label: 'Actions', link: '/reference/actions/' },
+            { label: 'Forms & inputs', link: '/reference/forms/' },
+            { label: 'Date & time', link: '/reference/dates/' },
+            { label: 'Data display', link: '/reference/data-display/' },
+            { label: 'Charts', link: '/reference/charts/' },
+            { label: 'Navigation', link: '/reference/navigation/' },
+            { label: 'Feedback & status', link: '/reference/feedback/' },
+            { label: 'Overlays', link: '/reference/overlays/' },
+            { label: 'Layout & structure', link: '/reference/layout/' },
+            { label: 'Blocks', link: '/reference/blocks/' },
           ],
+        },
+        {
+          label: 'More',
+          items: [{ label: 'Changelog', link: '/guides/changelog/' }],
         },
       ],
     }),
