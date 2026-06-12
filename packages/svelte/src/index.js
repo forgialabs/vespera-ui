@@ -55,3 +55,4 @@ export { default as Popover } from './Popover.svelte';
 export { default as Tooltip } from './Tooltip.svelte';
 export { default as ToastHost } from './ToastHost.svelte';
 export { toast, dismissToast } from './toast.svelte.js';
+export { default as CommandPalette } from './CommandPalette.svelte';

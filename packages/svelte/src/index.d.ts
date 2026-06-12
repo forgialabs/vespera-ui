@@ -237,3 +237,19 @@ export interface ToastOptions {
 export const ToastHost: Component<Record<string, never>>;
 export function toast(opts: ToastOptions | string): void;
 export function dismissToast(id: string): void;
+export interface CommandItem {
+  label: string;
+  meta?: string;
+  keywords?: string;
+  icon?: string;
+  onRun?: () => void;
+}
+export interface CommandGroup {
+  label: string;
+  items: CommandItem[];
+}
+export const CommandPalette: Component<{
+  open?: boolean;
+  groups?: CommandGroup[];
+  onclose?: () => void;
+}>;
