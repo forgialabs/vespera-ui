@@ -161,3 +161,19 @@ export interface TreeNodeData {
 }
 export const Tree: Component<{ data?: TreeNodeData[]; defaultExpanded?: string[] }>;
 export const OTPInput: Component<{ length?: number; value?: string }>;
+export const AreaChart: Component<{
+  series?: number[][];
+  labels?: string[];
+  width?: number;
+  height?: number;
+  color?: string;
+  color2?: string;
+  dual?: boolean;
+}>;
+export const BarChart: Component<{
+  data?: number[];
+  labels?: string[];
+  width?: number;
+  height?: number;
+  color?: string;
+}>;

@@ -45,3 +45,5 @@ export { default as CopyButton } from './CopyButton.svelte';
 export { default as InlineEdit } from './InlineEdit.svelte';
 export { default as Tree } from './Tree.svelte';
 export { default as OTPInput } from './OTPInput.svelte';
+export { default as AreaChart } from './AreaChart.svelte';
+export { default as BarChart } from './BarChart.svelte';
