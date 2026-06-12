@@ -73,3 +73,4 @@ export { default as AuditLogBlock } from './AuditLogBlock.svelte';
 export { default as OrdersBlock } from './OrdersBlock.svelte';
 export { default as TeamRolesBlock } from './TeamRolesBlock.svelte';
 export { default as ApiKeysBlock } from './ApiKeysBlock.svelte';
+export { default as KanbanBlock } from './KanbanBlock.svelte';

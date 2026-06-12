@@ -379,3 +379,19 @@ export interface ApiKey {
   last: string;
 }
 export const ApiKeysBlock: Component<{ keys?: ApiKey[] }>;
+export type KanbanTone = 'pos' | 'neg' | 'warn' | 'info' | 'muted';
+export interface KanbanCard {
+  id: string;
+  title: string;
+  tag: string;
+  tone: KanbanTone;
+}
+export interface KanbanColumn {
+  name: string;
+  tone: string;
+  cards: KanbanCard[];
+}
+export const KanbanBlock: Component<{
+  columns?: KanbanColumn[];
+  onchange?: (columns: KanbanColumn[]) => void;
+}>;

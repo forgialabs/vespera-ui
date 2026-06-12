@@ -28,3 +28,4 @@ export * from './event-calendar.component';
 export * from './icon.component';
 export * from './blocks.component';
 export * from './blocks2.component';
+export * from './kanban.component';
