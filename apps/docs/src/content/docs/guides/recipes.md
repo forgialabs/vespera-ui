@@ -148,4 +148,4 @@ function App() {
 ```
 
 For a complete application assembled from these pieces, see the
-[admin console template](/vespera-ui/examples/admin.html).
+[admin console](/vespera-ui/admin) and the [Examples & templates](/vespera-ui/examples/) page.

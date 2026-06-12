@@ -4,25 +4,11 @@ description: Live, interactive examples of Vespera components — with the code 
 ---
 
 import Preview from '../../../components/Preview.astro';
-import {
-  ButtonExample,
-  BadgeExample,
-  AlertExample,
-  SelectExample,
-  ToggleExample,
-  TabsExample,
-  OverlayExample,
-  DataExample,
-  DatePickerExample,
-} from '../../../components/examples';
+import { BadgeExample, AlertExample, ToggleExample, TabsExample, DataExample } from '../../../components/examples';
 import {
   ChartsExample,
   FeedbackExample,
   StructureExample,
-  CommandExample,
-  SheetExample,
-  DateRangeExample,
-  EventCalendarExample,
   NavExample,
   MessagingExample,
   MoreFormsExample,
@@ -32,6 +18,9 @@ import {
 Live examples you can interact with, each with the code to copy. Everything renders inside a
 themed `.vsp-root` — see [Installation](/vespera-ui/guides/installation/) to set up, and the
 [API reference](/vespera-ui/reference/react/) for the full props of all 65 components.
+
+Interactive demos with overlays (dropdowns, dialogs, date pickers…) run in an isolated frame,
+so anything they pop open stays inside its preview.
 
 ## Buttons
 
@@ -47,9 +36,8 @@ import { Icon } from '@vespera-ui/icons';
 <Tooltip label="Notifications">
   <Button variant="ghost" leadingIcon={<Icon.bell />}>Hover me</Button>
 </Tooltip>`}
->
-  <ButtonExample client:visible />
-</Preview>
+  demo="button"
+/>
 
 ## Badges & tags
 
@@ -88,9 +76,8 @@ const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
 <Field label="Select"><Select options={fruits} value={a} onChange={setA} /></Field>
 <Field label="Combobox"><Combobox options={fruits} value={b} onChange={setB} clearable /></Field>
 <Field label="Multi-select"><MultiSelect options={fruits} value={c} onChange={setC} max={4} /></Field>`}
->
-  <SelectExample client:visible />
-</Preview>
+  demo="select"
+/>
 
 ## Toggles
 
@@ -137,9 +124,8 @@ import { Icon } from '@vespera-ui/icons';
 <Button onClick={() => toast({ tone: 'pos', title: 'Saved' })}>Fire a toast</Button>
 <Dialog open={open} onClose={() => setOpen(false)} tone="neg" title="Delete workspace?" /* … */ />
 <ToastHost />`}
->
-  <OverlayExample client:visible />
-</Preview>
+  demo="overlay"
+/>
 
 ## Data display
 
@@ -162,9 +148,8 @@ import { Icon } from '@vespera-ui/icons';
   code={`import { DatePicker, Field } from '@vespera-ui/react';
 
 <Field label="Date"><DatePicker value={d} onChange={setD} /></Field>`}
->
-  <DatePickerExample client:visible />
-</Preview>
+  demo="datepicker"
+/>
 
 ## Charts
 
@@ -227,9 +212,8 @@ useCmdK(setOpen); // ⌘K / Ctrl+K
     { label: 'Search docs', icon: <Icon.doc />, keywords: 'help' },
   ]},
 ]} />`}
->
-  <CommandExample client:visible />
-</Preview>
+  demo="command"
+/>
 
 ## Sheet & popover
 
@@ -240,9 +224,8 @@ useCmdK(setOpen); // ⌘K / Ctrl+K
 <Sheet open={open} onClose={() => setOpen(false)} title="Settings" desc="Manage your workspace.">
   Drawer content
 </Sheet>`}
->
-  <SheetExample client:visible />
-</Preview>
+  demo="sheet"
+/>
 
 ## Date range
 
@@ -250,9 +233,8 @@ useCmdK(setOpen); // ⌘K / Ctrl+K
   code={`import { DateRangePicker } from '@vespera-ui/react';
 
 <DateRangePicker value={range} onChange={setRange} />`}
->
-  <DateRangeExample client:visible />
-</Preview>
+  demo="daterange"
+/>
 
 ## Event calendar
 
@@ -263,9 +245,8 @@ event across a range; click an empty week slot to add one at that hour.
   code={`import { EventCalendar } from '@vespera-ui/react';
 
 <EventCalendar onChange={(events) => console.log(events)} />`}
->
-  <EventCalendarExample client:visible />
-</Preview>
+  demo="eventcalendar"
+/>
 
 ## Breadcrumb & pagination
 
@@ -321,6 +302,6 @@ event across a range; click an empty week slot to add one at that hour.
 ---
 
 That covers most of the library. Browse every component in the
-[API reference](/vespera-ui/reference/react/), see the full
-[component library showcase](/vespera-ui/examples/library.html), or open the
+[API reference](/vespera-ui/reference/react/), see real-world compositions in
+[Examples & templates](/vespera-ui/examples/), or open the
 [interactive playground](/vespera-ui/demo).

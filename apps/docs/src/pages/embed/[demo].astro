@@ -1,0 +1,67 @@
+---
+// Isolated, full-document host for a single live demo. Embedded via <iframe> by
+// Preview.astro. Because each iframe is its own document with exactly one
+// `.vsp-root`, overlays portal correctly and fixed-positioned elements stay
+// inside the frame. Reports its height to the parent for auto-resize.
+import '@vespera-ui/css';
+import { DEMOS } from '../../components/registry';
+import EmbedDemo from '../../components/EmbedDemo';
+
+export function getStaticPaths() {
+  return Object.keys(DEMOS).map((demo) => ({ params: { demo } }));
+}
+
+const { demo } = Astro.params;
+const entry = DEMOS[demo as string];
+const minH = entry?.minH ?? 240;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{demo} · Vespera demo</title>
+    <style is:global define:vars={{ minH: `${minH}px` }}>
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+      }
+      .vsp-stage {
+        min-height: var(--minH);
+        padding: 28px 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-start;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="vsp-root vsp-stage"
+      data-theme="dark"
+      data-density="comfortable"
+      data-corners="round"
+    >
+      {demo && <EmbedDemo name={demo} client:load />}
+    </div>
+    <script>
+      const report = () => {
+        const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+        parent.postMessage({ vsp: 'frame-h', h }, '*');
+      };
+      window.addEventListener('load', report);
+      new ResizeObserver(report).observe(document.documentElement);
+      // Overlays open/close without changing document height; poll briefly so the
+      // frame can still settle after hydration + interactions.
+      let n = 0;
+      const t = setInterval(() => {
+        report();
+        if (++n > 20) clearInterval(t);
+      }, 400);
+    </script>
+  </body>
+</html>
