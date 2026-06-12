@@ -60,3 +60,4 @@ export { default as Select } from './Select.svelte';
 export { default as Combobox } from './Combobox.svelte';
 export { default as MultiSelect } from './MultiSelect.svelte';
 export { default as TokenInput } from './TokenInput.svelte';
+export { default as FileDropzone } from './FileDropzone.svelte';

@@ -22,3 +22,4 @@ export * from './tooltip.component';
 export * from './toast.component';
 export * from './command-palette.component';
 export * from './select.component';
+export * from './file-dropzone.component';

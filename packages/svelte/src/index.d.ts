@@ -289,3 +289,9 @@ export const TokenInput: Component<{
   placeholder?: string;
   onchange?: (value: string[]) => void;
 }>;
+export const FileDropzone: Component<{
+  hint?: string;
+  accept?: string;
+  multiple?: boolean;
+  onfiles?: (files: File[]) => void;
+}>;

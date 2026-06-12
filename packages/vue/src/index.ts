@@ -3055,3 +3055,60 @@ export const TokenInput = defineComponent({
     };
   },
 });
+
+/* ---------------- FileDropzone ---------------- */
+
+export const FileDropzone = defineComponent({
+  name: 'VspFileDropzone',
+  props: {
+    hint: { type: String, default: 'PNG, JPG or PDF up to 10MB' },
+    accept: { type: String, default: undefined },
+    multiple: { type: Boolean, default: true },
+  },
+  emits: ['files'],
+  setup(props, { emit }) {
+    const drag = ref(false);
+    const inputRef = ref<HTMLInputElement | null>(null);
+    const take = (list: FileList | null) => {
+      if (list && list.length) emit('files', Array.from(list));
+    };
+    return () =>
+      h(
+        'div',
+        {
+          class: cx('ui-dropzone', drag.value && 'drag'),
+          role: 'button',
+          tabindex: 0,
+          onClick: () => inputRef.value?.click(),
+          onDragover: (e: DragEvent) => {
+            e.preventDefault();
+            drag.value = true;
+          },
+          onDragleave: () => (drag.value = false),
+          onDrop: (e: DragEvent) => {
+            e.preventDefault();
+            drag.value = false;
+            take(e.dataTransfer?.files ?? null);
+          },
+        },
+        [
+          h('span', { class: 'dz-icon' }, [
+            svgIcon('M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3', 21),
+          ]),
+          h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, [
+            'Drop files or ',
+            h('span', { style: { color: 'var(--accent)' } }, 'browse'),
+          ]),
+          h('div', { style: { fontSize: '12px', color: 'var(--text-faint)' } }, props.hint),
+          h('input', {
+            ref: inputRef,
+            type: 'file',
+            accept: props.accept,
+            multiple: props.multiple,
+            hidden: true,
+            onChange: (e: Event) => take((e.target as HTMLInputElement).files),
+          }),
+        ],
+      );
+  },
+});
