@@ -1653,3 +1653,42 @@ export const Tree = defineComponent({
       );
   },
 });
+
+export const OTPInput = defineComponent({
+  name: 'VspOTPInput',
+  props: {
+    length: { type: Number, default: 6 },
+    modelValue: { type: String, default: '' },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const refs: (HTMLInputElement | null)[] = [];
+    const set = (i: number, ch: string) => {
+      const chars = Array.from({ length: props.length }, (_, k) => props.modelValue[k] ?? '');
+      chars[i] = ch.slice(-1);
+      emit('update:modelValue', chars.join(''));
+      if (ch && i < props.length - 1) refs[i + 1]?.focus();
+    };
+    const onKey = (i: number, e: KeyboardEvent) => {
+      if (e.key === 'Backspace' && !props.modelValue[i] && i > 0) refs[i - 1]?.focus();
+    };
+    return () =>
+      h(
+        'div',
+        { class: 'ui-otp' },
+        Array.from({ length: props.length }, (_, i) =>
+          h('input', {
+            key: i,
+            ref: (el: unknown) => {
+              refs[i] = el as HTMLInputElement | null;
+            },
+            inputmode: 'numeric',
+            maxlength: 1,
+            value: props.modelValue[i] ?? '',
+            onInput: (e: Event) => set(i, (e.target as HTMLInputElement).value.replace(/\D/g, '')),
+            onKeydown: (e: KeyboardEvent) => onKey(i, e),
+          }),
+        ),
+      );
+  },
+});
