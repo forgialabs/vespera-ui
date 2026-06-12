@@ -2539,6 +2539,9 @@ const SelPanel = defineComponent({
     open: Boolean,
     anchor: { type: Object as PropType<HTMLElement | null>, default: null },
     width: { type: Number, default: undefined },
+    menuClass: { type: String, default: 'ui-menu ui-combo' },
+    /** Hug the content (auto width, no padding/max-height) — used by the date pickers. */
+    auto: Boolean,
   },
   emits: ['close'],
   setup(props, { slots, emit }) {
@@ -2589,15 +2592,24 @@ const SelPanel = defineComponent({
           'div',
           {
             ref: panelRef,
-            class: 'ui-menu ui-combo',
-            style: {
-              position: 'fixed',
-              top: `${r.bottom + 6}px`,
-              left: `${r.left}px`,
-              width: `${props.width ?? r.width}px`,
-              zIndex: 330,
-              maxHeight: `${Math.max(220, maxBelow)}px`,
-            },
+            class: props.menuClass,
+            style: props.auto
+              ? {
+                  position: 'fixed',
+                  top: `${r.bottom + 6}px`,
+                  left: `${r.left}px`,
+                  zIndex: 330,
+                  padding: 0,
+                  width: 'auto',
+                }
+              : {
+                  position: 'fixed',
+                  top: `${r.bottom + 6}px`,
+                  left: `${r.left}px`,
+                  width: `${props.width ?? r.width}px`,
+                  zIndex: 330,
+                  maxHeight: `${Math.max(220, maxBelow)}px`,
+                },
           },
           slots.default?.(),
         ),
@@ -3110,5 +3122,341 @@ export const FileDropzone = defineComponent({
           }),
         ],
       );
+  },
+});
+
+/* ---------------- Date pickers (Calendar, DatePicker, DateRangePicker) ---------------- */
+
+const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+/** Format a date like "Jan 5, 2026". */
+export const fmtDate = (d: Date | null | undefined): string =>
+  d ? `${MONTHS[d.getMonth()]!.slice(0, 3)} ${d.getDate()}, ${d.getFullYear()}` : '';
+
+const sameDay = (a: Date | null | undefined, b: Date | null | undefined) =>
+  !!a &&
+  !!b &&
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+const stripTime = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+interface GridDay {
+  dt: Date;
+  muted?: boolean;
+}
+
+function monthGrid(year: number, month: number): GridDay[] {
+  const first = new Date(year, month, 1);
+  const days: GridDay[] = [];
+  for (let i = first.getDay(); i > 0; i--)
+    days.push({ dt: new Date(year, month, 1 - i), muted: true });
+  const dim = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= dim; d++) days.push({ dt: new Date(year, month, d) });
+  while (days.length < 42) {
+    const last = days[days.length - 1]!.dt;
+    const nd = new Date(last);
+    nd.setDate(nd.getDate() + 1);
+    days.push({ dt: nd, muted: true });
+  }
+  return days;
+}
+
+export interface MonthView {
+  m: number;
+  y: number;
+}
+export type RangeEdge = 'start' | 'end' | false;
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+const calendarIcon = (size: number) =>
+  h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: size,
+      height: size,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      style: { color: 'var(--text-faint)', flexShrink: 0 },
+    },
+    [
+      h('rect', { x: 3, y: 4, width: 18, height: 18, rx: 2 }),
+      h('path', { d: 'M16 2v4M8 2v4M3 10h18' }),
+    ],
+  );
+
+/** The month grid. Usually used via `DatePicker` / `DateRangePicker`. */
+export const Calendar = defineComponent({
+  name: 'VspCalendar',
+  props: {
+    view: { type: Object as PropType<MonthView>, required: true },
+    isSelected: { type: Function as PropType<(d: Date) => boolean>, default: () => false },
+    isInRange: { type: Function as PropType<(d: Date) => boolean>, default: undefined },
+    isRangeEnd: { type: Function as PropType<(d: Date) => RangeEdge>, default: undefined },
+  },
+  emits: ['update:view', 'pick'],
+  setup(props, { emit }) {
+    return () => {
+      const today = stripTime(new Date());
+      const days = monthGrid(props.view.y, props.view.m);
+      const nav = (delta: number) => {
+        let m = props.view.m + delta;
+        let y = props.view.y;
+        if (m < 0) {
+          m = 11;
+          y--;
+        }
+        if (m > 11) {
+          m = 0;
+          y++;
+        }
+        emit('update:view', { m, y });
+      };
+      return h('div', { class: 'ui-cal' }, [
+        h('div', { class: 'ui-cal-head' }, [
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'ui-cal-nav',
+              'aria-label': 'Previous month',
+              onClick: () => nav(-1),
+            },
+            [svgIcon('M15 18l-6-6 6-6', 16)],
+          ),
+          h('span', { class: 'ttl' }, `${MONTHS[props.view.m]} ${props.view.y}`),
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'ui-cal-nav',
+              'aria-label': 'Next month',
+              onClick: () => nav(1),
+            },
+            [svgIcon('M9 18l6-6-6-6', 16)],
+          ),
+        ]),
+        h('div', { class: 'ui-cal-grid' }, [
+          ...DOW.map((d) => h('div', { key: d, class: 'ui-cal-dow' }, d)),
+          ...days.map(({ dt, muted }, i) => {
+            const sel = props.isSelected(dt);
+            const range = props.isInRange?.(dt);
+            const rEdge = props.isRangeEnd?.(dt);
+            return h(
+              'button',
+              {
+                key: i,
+                type: 'button',
+                class: cx(
+                  'ui-cal-day',
+                  muted && 'muted',
+                  sameDay(dt, today) && 'today',
+                  sel && 'sel',
+                  range && !sel && 'inrange',
+                  rEdge === 'start' && 'rstart',
+                  rEdge === 'end' && 'rend',
+                ),
+                onClick: () => emit('pick', stripTime(dt)),
+              },
+              String(dt.getDate()),
+            );
+          }),
+        ]),
+      ]);
+    };
+  },
+});
+
+export const DatePicker = defineComponent({
+  name: 'VspDatePicker',
+  props: {
+    modelValue: { type: Object as PropType<Date | null>, default: null },
+    placeholder: { type: String, default: 'Pick a date' },
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const anchor = ref<HTMLButtonElement | null>(null);
+    const base = props.modelValue ?? new Date();
+    const view = ref<MonthView>({ m: base.getMonth(), y: base.getFullYear() });
+    watch(
+      () => [open.value, props.modelValue] as const,
+      ([o, v]) => {
+        if (o && v) view.value = { m: v.getMonth(), y: v.getFullYear() };
+      },
+    );
+    return () =>
+      h('div', { style: { display: 'contents' } }, [
+        h(
+          'button',
+          {
+            type: 'button',
+            ref: anchor,
+            class: cx('ui-trigger', open.value && 'open'),
+            onClick: () => (open.value = !open.value),
+          },
+          [
+            calendarIcon(16),
+            h(
+              'span',
+              { class: cx('val', !props.modelValue && 'ph') },
+              props.modelValue ? fmtDate(props.modelValue) : props.placeholder,
+            ),
+            svgIconClass(CHEV_DOWN, 16, 'chev'),
+          ],
+        ),
+        h(
+          SelPanel,
+          {
+            open: open.value,
+            anchor: anchor.value,
+            auto: true,
+            menuClass: 'ui-menu',
+            onClose: () => (open.value = false),
+          },
+          {
+            default: () =>
+              h(Calendar, {
+                view: view.value,
+                'onUpdate:view': (v: MonthView) => (view.value = v),
+                isSelected: (d: Date) => sameDay(d, props.modelValue),
+                onPick: (d: Date) => {
+                  emit('update:modelValue', d);
+                  emit('change', d);
+                  open.value = false;
+                },
+              }),
+          },
+        ),
+      ]);
+  },
+});
+
+export const DateRangePicker = defineComponent({
+  name: 'VspDateRangePicker',
+  props: {
+    modelValue: {
+      type: Object as PropType<DateRange>,
+      default: () => ({ start: null, end: null }),
+    },
+    placeholder: { type: String, default: 'Pick a range' },
+  },
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const anchor = ref<HTMLButtonElement | null>(null);
+    const base = props.modelValue.start ?? new Date();
+    const view = ref<MonthView>({ m: base.getMonth(), y: base.getFullYear() });
+    return () => {
+      const value = props.modelValue;
+      const set = (r: DateRange) => {
+        emit('update:modelValue', r);
+        emit('change', r);
+      };
+      const pick = (d: Date) => {
+        if (!value.start || value.end) set({ start: d, end: null });
+        else if (d < value.start) set({ start: d, end: value.start });
+        else set({ start: value.start, end: d });
+      };
+      const inRange = (d: Date) => !!value.start && !!value.end && d > value.start && d < value.end;
+      const rangeEnd = (d: Date): RangeEdge => {
+        if (sameDay(d, value.start) && value.end) return 'start';
+        if (sameDay(d, value.end)) return 'end';
+        return false;
+      };
+      const label = value.start
+        ? value.end
+          ? `${fmtDate(value.start)} – ${fmtDate(value.end)}`
+          : `${fmtDate(value.start)} – …`
+        : props.placeholder;
+      return h('div', { style: { display: 'contents' } }, [
+        h(
+          'button',
+          {
+            type: 'button',
+            ref: anchor,
+            class: cx('ui-trigger', open.value && 'open'),
+            onClick: () => (open.value = !open.value),
+          },
+          [
+            calendarIcon(16),
+            h('span', { class: cx('val', !value.start && 'ph') }, label),
+            svgIconClass(CHEV_DOWN, 16, 'chev'),
+          ],
+        ),
+        h(
+          SelPanel,
+          {
+            open: open.value,
+            anchor: anchor.value,
+            auto: true,
+            menuClass: 'ui-menu',
+            onClose: () => (open.value = false),
+          },
+          {
+            default: () => [
+              h(Calendar, {
+                view: view.value,
+                'onUpdate:view': (v: MonthView) => (view.value = v),
+                isSelected: (d: Date) => sameDay(d, value.start) || sameDay(d, value.end),
+                isInRange: inRange,
+                isRangeEnd: rangeEnd,
+                onPick: pick,
+              }),
+              h('div', { class: 'ui-combo-foot' }, [
+                h(
+                  'span',
+                  { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)' } },
+                  value.start && value.end
+                    ? `${Math.round((value.end.getTime() - value.start.getTime()) / 86400000) + 1} days`
+                    : 'Select start & end',
+                ),
+                h('div', { style: { flex: 1 } }),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    class: 'btn btn-subtle btn-sm',
+                    onClick: () => set({ start: null, end: null }),
+                  },
+                  'Clear',
+                ),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    class: 'btn btn-primary btn-sm',
+                    onClick: () => (open.value = false),
+                  },
+                  'Done',
+                ),
+              ]),
+            ],
+          },
+        ),
+      ]);
+    };
   },
 });

@@ -295,3 +295,30 @@ export const FileDropzone: Component<{
   multiple?: boolean;
   onfiles?: (files: File[]) => void;
 }>;
+export interface MonthView {
+  m: number;
+  y: number;
+}
+export type RangeEdge = 'start' | 'end' | false;
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+export function fmtDate(d: Date | null | undefined): string;
+export const Calendar: Component<{
+  view?: MonthView;
+  isSelected?: (d: Date) => boolean;
+  isInRange?: (d: Date) => boolean;
+  isRangeEnd?: (d: Date) => RangeEdge;
+  onpick?: (d: Date) => void;
+}>;
+export const DatePicker: Component<{
+  value?: Date | null;
+  placeholder?: string;
+  onchange?: (date: Date) => void;
+}>;
+export const DateRangePicker: Component<{
+  value?: DateRange;
+  placeholder?: string;
+  onchange?: (range: DateRange) => void;
+}>;

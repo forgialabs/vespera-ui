@@ -36,12 +36,13 @@ function normalize(o: SelectOptionInput): SelectOption {
   template: `@if (open && rect) {
     <div
       #panel
-      class="ui-menu ui-combo"
+      [class]="menuClass"
       style="position: fixed; z-index: 330"
       [style.top.px]="rect.bottom + 6"
       [style.left.px]="rect.left"
-      [style.width.px]="width ?? rect.width"
-      [style.maxHeight.px]="maxH"
+      [style.width]="auto ? 'auto' : (width ?? rect.width) + 'px'"
+      [style.padding]="auto ? '0' : null"
+      [style.maxHeight]="auto ? null : maxH + 'px'"
     >
       <ng-content />
     </div>
@@ -51,6 +52,9 @@ export class VspSelPanel implements OnChanges, OnDestroy {
   @Input() open = false;
   @Input() anchor: HTMLElement | null = null;
   @Input() width?: number;
+  @Input() menuClass = 'ui-menu ui-combo';
+  /** Hug the content (auto width, no padding/max-height) — used by the date pickers. */
+  @Input() auto = false;
   @Output() close = new EventEmitter<void>();
   @ViewChild('panel') panel?: ElementRef<HTMLElement>;
 
