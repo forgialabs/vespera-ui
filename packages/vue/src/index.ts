@@ -2201,3 +2201,63 @@ export const Popover = defineComponent({
       );
   },
 });
+
+export const Tooltip = defineComponent({
+  name: 'VspTooltip',
+  props: {
+    label: { type: String, default: undefined },
+    side: { type: String as PropType<'top' | 'bottom'>, default: 'top' },
+  },
+  setup(props, { slots }) {
+    const show = ref(false);
+    const pos = ref({ x: 0, y: 0 });
+    const elRef = ref<HTMLElement | null>(null);
+    const place = () => {
+      const el = elRef.value;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      pos.value = {
+        x: r.left + r.width / 2,
+        y: props.side === 'bottom' ? r.bottom + 8 : r.top - 8,
+      };
+    };
+    const enter = () => {
+      place();
+      show.value = true;
+    };
+    return () => {
+      const target = show.value ? getPortalTarget() : null;
+      return h(
+        'span',
+        {
+          ref: elRef,
+          style: { display: 'inline-flex' },
+          onMouseenter: enter,
+          onMouseleave: () => (show.value = false),
+          onFocusin: enter,
+          onFocusout: () => (show.value = false),
+        },
+        [
+          slots.default?.(),
+          target
+            ? h(Teleport, { to: target }, [
+                h(
+                  'div',
+                  {
+                    class: 'ui-tip',
+                    style: {
+                      left: `${pos.value.x}px`,
+                      top: `${pos.value.y}px`,
+                      transform:
+                        props.side === 'bottom' ? 'translateX(-50%)' : 'translate(-50%,-100%)',
+                    },
+                  },
+                  props.label,
+                ),
+              ])
+            : null,
+        ],
+      );
+    };
+  },
+});
