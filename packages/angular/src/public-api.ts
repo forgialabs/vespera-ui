@@ -17,3 +17,4 @@ export * from './tree.component';
 export * from './otp.component';
 export * from './area-bar.component';
 export * from './overlay.component';
+export * from './anchored.component';

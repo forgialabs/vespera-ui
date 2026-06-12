@@ -12,6 +12,8 @@ import {
   useId,
   onMounted,
   onBeforeUnmount,
+  watch,
+  nextTick,
   Teleport,
   type PropType,
   type Component,
@@ -2054,5 +2056,148 @@ export const Sheet = defineComponent({
         ),
       ]);
     };
+  },
+});
+
+export type AnchoredAlign = 'start' | 'end';
+
+export const Anchored = defineComponent({
+  name: 'VspAnchored',
+  props: {
+    align: { type: String as PropType<AnchoredAlign>, default: 'start' },
+    width: { type: Number, default: undefined },
+    layerClass: { type: String, default: 'ui-menu' },
+  },
+  setup(props, { slots }) {
+    const open = ref(false);
+    const rect = ref<DOMRect | null>(null);
+    const triggerRef = ref<HTMLElement | null>(null);
+    const layerRef = ref<HTMLElement | null>(null);
+    let cleanup: (() => void) | null = null;
+    const place = () => {
+      if (triggerRef.value) rect.value = triggerRef.value.getBoundingClientRect();
+    };
+    const close = () => {
+      open.value = false;
+    };
+    const toggle = () => {
+      open.value = !open.value;
+      if (open.value) nextTick(place);
+    };
+    watch(open, (o) => {
+      if (o) {
+        place();
+        const onDoc = (e: MouseEvent) => {
+          const t = e.target as Node;
+          if (!layerRef.value?.contains(t) && !triggerRef.value?.contains(t)) close();
+        };
+        const onEsc = (e: KeyboardEvent) => {
+          if (e.key === 'Escape') close();
+        };
+        document.addEventListener('mousedown', onDoc);
+        window.addEventListener('keydown', onEsc);
+        window.addEventListener('resize', place);
+        cleanup = () => {
+          document.removeEventListener('mousedown', onDoc);
+          window.removeEventListener('keydown', onEsc);
+          window.removeEventListener('resize', place);
+        };
+      } else {
+        cleanup?.();
+        cleanup = null;
+      }
+    });
+    onBeforeUnmount(() => cleanup?.());
+    return () => {
+      const r = rect.value;
+      const style: Record<string, string | number> = {};
+      if (r) {
+        style.position = 'fixed';
+        style.top = `${r.bottom + 6}px`;
+        style.minWidth = `${props.width ?? r.width}px`;
+        style.zIndex = 320;
+        if (props.align === 'end') style.right = `${window.innerWidth - r.right}px`;
+        else style.left = `${r.left}px`;
+      }
+      const target = open.value && r ? getPortalTarget() : null;
+      return [
+        h(
+          'span',
+          { ref: triggerRef, onClick: toggle, style: { display: 'inline-flex' } },
+          slots.trigger?.(),
+        ),
+        target
+          ? h(Teleport, { to: target }, [
+              h(
+                'div',
+                { ref: layerRef, class: props.layerClass, style },
+                slots.default?.({ close }),
+              ),
+            ])
+          : null,
+      ];
+    };
+  },
+});
+
+export interface MenuItem {
+  label?: string;
+  kbd?: string;
+  danger?: boolean;
+  heading?: boolean;
+  sep?: boolean;
+  onClick?: () => void;
+}
+
+export const DropdownMenu = defineComponent({
+  name: 'VspDropdownMenu',
+  props: {
+    items: { type: Array as PropType<MenuItem[]>, default: () => [] },
+    align: { type: String as PropType<AnchoredAlign>, default: 'end' },
+    width: { type: Number, default: undefined },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        Anchored,
+        { align: props.align, width: props.width },
+        {
+          trigger: () => slots.trigger?.(),
+          default: ({ close }: { close: () => void }) =>
+            props.items.map((it, i) => {
+              if (it.sep) return h('div', { key: i, class: 'ui-menu-sep' });
+              if (it.heading) return h('div', { key: i, class: 'ui-menu-label' }, it.label);
+              return h(
+                'button',
+                {
+                  key: i,
+                  type: 'button',
+                  class: cx('ui-menu-item', it.danger && 'danger'),
+                  onClick: () => {
+                    it.onClick?.();
+                    close();
+                  },
+                },
+                [it.label, it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null],
+              );
+            }),
+        },
+      );
+  },
+});
+
+export const Popover = defineComponent({
+  name: 'VspPopover',
+  props: {
+    align: { type: String as PropType<AnchoredAlign>, default: 'start' },
+    width: { type: Number, default: 260 },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h(
+        Anchored,
+        { align: props.align, width: props.width, layerClass: 'ui-popover' },
+        { trigger: () => slots.trigger?.(), default: () => slots.default?.() },
+      );
   },
 });
