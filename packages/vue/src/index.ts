@@ -5,7 +5,17 @@
  * as `@vespera-ui/react`, so theming via `.vsp-root` data-attributes works
  * identically. Import the CSS once and wrap your app in a themed root.
  */
-import { defineComponent, h, ref, useId, type PropType, type Component } from 'vue';
+import {
+  defineComponent,
+  h,
+  ref,
+  useId,
+  onMounted,
+  onBeforeUnmount,
+  Teleport,
+  type PropType,
+  type Component,
+} from 'vue';
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -1870,6 +1880,179 @@ export const BarChart = defineComponent({
         ]);
       });
       return h('svg', { width: w, height, style: { display: 'block' } }, [...grid, ...bars]);
+    };
+  },
+});
+
+/** The overlay portal target — the nearest .vsp-root, so overlays inherit theme tokens. */
+export function getPortalTarget(): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
+  return document.querySelector<HTMLElement>('.vsp-root') ?? document.body;
+}
+
+export type DialogTone = 'pos' | 'neg' | 'warn' | 'info';
+const DIALOG_TONE: Record<DialogTone, string> = {
+  pos: 'var(--success)',
+  neg: 'var(--danger)',
+  warn: 'var(--warning)',
+  info: 'var(--accent)',
+};
+
+export const Dialog = defineComponent({
+  name: 'VspDialog',
+  props: {
+    open: Boolean,
+    title: { type: String, default: undefined },
+    desc: { type: String, default: undefined },
+    maxWidth: { type: Number, default: 460 },
+    tone: { type: String as PropType<DialogTone>, default: undefined },
+  },
+  emits: ['close'],
+  setup(props, { slots, emit }) {
+    const onKey = (e: KeyboardEvent) => {
+      if (props.open && e.key === 'Escape') emit('close');
+    };
+    onMounted(() => window.addEventListener('keydown', onKey));
+    onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+    return () => {
+      if (!props.open) return null;
+      const target = getPortalTarget();
+      if (!target) return null;
+      const color = props.tone ? DIALOG_TONE[props.tone] : 'var(--accent)';
+      return h(Teleport, { to: target }, [
+        h(
+          'div',
+          {
+            class: 'ui-overlay',
+            onMousedown: (e: MouseEvent) => {
+              if (e.target === e.currentTarget) emit('close');
+            },
+          },
+          [
+            h(
+              'div',
+              {
+                class: 'ui-dialog',
+                style: { maxWidth: px(props.maxWidth) },
+                role: 'dialog',
+                'aria-modal': 'true',
+              },
+              [
+                h('div', { class: 'ui-dialog-head' }, [
+                  slots.icon
+                    ? h(
+                        'span',
+                        {
+                          style: {
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: 'var(--r-sm)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            marginBottom: '14px',
+                            background: `color-mix(in oklab, ${color} 13%, transparent)`,
+                            color,
+                          },
+                        },
+                        slots.icon(),
+                      )
+                    : null,
+                  h('div', { class: 'ui-dialog-title' }, props.title),
+                  props.desc ? h('div', { class: 'ui-dialog-desc' }, props.desc) : null,
+                ]),
+                slots.default ? h('div', { class: 'ui-dialog-body' }, slots.default()) : null,
+                slots.footer ? h('div', { class: 'ui-dialog-foot' }, slots.footer()) : null,
+              ],
+            ),
+          ],
+        ),
+      ]);
+    };
+  },
+});
+
+export const Sheet = defineComponent({
+  name: 'VspSheet',
+  props: {
+    open: Boolean,
+    title: { type: String, default: undefined },
+    desc: { type: String, default: undefined },
+  },
+  emits: ['close'],
+  setup(props, { slots, emit }) {
+    const onKey = (e: KeyboardEvent) => {
+      if (props.open && e.key === 'Escape') emit('close');
+    };
+    onMounted(() => window.addEventListener('keydown', onKey));
+    onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+    return () => {
+      if (!props.open) return null;
+      const target = getPortalTarget();
+      if (!target) return null;
+      return h(Teleport, { to: target }, [
+        h(
+          'div',
+          {
+            class: 'ui-overlay',
+            onMousedown: (e: MouseEvent) => {
+              if (e.target === e.currentTarget) emit('close');
+            },
+          },
+          [
+            h('div', { class: 'ui-sheet', role: 'dialog', 'aria-modal': 'true' }, [
+              h('div', { class: 'ui-sheet-head' }, [
+                slots.icon
+                  ? h(
+                      'span',
+                      {
+                        style: {
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: 'var(--r-sm)',
+                          display: 'grid',
+                          placeItems: 'center',
+                          background: 'color-mix(in oklab, var(--accent) 13%, transparent)',
+                          color: 'var(--accent)',
+                          flexShrink: 0,
+                        },
+                      },
+                      slots.icon(),
+                    )
+                  : null,
+                h('div', { style: { flex: 1, minWidth: 0 } }, [
+                  h(
+                    'div',
+                    { style: { fontSize: '16px', fontWeight: 700, letterSpacing: '-.01em' } },
+                    props.title,
+                  ),
+                  props.desc
+                    ? h(
+                        'div',
+                        {
+                          style: { fontSize: '12.5px', color: 'var(--text-dim)', marginTop: '3px' },
+                        },
+                        props.desc,
+                      )
+                    : null,
+                ]),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    class: 'vsp-icon-btn',
+                    style: { border: 0, background: 'transparent', width: '32px', height: '32px' },
+                    'aria-label': 'Close',
+                    onClick: () => emit('close'),
+                  },
+                  [svgIcon('M18 6L6 18M6 6l12 12', 16)],
+                ),
+              ]),
+              h('div', { class: 'ui-sheet-body vsp-scroll' }, slots.default?.()),
+              slots.footer ? h('div', { class: 'ui-sheet-foot' }, slots.footer()) : null,
+            ]),
+          ],
+        ),
+      ]);
     };
   },
 });

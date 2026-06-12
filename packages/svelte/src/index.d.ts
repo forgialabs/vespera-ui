@@ -177,3 +177,24 @@ export const BarChart: Component<{
   height?: number;
   color?: string;
 }>;
+export type DialogTone = 'pos' | 'neg' | 'warn' | 'info';
+export const Dialog: Component<{
+  open?: boolean;
+  title?: string;
+  desc?: string;
+  maxWidth?: number;
+  tone?: DialogTone;
+  icon?: unknown;
+  footer?: unknown;
+  children?: unknown;
+  onclose?: () => void;
+}>;
+export const Sheet: Component<{
+  open?: boolean;
+  title?: string;
+  desc?: string;
+  icon?: unknown;
+  footer?: unknown;
+  children?: unknown;
+  onclose?: () => void;
+}>;

@@ -16,3 +16,4 @@ export * from './extras.component';
 export * from './tree.component';
 export * from './otp.component';
 export * from './area-bar.component';
+export * from './overlay.component';
