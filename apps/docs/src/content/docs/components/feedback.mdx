@@ -1,0 +1,48 @@
+---
+title: Feedback & status
+description: Alerts, progress, banners, and empty states — live examples with the code to copy.
+---
+
+import Preview from '../../../components/Preview.astro';
+import { AlertExample } from '../../../components/examples';
+import { FeedbackExample, MessagingExample } from '../../../components/examples-more';
+
+## Alerts
+
+<Preview
+  code={`import { Alert } from '@vespera-ui/react';
+
+<Alert tone="info" title="Heads up">Your trial ends in 3 days.</Alert>
+<Alert tone="pos" title="Saved">Your changes are live.</Alert>
+<Alert tone="warn" title="Usage high">You're near your API limit.</Alert>`}
+>
+  <AlertExample client:visible />
+</Preview>
+
+## Progress & steps
+
+<Preview
+  code={`import { Progress, CircularProgress, Spinner, Stepper } from '@vespera-ui/react';
+
+<Progress value={64} />
+<CircularProgress value={72} />
+<Spinner size="lg" />
+<Stepper steps={['Account', 'Profile', 'Done']} current={1} />`}
+>
+  <FeedbackExample client:visible />
+</Preview>
+
+## Banner & empty state
+
+<Preview
+  code={`import { Banner, EmptyState, Button, Card } from '@vespera-ui/react';
+
+<Banner tone="accent" action={<Button size="sm">Upgrade</Button>} onDismiss={() => {}}>
+  You're on the free plan — upgrade for more.
+</Banner>
+<Card><EmptyState icon={<Icon.inbox />} title="No messages" action={<Button variant="primary">Compose</Button>} compact /></Card>`}
+>
+  <MessagingExample client:visible />
+</Preview>
+
+Full props: [Feedback & status API](/vespera-ui/reference/feedback/).
