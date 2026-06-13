@@ -45,7 +45,12 @@ export function Preview({ demo, code, children }: PreviewProps) {
       </div>
       {tab === 'preview' ? (
         demo ? (
-          <iframe className="vsp-pv-frame" src={`/embed/${demo}`} title={`${demo} demo`} loading="lazy" />
+          <iframe
+            className="vsp-pv-frame"
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/embed/${demo}/`}
+            title={`${demo} demo`}
+            loading="lazy"
+          />
         ) : (
           <div className="vsp-pv-stage">{children}</div>
         )
