@@ -1,0 +1,24 @@
+---
+title: Actions
+description: Buttons and icon buttons — live examples with the code to copy.
+---
+
+
+## Buttons
+
+<Preview
+  code={`import { Button, Tooltip } from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
+
+<Button variant="primary" leadingIcon={<Icon.check />}>Save</Button>
+<Button variant="ghost">Cancel</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="danger">Delete</Button>
+<Button variant="primary" loading>Saving…</Button>
+<Tooltip label="Notifications">
+  <Button variant="ghost" leadingIcon={<Icon.bell />}>Hover me</Button>
+</Tooltip>`}
+  demo="button"
+/>
+
+Full props: [Actions API](/docs/reference/actions).
