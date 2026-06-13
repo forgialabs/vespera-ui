@@ -1,0 +1,10 @@
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# fumadocs generated source
+/.source/
+
+# misc
+*.tsbuildinfo
