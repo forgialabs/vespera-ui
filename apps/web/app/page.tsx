@@ -3,14 +3,15 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <main
+      className="vsp-root"
+      data-theme="dark"
       style={{
         minHeight: '100dvh',
-        maxWidth: 720,
-        margin: '0 auto',
         padding: '120px 24px',
         textAlign: 'center',
       }}
     >
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <div
         style={{
           width: 56,
@@ -37,6 +38,7 @@ export default function Home() {
       <Link href="/docs" className="btn btn-primary">
         Read the docs →
       </Link>
+      </div>
     </main>
   );
 }

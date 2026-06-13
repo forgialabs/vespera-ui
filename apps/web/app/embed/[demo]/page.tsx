@@ -12,8 +12,10 @@ export default async function EmbedPage(props: { params: Promise<{ demo: string 
   if (!entry) notFound();
   const Comp = entry.Comp;
   return (
-    <EmbedFrame minH={entry.minH}>
-      <Comp />
-    </EmbedFrame>
+    <div className="vsp-root" data-theme="dark" data-density="comfortable" data-corners="round">
+      <EmbedFrame minH={entry.minH}>
+        <Comp />
+      </EmbedFrame>
+    </div>
   );
 }
