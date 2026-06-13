@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { source } from '@/lib/source';
 import { DocsSidebar, type SidebarNode } from '@/components/DocsSidebar';
+import { DocsTopbar } from '@/components/DocsTopbar';
 
 type Raw = (typeof source.pageTree.children)[number];
 
@@ -17,10 +18,14 @@ function simplify(nodes: Raw[]): SidebarNode[] {
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   const tree = simplify(source.pageTree.children);
+  const pages = source.getPages().map((p) => ({ title: String(p.data.title), url: p.url }));
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '250px minmax(0, 1fr)', minHeight: '100dvh' }}>
       <DocsSidebar tree={tree} />
-      <main style={{ minWidth: 0 }}>{children}</main>
+      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <DocsTopbar pages={pages} />
+        <main style={{ minWidth: 0, flex: 1 }}>{children}</main>
+      </div>
     </div>
   );
 }

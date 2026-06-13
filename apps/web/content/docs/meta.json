@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "index",
+    "installation",
+    "quick-start",
+    "concepts",
+    "---Guides---",
+    "theming",
+    "frameworks",
+    "accessibility",
+    "recipes",
+    "cli",
+    "---Explore---",
+    "foundations",
+    "components",
+    "reference",
+    "examples",
+    "---More---",
+    "changelog"
+  ]
+}
