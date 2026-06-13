@@ -9,15 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  // Each top-level surface (docs, landing, embed, admin, demo) provides its own
+  // .vsp-root so it can theme independently — the admin/playground manage theme
+  // live, so they own their root.
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        {/* The whole site lives inside a themed .vsp-root — the docs are built
-            with Vespera itself. */}
-        <div className="vsp-root" data-theme="dark" data-density="comfortable" data-corners="round">
-          {children}
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
