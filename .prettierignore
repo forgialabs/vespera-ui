@@ -3,6 +3,5 @@ node_modules
 pnpm-lock.yaml
 prototype
 CHANGELOG.md
-apps/docs
 apps/web
 manifest

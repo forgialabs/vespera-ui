@@ -24,18 +24,21 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      # Build the workspace packages (topologically) before the docs, since the
-      # docs import the built `@vespera-ui/react` / `@vespera-ui/css` packages.
-      - name: Build
+      # Build the workspace packages first — the docs import the built
+      # `@vespera-ui/react` / `@vespera-ui/css` packages.
+      - name: Build packages
         run: pnpm build
+      # Static-export the Next.js + Fumadocs docs site (apps/web).
+      - name: Build docs site
+        run: pnpm --filter @vespera-ui/web run build:web
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/docs/dist
+          path: apps/web/out
 
   deploy:
     needs: build
