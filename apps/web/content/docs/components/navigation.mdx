@@ -1,0 +1,38 @@
+---
+title: Navigation
+description: Tabs, breadcrumbs, and pagination — live examples with the code to copy.
+---
+
+import { TabsExample } from '@/components/examples';
+import { NavExample } from '@/components/examples-more';
+
+## Tabs
+
+<Preview
+  code={`import { Tabs } from '@vespera-ui/react';
+
+<Tabs
+  tabs={[
+    { value: 'overview', label: 'Overview' },
+    { value: 'activity', label: 'Activity', count: 3 },
+    { value: 'settings', label: 'Settings' },
+  ]}
+  value={tab}
+  onChange={setTab}
+/>`}
+>
+  <TabsExample />
+</Preview>
+
+## Breadcrumb & pagination
+
+<Preview
+  code={`import { Breadcrumb, Pagination } from '@vespera-ui/react';
+
+<Breadcrumb items={['Home', 'Projects', 'Vespera']} />
+<Pagination page={page} pages={8} onPage={setPage} />`}
+>
+  <NavExample />
+</Preview>
+
+Full props: [Navigation API](/docs/reference/navigation).
