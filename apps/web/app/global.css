@@ -192,3 +192,19 @@ body {
   color: var(--text);
   font-weight: 600;
 }
+
+/* ---------------- shiki syntax highlighting ---------------- */
+/* Fumadocs emits dual-theme tokens via --shiki-light/--shiki-dark vars; apply
+   them per our data-theme (we keep our own surface background on the pre). */
+.vsp-doc-prose pre.shiki,
+.vsp-doc-prose pre.shiki span {
+  color: var(--shiki-dark);
+}
+.vsp-root[data-theme='light'] .vsp-doc-prose pre.shiki,
+.vsp-root[data-theme='light'] .vsp-doc-prose pre.shiki span {
+  color: var(--shiki-light);
+}
+/* hide the non-standard language-icon attribute artifact, keep clean padding */
+.vsp-doc-prose pre.shiki {
+  background: var(--surface-1);
+}
