@@ -18,6 +18,8 @@ const groupLabel: CSSProperties = {
   fontWeight: 500,
 };
 
+const norm = (s: string) => s.replace(/\/+$/, '') || '/';
+
 function Node({ node, pathname, onNav }: { node: SidebarNode; pathname: string; onNav?: () => void }) {
   if (node.type === 'separator') return <div style={groupLabel}>{node.name}</div>;
   if (node.type === 'folder')
@@ -29,22 +31,11 @@ function Node({ node, pathname, onNav }: { node: SidebarNode; pathname: string; 
         ))}
       </div>
     );
-  const active = pathname === node.url;
+  // usePathname() strips basePath but (with trailingSlash) keeps a trailing
+  // slash, while node.url has none — normalize both before comparing.
+  const active = norm(pathname) === norm(node.url);
   return (
-    <Link
-      href={node.url}
-      onClick={onNav}
-      style={{
-        display: 'block',
-        padding: '7px 10px',
-        borderRadius: 'var(--r-sm)',
-        fontSize: 13.5,
-        textDecoration: 'none',
-        color: active ? 'var(--text)' : 'var(--text-dim)',
-        background: active ? 'var(--surface-2)' : 'transparent',
-        fontWeight: active ? 600 : 500,
-      }}
-    >
+    <Link className="vsp-nav-link" href={node.url} data-active={active} onClick={onNav}>
       {node.name}
     </Link>
   );

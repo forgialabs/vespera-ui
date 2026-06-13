@@ -169,3 +169,26 @@ body {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
+
+/* ---------------- sidebar nav links ---------------- */
+.vsp-nav-link {
+  display: block;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  text-decoration: none;
+  color: var(--text-dim);
+  font-weight: 500;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.vsp-nav-link:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.vsp-nav-link[data-active='true'] {
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+}
