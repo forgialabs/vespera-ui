@@ -1,0 +1,121 @@
+---
+title: Frameworks
+description: One CSS layer, every framework. Use Vespera in React, Vue, Svelte, or Angular — identical look and theming.
+---
+
+Vespera's design language lives entirely in **`@vespera-ui/css`** — tokens and component styles
+driven by `.vsp-root` data-attributes. Every framework package is a thin wrapper that emits the
+same classes, so they render identical markup and theme the same way. Pick your framework; the
+look, the theming knobs, and the class contract are the same everywhere.
+
+> The CSS is the source of truth. Framework wrappers never fork styles — they just bind props to
+> classes. That's why a `<Button variant="primary">` looks the same in React, Vue, Svelte, and
+> Angular.
+
+## Install
+
+Each wrapper needs `@vespera-ui/css` (imported once) and, where you use icons,
+`@vespera-ui/icons`.
+
+```bash
+# React
+npm install @vespera-ui/react @vespera-ui/css @vespera-ui/icons
+# Vue
+npm install @vespera-ui/vue @vespera-ui/css
+# Svelte
+npm install @vespera-ui/svelte @vespera-ui/css svelte
+# Angular
+npm install @vespera-ui/angular @vespera-ui/css
+```
+
+```js
+```
+
+## The same form, four ways
+
+A name field and a switch — note how the only differences are framework syntax, not the
+component API.
+
+### React
+
+```tsx
+
+<div className="vsp-root" data-theme="dark">
+  <Field label="Name" required>
+    <Input value={name} onChange={(e) => setName(e.target.value)} />
+  </Field>
+  <Switch checked={on} onChange={setOn} />
+  <Button variant="primary">Save</Button>
+</div>;
+```
+
+### Vue
+
+```vue
+<script setup>
+const name = ref('');
+const on = ref(true);
+</script>
+
+<template>
+  <div class="vsp-root" data-theme="dark">
+    <Field label="Name" required><Input v-model="name" /></Field>
+    <Switch v-model="on" />
+    <Button variant="primary">Save</Button>
+  </div>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script>
+  import { Field, Input, Switch, Button } from '@vespera-ui/svelte';
+  let name = $state('');
+  let on = $state(true);
+</script>
+
+<div class="vsp-root" data-theme="dark">
+  <Field label="Name" required><Input bind:value={name} /></Field>
+  <Switch bind:checked={on} />
+  <Button variant="primary">Save</Button>
+</div>
+```
+
+### Angular
+
+```ts
+
+@Component({
+  imports: [VspField, VspInput, VspSwitch, VspButton],
+  template: `
+    <div class="vsp-root" data-theme="dark">
+      <vsp-field label="Name" required><vsp-input [(value)]="name" /></vsp-field>
+      <vsp-switch [(checked)]="on" />
+      <vsp-button variant="primary">Save</vsp-button>
+    </div>
+  `,
+})
+export class DemoComponent {
+  name = '';
+  on = true;
+}
+```
+
+## Theming is shared
+
+Whatever framework you choose, theming is the same — set data-attributes on `.vsp-root`:
+
+```html
+<div class="vsp-root" data-theme="light" data-density="compact" data-corners="sharp">…</div>
+```
+
+See [Theming](/docs/theming) for the full set of knobs (`data-theme`,
+`data-density`, `data-corners`, and the `--accent` variable).
+
+## Coverage
+
+`@vespera-ui/react` is the most complete (every component, plus blocks and charts). The Vue,
+Svelte, and Angular wrappers ship a growing core set — the CSS layer already supports every
+component, so wrappers are thin and arrive quickly. Need something not yet wrapped? You can
+always use the raw classes (e.g. `<button class="btn btn-primary">`) in any framework today.
