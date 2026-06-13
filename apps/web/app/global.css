@@ -1,0 +1,92 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Markdown prose, themed entirely with Vespera tokens. */
+.vsp-doc-prose {
+  font-size: 14.5px;
+}
+.vsp-doc-prose h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+.vsp-doc-prose h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 38px 0 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.vsp-doc-prose h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 26px 0 8px;
+}
+.vsp-doc-prose p,
+.vsp-doc-prose li {
+  line-height: 1.7;
+  color: var(--text);
+}
+.vsp-doc-prose p {
+  margin: 12px 0;
+}
+.vsp-doc-prose a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.vsp-doc-prose a:hover {
+  text-decoration: underline;
+}
+.vsp-doc-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+}
+.vsp-doc-prose pre {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+.vsp-doc-prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.vsp-doc-prose ul,
+.vsp-doc-prose ol {
+  line-height: 1.7;
+  padding-left: 20px;
+}
+.vsp-doc-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  margin: 16px 0;
+}
+.vsp-doc-prose th,
+.vsp-doc-prose td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+}
+.vsp-doc-prose th {
+  background: var(--surface-2);
+  font-weight: 600;
+}

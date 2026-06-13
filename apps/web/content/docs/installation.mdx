@@ -1,0 +1,26 @@
+---
+title: Installation
+description: Add Vespera to any project — the CSS plus framework components.
+---
+
+Install the framework-agnostic CSS and (optionally) the React components:
+
+```bash
+npm i @vespera-ui/css @vespera-ui/react
+```
+
+Import the CSS once and wrap your app in a themed root:
+
+```tsx
+import '@vespera-ui/css';
+
+export default function App() {
+  return (
+    <div className="vsp-root" data-theme="dark">
+      {/* your app */}
+    </div>
+  );
+}
+```
+
+That's it — every component styles itself from CSS variables on `.vsp-root`.

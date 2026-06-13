@@ -1,0 +1,29 @@
+{
+  "name": "@vespera-ui/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build:web": "next build",
+    "start:web": "next start",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "@vespera-ui/css": "workspace:*",
+    "@vespera-ui/icons": "workspace:*",
+    "@vespera-ui/react": "workspace:*",
+    "fumadocs-core": "^16.10.2",
+    "fumadocs-mdx": "^15.0.12",
+    "next": "^16.2.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}
