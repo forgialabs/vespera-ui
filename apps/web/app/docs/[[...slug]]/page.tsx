@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { source } from '@/lib/source';
 import { getMDXComponents } from '@/mdx-components';
+import { Toc } from '@/components/Toc';
 
 interface Props {
   params: Promise<{ slug?: string[] }>;
@@ -12,19 +13,29 @@ export default async function Page(props: Props) {
   const page = source.getPage(slug);
   if (!page) notFound();
   const MDX = page.data.body;
+
   return (
-    <article
-      className="vsp-doc-prose"
-      style={{ maxWidth: 820, margin: '0 auto', padding: '52px 36px 120px' }}
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) 220px',
+        gap: 36,
+        maxWidth: 1180,
+        margin: '0 auto',
+        padding: '44px 40px 120px',
+      }}
     >
-      <h1>{page.data.title}</h1>
-      {page.data.description ? (
-        <p style={{ fontSize: 16, color: 'var(--text-dim)', marginTop: 0 }}>
-          {page.data.description}
-        </p>
-      ) : null}
-      <MDX components={getMDXComponents()} />
-    </article>
+      <article className="vsp-doc-prose" style={{ maxWidth: 820, minWidth: 0 }}>
+        <h1>{page.data.title}</h1>
+        {page.data.description ? (
+          <p style={{ fontSize: 16, color: 'var(--text-dim)', marginTop: 0 }}>
+            {page.data.description}
+          </p>
+        ) : null}
+        <MDX components={getMDXComponents()} />
+      </article>
+      <Toc />
+    </div>
   );
 }
 
