@@ -1,0 +1,49 @@
+---
+title: Spacing & density
+description: One attribute retunes the whole spacing scale — padding, gaps, control heights, and corner radii.
+---
+
+import { DensityRow, CornersRow } from '@/components/foundations-examples';
+
+Spacing in Vespera isn't a fixed scale — it's driven by `data-density` on `.vsp-root`. Switch it
+once and every padding, gap, row height, and control height across the subtree retunes together.
+
+## Density
+
+```html
+<div class="vsp-root" data-density="compact">…</div>
+```
+
+| Token | `compact` | `comfortable` (default) | `spacious` | Drives |
+| --- | --- | --- | --- | --- |
+| `--pad` | 13px | 22px | 34px | Card / content padding |
+| `--gap` | 10px | 18px | 28px | `.grid` gutters, clusters |
+| `--row-h` | 40px | 52px | 64px | List / table row height |
+| `--ctrl-h` | 34px | 40px | 48px | Inputs, buttons, selects |
+| `--fs-base` | 13px | 14px | 15px | Base font size |
+
+<Preview>
+  <DensityRow />
+</Preview>
+
+## Corners
+
+Corner radius is a separate axis — `data-corners` retunes `--r-sm/md/lg` from nearly square to
+fully rounded, independent of density.
+
+| Token | `sharp` | `soft` | `round` (default) |
+| --- | --- | --- | --- |
+| `--r-sm` | 2px | 6px | 10px |
+| `--r-md` | 3px | 9px | 14px |
+| `--r-lg` | 4px | 12px | 20px |
+
+`--r-pill` is always `999px` for fully-rounded chips and avatars.
+
+<Preview>
+  <CornersRow />
+</Preview>
+
+Both attributes compose freely with `data-theme` — set all three on one root. See
+[Theming](/docs/theming) to wire up a live switcher.
+
+Next: [Layout & grids](/docs/foundations/layout) — how grids consume this scale.

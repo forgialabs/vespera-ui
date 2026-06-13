@@ -1,0 +1,38 @@
+---
+title: Typography
+description: Vespera's type — Plus Jakarta Sans for UI, JetBrains Mono for code and numbers, plus the text helpers.
+---
+
+import { TypeSample, TextHelpers } from '@/components/foundations-examples';
+
+Vespera uses two typefaces, both as tokens so you can swap them in one place:
+
+| Token | Default | Use for |
+| --- | --- | --- |
+| `--font-sans` | Plus Jakarta Sans | All UI text and headings |
+| `--font-mono` | JetBrains Mono | Code, IDs, the `.eyebrow` label, tabular numbers |
+
+The base size is `--fs-base` (14px), which scales with
+[density](/docs/foundations/spacing). Body line-height is `1.45`.
+
+<Preview>
+  <TypeSample />
+</Preview>
+
+## Text helpers
+
+| Class | Effect |
+| --- | --- |
+| `.eyebrow` | Uppercase mono micro-label in `--text-faint` — section kickers, table headers |
+| `.mono` | Switch to `--font-mono` (tokens, code, key combos) |
+| `.tnum` | Tabular figures so numbers align in columns — stats, tables, money |
+
+<Preview>
+  <TextHelpers />
+</Preview>
+
+For text **color** levels (`--text` / `--text-dim` / `--text-faint`), see
+[Color](/docs/foundations/color).
+
+That's the foundation set — from here, browse the [Components](/docs/components/overlays) or the
+[API reference](/docs/reference/react).
