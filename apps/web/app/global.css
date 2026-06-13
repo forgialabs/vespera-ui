@@ -90,3 +90,60 @@ body {
   background: var(--surface-2);
   font-weight: 600;
 }
+
+/* ---------------- Preview (shadcn-style Preview/Code tabs) ---------------- */
+.vsp-pv {
+  margin: 1.5rem 0 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-1);
+}
+.vsp-pv-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.vsp-pv-tabs button {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.vsp-pv-tabs button[data-on='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+  font-weight: 600;
+}
+.vsp-pv-frame {
+  display: block;
+  width: 100%;
+  height: 320px;
+  border: 0;
+  background: var(--bg);
+}
+.vsp-pv-stage {
+  padding: 28px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.vsp-pv-code {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--bg);
+  font-size: 13px;
+}
+.vsp-pv-code code {
+  font-family: var(--font-mono);
+  background: none;
+  border: 0;
+  padding: 0;
+}

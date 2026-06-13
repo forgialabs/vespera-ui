@@ -1,0 +1,43 @@
+---
+title: Overlays
+description: Dialogs, menus, toasts, sheets, popovers, and the command palette — live, framed.
+---
+
+Every overlay portals into the nearest `.vsp-root` and is `position: fixed`. Each demo runs in an
+isolated frame, so whatever it pops open stays inside the preview. Toggle **Code** to copy the
+source.
+
+## Dialog, menu & toast
+
+<Preview
+  demo="overlay"
+  code={`import { Button, Dialog, DropdownMenu, ToastHost, toast } from '@vespera-ui/react';
+
+<Button variant="primary" onClick={() => setOpen(true)}>Open dialog</Button>
+<DropdownMenu trigger={<Button>Menu</Button>} items={[
+  { label: 'Profile' }, { sep: true }, { label: 'Log out', danger: true },
+]} />
+<Button onClick={() => toast({ tone: 'pos', title: 'Saved' })}>Fire a toast</Button>
+<Dialog open={open} onClose={() => setOpen(false)} title="Delete workspace?" />
+<ToastHost />`}
+/>
+
+## Sheet & popover
+
+<Preview
+  demo="sheet"
+  code={`import { Button, Sheet, Popover } from '@vespera-ui/react';
+
+<Popover trigger={<Button>Popover</Button>}>…anything…</Popover>
+<Sheet open={open} onClose={() => setOpen(false)} title="Settings">Drawer content</Sheet>`}
+/>
+
+## Command palette
+
+<Preview
+  demo="command"
+  code={`import { CommandPalette, useCmdK } from '@vespera-ui/react';
+
+useCmdK(setOpen); // ⌘K / Ctrl+K
+<CommandPalette open={open} onClose={() => setOpen(false)} groups={groups} />`}
+/>

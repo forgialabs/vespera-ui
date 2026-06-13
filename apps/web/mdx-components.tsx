@@ -1,7 +1,11 @@
 import type { MDXComponents } from 'mdx/types';
+import { Preview } from '@/components/Preview';
 
-// MDX element overrides. The prose styling lives in global.css (.vsp-doc-prose);
-// richer overrides (callouts, Preview, tabs) get added as the migration proceeds.
+// MDX element + custom-component overrides. Prose styling lives in global.css
+// (.vsp-doc-prose). `Preview` lets content embed live, framed demos.
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
-  return { ...components };
+  return {
+    Preview,
+    ...components,
+  };
 }

@@ -14,13 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         {/* The whole site lives inside a themed .vsp-root — the docs are built
             with Vespera itself. */}
-        <div
-          className="vsp-root"
-          data-theme="dark"
-          data-density="comfortable"
-          data-corners="round"
-          style={{ minHeight: '100dvh' }}
-        >
+        <div className="vsp-root" data-theme="dark" data-density="comfortable" data-corners="round">
           {children}
         </div>
       </body>
