@@ -1,0 +1,47 @@
+---
+title: Theming
+description: How Vespera's token system works.
+---
+
+Vespera has no hardcoded colors in components — every visual decision is a CSS variable on
+`.vsp-root`. Re-theme by setting data-attributes or overriding tokens.
+
+## Data-attributes
+
+| Attribute | Values | Effect |
+| --- | --- | --- |
+| `data-theme` | `dark` \| `light` | Full token swap (surfaces, text, borders) |
+| `data-density` | `compact` \| `comfortable` \| `spacious` | Control heights, padding, gaps |
+| `data-corners` | `round` \| `soft` \| `sharp` | Border radii (`--r-sm/md/lg`) |
+
+```html
+<div class="vsp-root" data-theme="light" data-density="spacious" data-corners="soft">…</div>
+```
+
+## The accent
+
+The brand/primary color is a single variable. Set it inline (or in your own CSS):
+
+```html
+<div class="vsp-root" data-theme="dark" style="--accent: #1fb574">…</div>
+```
+
+## Key tokens
+
+These are defined on `.vsp-root`; override any of them to customize:
+
+| Token | Role |
+| --- | --- |
+| `--bg`, `--surface-1/2/3` | Background and raised surfaces |
+| `--text`, `--text-dim`, `--text-faint` | Text hierarchy |
+| `--border`, `--border-strong` | Hairline borders |
+| `--accent`, `--accent-2`, `--accent-ink` | Brand color + on-accent text |
+| `--success`, `--danger`, `--warning` | Semantic colors |
+| `--r-sm/md/lg`, `--pad`, `--gap`, `--ctrl-h` | Radii, spacing, control height |
+
+## Importing only what you need
+
+The bundle includes everything. You can also import individual layers:
+
+```js
+```
