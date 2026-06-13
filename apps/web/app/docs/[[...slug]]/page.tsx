@@ -16,6 +16,7 @@ export default async function Page(props: Props) {
 
   return (
     <div
+      className="vsp-doc-content"
       style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 1fr) 220px',
