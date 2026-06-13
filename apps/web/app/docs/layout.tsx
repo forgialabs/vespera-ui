@@ -21,7 +21,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
   const pages = source.getPages().map((p) => ({ title: String(p.data.title), url: p.url }));
   return (
     <div
-      className="vsp-root"
+      className="vsp-root vsp-docs-grid"
       data-theme="dark"
       data-density="comfortable"
       data-corners="round"
@@ -29,7 +29,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
     >
       <DocsSidebar tree={tree} />
       <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <DocsTopbar pages={pages} />
+        <DocsTopbar pages={pages} tree={tree} />
         <main style={{ minWidth: 0, flex: 1 }}>{children}</main>
       </div>
     </div>

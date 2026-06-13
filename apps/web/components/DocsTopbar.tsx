@@ -3,15 +3,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@vespera-ui/icons';
 import { CommandPalette, IconButton, useCmdK } from '@vespera-ui/react';
+import { SidebarNav, type SidebarNode } from './DocsSidebar';
 
 export interface NavPage {
   title: string;
   url: string;
 }
 
-export function DocsTopbar({ pages }: { pages: NavPage[] }) {
+export function DocsTopbar({ pages, tree }: { pages: NavPage[]; tree: SidebarNode[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [nav, setNav] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   useCmdK(setOpen);
 
@@ -41,6 +43,26 @@ export function DocsTopbar({ pages }: { pages: NavPage[] }) {
         zIndex: 20,
       }}
     >
+      <button
+        type="button"
+        className="vsp-docs-menu-btn"
+        aria-label="Menu"
+        onClick={() => setNav(true)}
+        style={{
+          display: 'none',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 36,
+          height: 36,
+          border: '1px solid var(--border)',
+          background: 'transparent',
+          borderRadius: 'var(--r-sm)',
+          color: 'var(--text)',
+          cursor: 'pointer',
+        }}
+      >
+        <Icon.layers style={{ width: 18, height: 18 }} />
+      </button>
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -89,6 +111,29 @@ export function DocsTopbar({ pages }: { pages: NavPage[] }) {
           },
         ]}
       />
+
+      {nav ? (
+        <div
+          role="presentation"
+          onClick={() => setNav(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 60 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 270,
+              maxWidth: '82vw',
+              height: '100dvh',
+              overflowY: 'auto',
+              padding: '16px 12px',
+              background: 'var(--surface-1)',
+              borderRight: '1px solid var(--border)',
+            }}
+          >
+            <SidebarNav tree={tree} onNav={() => setNav(false)} />
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

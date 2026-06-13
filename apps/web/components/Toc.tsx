@@ -36,7 +36,11 @@ export function Toc() {
   if (!items.length) return <div />;
 
   return (
-    <nav aria-label="On this page" style={{ position: 'sticky', top: 80, alignSelf: 'start', fontSize: 12.5 }}>
+    <nav
+      className="vsp-doc-toc"
+      aria-label="On this page"
+      style={{ position: 'sticky', top: 80, alignSelf: 'start', fontSize: 12.5 }}
+    >
       <div className="eyebrow" style={{ marginBottom: 10 }}>
         On this page
       </div>

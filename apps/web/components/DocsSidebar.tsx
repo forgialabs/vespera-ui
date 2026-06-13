@@ -18,14 +18,14 @@ const groupLabel: CSSProperties = {
   fontWeight: 500,
 };
 
-function Node({ node, pathname }: { node: SidebarNode; pathname: string }) {
+function Node({ node, pathname, onNav }: { node: SidebarNode; pathname: string; onNav?: () => void }) {
   if (node.type === 'separator') return <div style={groupLabel}>{node.name}</div>;
   if (node.type === 'folder')
     return (
       <div>
         <div style={groupLabel}>{node.name}</div>
         {node.children.map((c, i) => (
-          <Node key={i} node={c} pathname={pathname} />
+          <Node key={i} node={c} pathname={pathname} onNav={onNav} />
         ))}
       </div>
     );
@@ -33,6 +33,7 @@ function Node({ node, pathname }: { node: SidebarNode; pathname: string }) {
   return (
     <Link
       href={node.url}
+      onClick={onNav}
       style={{
         display: 'block',
         padding: '7px 10px',
@@ -49,23 +50,14 @@ function Node({ node, pathname }: { node: SidebarNode; pathname: string }) {
   );
 }
 
-export function DocsSidebar({ tree }: { tree: SidebarNode[] }) {
+/** The brand + nav list, shared by the desktop sidebar and the mobile drawer. */
+export function SidebarNav({ tree, onNav }: { tree: SidebarNode[]; onNav?: () => void }) {
   const pathname = usePathname();
   return (
-    <aside
-      style={{
-        borderRight: '1px solid var(--border)',
-        padding: '16px 12px',
-        background: 'color-mix(in oklab, var(--surface-1) 92%, var(--bg))',
-        position: 'sticky',
-        top: 0,
-        alignSelf: 'start',
-        height: '100dvh',
-        overflowY: 'auto',
-      }}
-    >
+    <>
       <Link
         href="/"
+        onClick={onNav}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -93,9 +85,30 @@ export function DocsSidebar({ tree }: { tree: SidebarNode[] }) {
       </Link>
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {tree.map((n, i) => (
-          <Node key={i} node={n} pathname={pathname} />
+          <Node key={i} node={n} pathname={pathname} onNav={onNav} />
         ))}
       </nav>
+    </>
+  );
+}
+
+/** Desktop sidebar (hidden under 1024px — the mobile drawer lives in the top bar). */
+export function DocsSidebar({ tree }: { tree: SidebarNode[] }) {
+  return (
+    <aside
+      className="vsp-docs-aside"
+      style={{
+        borderRight: '1px solid var(--border)',
+        padding: '16px 12px',
+        background: 'color-mix(in oklab, var(--surface-1) 92%, var(--bg))',
+        position: 'sticky',
+        top: 0,
+        alignSelf: 'start',
+        height: '100dvh',
+        overflowY: 'auto',
+      }}
+    >
+      <SidebarNav tree={tree} />
     </aside>
   );
 }

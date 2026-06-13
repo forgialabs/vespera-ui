@@ -147,3 +147,25 @@ body {
   border: 0;
   padding: 0;
 }
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 1023px) {
+  .vsp-docs-aside {
+    display: none !important;
+  }
+  .vsp-docs-menu-btn {
+    display: inline-flex !important;
+  }
+  /* docs grid → single column (sidebar hidden) */
+  .vsp-docs-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+@media (max-width: 1279px) {
+  .vsp-doc-toc {
+    display: none !important;
+  }
+  .vsp-doc-content {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
