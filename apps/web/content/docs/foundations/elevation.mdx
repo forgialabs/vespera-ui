@@ -1,0 +1,26 @@
+---
+title: Elevation & shadows
+description: When to lift something off the page — Vespera's two-step shadow scale.
+---
+
+import { ElevationRow } from '@/components/foundations-examples';
+
+Vespera leans on [surfaces](/docs/foundations/surfaces) and borders for everyday depth, and saves
+shadows for things that genuinely float above the page. There are two:
+
+| Token | Use for |
+| --- | --- |
+| `--shadow` | Subtle lift — hover/drag states, a card you want to nudge forward |
+| `--shadow-lg` | True overlays — dialogs, popovers, dropdown menus, the kanban drag-ghost |
+
+Resting cards use **no shadow** — just `--surface-1` and a hairline `--border`. That flatness is
+deliberate; it's what keeps a dense screen calm.
+
+<Preview>
+  <ElevationRow />
+</Preview>
+
+Both tokens are tuned per theme — softer and cooler in light, deeper in dark — so you never write a
+raw `box-shadow`. Pair `--shadow-lg` with `--surface-3` for overlay panels.
+
+Next: [Spacing & density](/docs/foundations/spacing).

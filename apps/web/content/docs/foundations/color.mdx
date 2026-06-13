@@ -1,0 +1,96 @@
+---
+title: Color
+description: Vespera's color system — accent, surfaces, text, borders, and semantic tokens, all CSS variables on .vsp-root.
+---
+
+Every color in Vespera is a CSS variable on `.vsp-root` — components never hardcode a hex. That's
+what makes the whole system re-theme with one attribute. The swatches below render the **live
+dark-theme** tokens; switch `data-theme="light"` and every one of them swaps. To change them, see
+[Theming](/docs/theming).
+
+## Accent
+
+The brand/primary color. `--accent` drives buttons, links, focus rings, and the background glow;
+`--accent-2` is the secondary used in gradients and charts. `--accent-ink` is the text color that
+sits **on** an accent fill.
+
+<SwatchGrid>
+  <Swatch name="accent" value="#4a7cff" note="Primary / brand" />
+  <Swatch name="accent-2" value="#b16cff" note="Secondary / gradient" />
+  <Swatch name="accent-ink" value="#ffffff" note="Text on accent" />
+</SwatchGrid>
+
+Set the accent inline — no rebuild:
+
+```html
+<div class="vsp-root" style="--accent: #1fb574">…</div>
+```
+
+### Accent presets
+
+The theme switcher picks `--accent` from this named set. They're available as `--c-*` tokens too.
+
+<SwatchGrid min={120}>
+  <Swatch name="c-blue" value="#4a7cff" />
+  <Swatch name="c-cyan" value="#16b6c9" />
+  <Swatch name="c-indigo" value="#8b6cff" />
+  <Swatch name="c-violet" value="#b16cff" />
+  <Swatch name="c-emerald" value="#1fb574" />
+  <Swatch name="c-coral" value="#ff7a6b" />
+  <Swatch name="c-amber" value="#f5a524" />
+  <Swatch name="c-magenta" value="#e75cff" />
+</SwatchGrid>
+
+## Surfaces
+
+Vespera builds depth with a three-step surface scale over the page background, not with heavy
+shadows. `--bg` is the page; `--surface-1/2/3` are progressively raised. See
+[Surfaces & background](/docs/foundations/surfaces) for how they stack.
+
+<SwatchGrid>
+  <Swatch name="bg" value="#080b14" note="Page background" />
+  <Swatch name="surface-1" value="#0e131f" note="Cards, panels" />
+  <Swatch name="surface-2" value="#141a28" note="Inputs, raised rows" />
+  <Swatch name="surface-3" value="#1a2233" note="Popovers, hover wells" />
+</SwatchGrid>
+
+## Text
+
+A three-level hierarchy — body, dimmed, and faint — so you set emphasis with a token instead of
+opacity.
+
+<SwatchGrid>
+  <Swatch name="text" value="#e8ecf4" note="Body / headings" />
+  <Swatch name="text-dim" value="#97a1b6" note="Secondary text" />
+  <Swatch name="text-faint" value="#5d6479" note="Labels, captions" />
+</SwatchGrid>
+
+## Borders
+
+Hairline borders are translucent white (or ink in light theme) so they read on any surface.
+
+<SwatchGrid>
+  <Swatch name="border" note="Hairline (8% white)" outline />
+  <Swatch name="border-strong" note="Emphasis / focus" outline />
+</SwatchGrid>
+
+## Semantic
+
+Status colors for badges, alerts, toasts, and validation. Use these — never raw greens/reds — so
+they adapt across themes.
+
+<SwatchGrid>
+  <Swatch name="success" value="#34d399" note="Positive / done" />
+  <Swatch name="warning" value="#fbbf24" note="Caution / pending" />
+  <Swatch name="danger" value="#fb7185" note="Error / destructive" />
+  <Swatch name="accent" value="#4a7cff" note="Info / neutral-active" />
+</SwatchGrid>
+
+<Callout type="tip" title="Mixing colors">
+  Need a tint? Use `color-mix` with a token instead of a new variable — e.g. a 14%-accent chip:
+  `background: color-mix(in oklab, var(--accent) 14%, transparent)`. That's how the components build
+  their subtle fills, so your additions stay theme-aware.
+</Callout>
+
+Next: [Surfaces & background](/docs/foundations/surfaces) for depth and the deep-space backdrop, or
+[Theming](/docs/theming) to override any of these.
