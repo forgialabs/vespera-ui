@@ -3,7 +3,37 @@ title: Introduction
 description: A deep-space, weightless design system.
 ---
 
-Welcome to the new Vespera docs — built with Next.js and Fumadocs, themed entirely with
-`@vespera-ui` itself.
+**Vespera** is a deep-space, weightless design system. The entire look lives in CSS variables on a
+single `.vsp-root` element, so it themes with one attribute — no rebuild, no recompile — and works
+in **React, Vue, Svelte, Angular, or plain HTML**.
 
-This page proves the content pipeline works.
+This very site is built with Vespera itself (Next.js + Fumadocs) — the navbar, search, and every
+demo are the real components.
+
+## Start here
+
+<CardGrid>
+  <Card title="Installation" href="/docs/installation">Add the CSS + components to any project.</Card>
+  <Card title="Quick start" href="/docs/quick-start">A themed root and your first components.</Card>
+  <Card title="Concepts" href="/docs/concepts">How the `.vsp-root` + token model works.</Card>
+  <Card title="Theming" href="/docs/theming">Swap theme, accent, density, and corners.</Card>
+</CardGrid>
+
+## Explore
+
+<CardGrid>
+  <Card title="Foundations" href="/docs/foundations/color">Color, surfaces, layout, type — the visual system.</Card>
+  <Card title="Components" href="/docs/components/overview">Live examples of all 73 components, by category.</Card>
+  <Card title="API reference" href="/docs/reference/react">Every prop, generated from the source.</Card>
+  <Card title="Examples & templates" href="/docs/examples">Ready-made blocks and a live dashboard.</Card>
+</CardGrid>
+
+Or jump straight into the **[interactive playground](/demo)** or the full
+**[admin console](/admin)** — both built entirely from `@vespera-ui/react`, with a live theme
+customizer.
+
+<Callout title="Pre-release">
+  Vespera is pre-`1.0` — APIs and class names may still change. Available now: the
+  framework-agnostic CSS (`@vespera-ui/css`) plus component wrappers for React, Vue, Svelte, and
+  Angular.
+</Callout>
