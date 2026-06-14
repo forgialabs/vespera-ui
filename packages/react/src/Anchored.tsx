@@ -116,6 +116,8 @@ export interface MenuItem {
   /** Render as a checkable item — shows a tick and keeps the menu open on select. */
   type?: 'checkbox' | 'radio';
   checked?: boolean;
+  /** Nested items — renders a submenu that flies out to the side. */
+  items?: MenuItem[];
   onClick?: () => void;
 }
 
@@ -127,7 +129,7 @@ function onMenuKey(e: import('react').KeyboardEvent<HTMLButtonElement>) {
   const parent = e.currentTarget.parentElement;
   if (!parent) return;
   const items = Array.from(
-    parent.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]:not([disabled])'),
+    parent.querySelectorAll<HTMLButtonElement>(':scope > [role^="menuitem"]:not([disabled])'),
   );
   const i = items.indexOf(e.currentTarget);
   const next =
@@ -139,6 +141,118 @@ function onMenuKey(e: import('react').KeyboardEvent<HTMLButtonElement>) {
           ? items[(i + 1) % items.length]
           : items[(i - 1 + items.length) % items.length];
   next?.focus();
+}
+
+/** A parent item that opens a nested flyout menu on hover / ArrowRight. */
+function SubMenuItem({ item, close }: { item: MenuItem; close: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const timer = useRef<number | null>(null);
+  const cancel = () => {
+    if (timer.current != null) {
+      window.clearTimeout(timer.current);
+      timer.current = null;
+    }
+  };
+  const openNow = () => {
+    cancel();
+    if (ref.current) setRect(ref.current.getBoundingClientRect());
+    setOpen(true);
+  };
+  const closeSoon = () => {
+    cancel();
+    timer.current = window.setTimeout(() => setOpen(false), 130);
+  };
+  const target = open && rect ? getPortalTarget() : null;
+  return (
+    <>
+      <button
+        ref={ref}
+        type="button"
+        role="menuitem"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        disabled={item.disabled}
+        className={cx('ui-menu-item', 'ui-menu-parent', item.danger && 'danger')}
+        onMouseEnter={openNow}
+        onMouseLeave={closeSoon}
+        onClick={openNow}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            openNow();
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            setOpen(false);
+          } else onMenuKey(e);
+        }}
+      >
+        {item.icon}
+        {item.label}
+        <Icon.chevRight className="ui-menu-sub-arrow" />
+      </button>
+      {target &&
+        createPortal(
+          <div
+            className="ui-menu"
+            role="menu"
+            style={{ position: 'fixed', left: rect!.right - 4, top: rect!.top - 6, zIndex: 340 }}
+            onMouseEnter={openNow}
+            onMouseLeave={closeSoon}
+          >
+            <MenuList items={item.items!} close={close} />
+          </div>,
+          target,
+        )}
+    </>
+  );
+}
+
+function MenuList({ items, close }: { items: MenuItem[]; close: () => void }) {
+  return (
+    <>
+      {items.map((it, i) => {
+        if (it.sep) return <div key={i} className="ui-menu-sep" />;
+        if (it.heading)
+          return (
+            <div key={i} className="ui-menu-label">
+              {it.label}
+            </div>
+          );
+        if (it.items && it.items.length) return <SubMenuItem key={i} item={it} close={close} />;
+        const role =
+          it.type === 'checkbox'
+            ? 'menuitemcheckbox'
+            : it.type === 'radio'
+              ? 'menuitemradio'
+              : 'menuitem';
+        return (
+          <button
+            key={i}
+            type="button"
+            role={role}
+            disabled={it.disabled}
+            aria-checked={it.type ? !!it.checked : undefined}
+            className={cx('ui-menu-item', it.danger && 'danger')}
+            onClick={() => {
+              it.onClick?.();
+              if (!it.type) close();
+            }}
+            onKeyDown={onMenuKey}
+          >
+            {it.type ? (
+              <span className="ui-menu-check">{it.checked && <Icon.check />}</span>
+            ) : (
+              it.icon
+            )}
+            {it.label}
+            {it.kbd && <kbd className="ui-kbd">{it.kbd}</kbd>}
+          </button>
+        );
+      })}
+    </>
+  );
 }
 
 export interface DropdownMenuProps {
@@ -160,46 +274,7 @@ export function DropdownMenu({
 }: DropdownMenuProps) {
   return (
     <Anchored trigger={trigger} align={align} width={width} open={open} onOpenChange={onOpenChange}>
-      {(close) =>
-        items.map((it, i) => {
-          if (it.sep) return <div key={i} className="ui-menu-sep" />;
-          if (it.heading)
-            return (
-              <div key={i} className="ui-menu-label">
-                {it.label}
-              </div>
-            );
-          const role =
-            it.type === 'checkbox'
-              ? 'menuitemcheckbox'
-              : it.type === 'radio'
-                ? 'menuitemradio'
-                : 'menuitem';
-          return (
-            <button
-              key={i}
-              type="button"
-              role={role}
-              disabled={it.disabled}
-              aria-checked={it.type ? !!it.checked : undefined}
-              className={cx('ui-menu-item', it.danger && 'danger')}
-              onClick={() => {
-                it.onClick?.();
-                if (!it.type) close();
-              }}
-              onKeyDown={onMenuKey}
-            >
-              {it.type ? (
-                <span className="ui-menu-check">{it.checked && <Icon.check />}</span>
-              ) : (
-                it.icon
-              )}
-              {it.label}
-              {it.kbd && <kbd className="ui-kbd">{it.kbd}</kbd>}
-            </button>
-          );
-        })
-      }
+      {(close) => <MenuList items={items} close={close} />}
     </Anchored>
   );
 }

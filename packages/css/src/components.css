@@ -1198,6 +1198,12 @@
   place-items: center;
   color: var(--accent);
 }
+.ui-menu-item .ui-menu-sub-arrow {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  opacity: 0.55;
+}
 .ui-menu-item svg {
   width: 16px;
   height: 16px;

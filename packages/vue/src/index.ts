@@ -2685,6 +2685,8 @@ export interface MenuItem {
   /** Render as a checkable item — shows a tick and keeps the menu open on select. */
   type?: 'checkbox' | 'radio';
   checked?: boolean;
+  /** Nested items — renders a submenu that flies out to the side. */
+  items?: MenuItem[];
   onClick?: () => void;
 }
 
@@ -2695,7 +2697,7 @@ function menuKeydown(e: KeyboardEvent): void {
   const parent = (e.currentTarget as HTMLElement).parentElement;
   if (!parent) return;
   const items = Array.from(
-    parent.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]:not([disabled])'),
+    parent.querySelectorAll<HTMLButtonElement>(':scope > [role^="menuitem"]:not([disabled])'),
   );
   const i = items.indexOf(e.currentTarget as HTMLButtonElement);
   const n = items.length;
@@ -2709,6 +2711,128 @@ function menuKeydown(e: KeyboardEvent): void {
           : items[(i - 1 + n) % n];
   next?.focus();
 }
+
+function renderMenuItems(items: MenuItem[], close: () => void): ReturnType<typeof h>[] {
+  return items.map((it, i) => {
+    if (it.sep) return h('div', { key: i, class: 'ui-menu-sep' });
+    if (it.heading) return h('div', { key: i, class: 'ui-menu-label' }, it.label);
+    if (it.items && it.items.length) return h(SubMenuItem, { key: i, item: it, onClose: close });
+    const role =
+      it.type === 'checkbox'
+        ? 'menuitemcheckbox'
+        : it.type === 'radio'
+          ? 'menuitemradio'
+          : 'menuitem';
+    return h(
+      'button',
+      {
+        key: i,
+        type: 'button',
+        role,
+        disabled: it.disabled,
+        'aria-checked': it.type ? !!it.checked : undefined,
+        class: cx('ui-menu-item', it.danger && 'danger'),
+        onClick: () => {
+          it.onClick?.();
+          if (!it.type) close();
+        },
+        onKeydown: menuKeydown,
+      },
+      [
+        it.type
+          ? h('span', { class: 'ui-menu-check' }, [
+              it.checked ? svgIcon('M20 6L9 17l-5-5', 16) : null,
+            ])
+          : it.icon
+            ? blockIcon(it.icon, 15)
+            : null,
+        it.label,
+        it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null,
+      ],
+    );
+  });
+}
+
+const SubMenuItem = defineComponent({
+  name: 'VspSubMenuItem',
+  props: {
+    item: { type: Object as PropType<MenuItem>, required: true },
+  },
+  emits: ['close'],
+  setup(props, { emit }) {
+    const open = ref(false);
+    const elRef = ref<HTMLElement | null>(null);
+    const rect = ref<DOMRect | null>(null);
+    let timer: number | null = null;
+    const cancel = () => {
+      if (timer != null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    };
+    const openNow = () => {
+      cancel();
+      if (elRef.value) rect.value = elRef.value.getBoundingClientRect();
+      open.value = true;
+    };
+    const closeSoon = () => {
+      cancel();
+      timer = window.setTimeout(() => (open.value = false), 130);
+    };
+    onBeforeUnmount(cancel);
+    return () => [
+      h(
+        'button',
+        {
+          ref: elRef,
+          type: 'button',
+          role: 'menuitem',
+          'aria-haspopup': 'menu',
+          'aria-expanded': open.value,
+          disabled: props.item.disabled,
+          class: cx('ui-menu-item', 'ui-menu-parent', props.item.danger && 'danger'),
+          onMouseenter: openNow,
+          onMouseleave: closeSoon,
+          onClick: openNow,
+          onKeydown: (e: KeyboardEvent) => {
+            if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              openNow();
+            } else if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              open.value = false;
+            } else menuKeydown(e);
+          },
+        },
+        [
+          props.item.icon ? blockIcon(props.item.icon, 15) : null,
+          props.item.label,
+          svgIconClass('M9 18l6-6-6-6', 14, 'ui-menu-sub-arrow'),
+        ],
+      ),
+      open.value && rect.value
+        ? h(Teleport, { to: getPortalTarget() }, [
+            h(
+              'div',
+              {
+                class: 'ui-menu',
+                role: 'menu',
+                style: {
+                  position: 'fixed',
+                  left: `${rect.value.right - 4}px`,
+                  top: `${rect.value.top - 6}px`,
+                  zIndex: 340,
+                },
+                onMouseenter: openNow,
+                onMouseleave: closeSoon,
+              },
+              renderMenuItems(props.item.items ?? [], () => emit('close')),
+            ),
+          ])
+        : null,
+    ];
+  },
+});
 
 export const DropdownMenu = defineComponent({
   name: 'VspDropdownMenu',
@@ -2732,44 +2856,7 @@ export const DropdownMenu = defineComponent({
         },
         {
           trigger: () => slots.trigger?.(),
-          default: ({ close }: { close: () => void }) =>
-            props.items.map((it, i) => {
-              if (it.sep) return h('div', { key: i, class: 'ui-menu-sep' });
-              if (it.heading) return h('div', { key: i, class: 'ui-menu-label' }, it.label);
-              const role =
-                it.type === 'checkbox'
-                  ? 'menuitemcheckbox'
-                  : it.type === 'radio'
-                    ? 'menuitemradio'
-                    : 'menuitem';
-              return h(
-                'button',
-                {
-                  key: i,
-                  type: 'button',
-                  role,
-                  disabled: it.disabled,
-                  'aria-checked': it.type ? !!it.checked : undefined,
-                  class: cx('ui-menu-item', it.danger && 'danger'),
-                  onClick: () => {
-                    it.onClick?.();
-                    if (!it.type) close();
-                  },
-                  onKeydown: menuKeydown,
-                },
-                [
-                  it.type
-                    ? h('span', { class: 'ui-menu-check' }, [
-                        it.checked ? svgIcon('M20 6L9 17l-5-5', 16) : null,
-                      ])
-                    : it.icon
-                      ? blockIcon(it.icon, 15)
-                      : null,
-                  it.label,
-                  it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null,
-                ],
-              );
-            }),
+          default: ({ close }: { close: () => void }) => renderMenuItems(props.items, close),
         },
       );
   },
