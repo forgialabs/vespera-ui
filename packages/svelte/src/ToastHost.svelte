@@ -1,11 +1,12 @@
 <script>
   import { portal } from './portal.js';
   import { toasts, dismissToast, toastIconPath } from './toast.svelte.js';
+  let { position = 'bottom-right' } = $props();
 </script>
 
-<div class="ui-toast-region" use:portal>
+<div class="ui-toast-region" use:portal data-position={position}>
   {#each toasts as t (t.id)}
-    <div class="ui-toast {t.tone}">
+    <div class="ui-toast {t.tone}" role="status">
       <svg
         viewBox="0 0 24 24"
         width="18"
@@ -20,6 +21,18 @@
         <div class="ui-toast-title">{t.title}</div>
         {#if t.body}<div class="ui-toast-body">{t.body}</div>{/if}
       </div>
+      {#if t.action}
+        <button
+          type="button"
+          class="ui-toast-action"
+          onclick={() => {
+            t.action.onClick();
+            dismissToast(t.id);
+          }}
+        >
+          {t.action.label}
+        </button>
+      {/if}
       <button
         type="button"
         class="vsp-icon-btn"

@@ -2583,11 +2583,24 @@ export const Tooltip = defineComponent({
 });
 
 export type ToastTone = 'info' | 'pos' | 'neg' | 'warn';
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+export type ToastPosition =
+  | 'top-left'
+  | 'top'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom'
+  | 'bottom-right';
 export interface ToastOptions {
   title?: string;
   body?: string;
   tone?: ToastTone;
+  /** Auto-dismiss after this many ms (default 3600). Pass `Infinity` to persist. */
   duration?: number;
+  action?: ToastAction;
 }
 interface ToastItem extends ToastOptions {
   id: string;
@@ -2606,14 +2619,19 @@ export function toast(opts: ToastOptions | string): void {
   const o: ToastOptions = typeof opts === 'string' ? { title: opts } : opts;
   const item: ToastItem = { id: `toast-${toastCounter++}`, tone: 'info', ...o };
   toastList.value = [...toastList.value, item];
-  setTimeout(() => {
-    toastList.value = toastList.value.filter((x) => x.id !== item.id);
-  }, o.duration ?? 3600);
+  if (o.duration !== Infinity) {
+    setTimeout(() => {
+      toastList.value = toastList.value.filter((x) => x.id !== item.id);
+    }, o.duration ?? 3600);
+  }
 }
 
 export const ToastHost = defineComponent({
   name: 'VspToastHost',
-  setup() {
+  props: {
+    position: { type: String as PropType<ToastPosition>, default: 'bottom-right' },
+  },
+  setup(props) {
     const dismiss = (id: string) => {
       toastList.value = toastList.value.filter((x) => x.id !== id);
     };
@@ -2623,14 +2641,28 @@ export const ToastHost = defineComponent({
       return h(Teleport, { to: target }, [
         h(
           'div',
-          { class: 'ui-toast-region' },
+          { class: 'ui-toast-region', 'data-position': props.position },
           toastList.value.map((t) =>
-            h('div', { key: t.id, class: cx('ui-toast', t.tone) }, [
+            h('div', { key: t.id, class: cx('ui-toast', t.tone), role: 'status' }, [
               svgIcon(TOAST_ICON[t.tone ?? 'info'], 18),
               h('div', { style: { flex: 1 } }, [
                 h('div', { class: 'ui-toast-title' }, t.title),
                 t.body ? h('div', { class: 'ui-toast-body' }, t.body) : null,
               ]),
+              t.action
+                ? h(
+                    'button',
+                    {
+                      type: 'button',
+                      class: 'ui-toast-action',
+                      onClick: () => {
+                        t.action!.onClick();
+                        dismiss(t.id);
+                      },
+                    },
+                    t.action.label,
+                  )
+                : null,
               h(
                 'button',
                 {

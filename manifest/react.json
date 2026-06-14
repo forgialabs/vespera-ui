@@ -14,7 +14,8 @@
     "Feedback & status",
     "Overlays",
     "Layout & structure",
-    "Blocks"
+    "Blocks",
+    "Other"
   ],
   "components": [
     {
@@ -2225,6 +2226,27 @@
           "name": "items",
           "type": "TimelineItem[]",
           "required": true
+        }
+      ]
+    },
+    {
+      "name": "ToastHost",
+      "category": "Other",
+      "props": [
+        {
+          "name": "position",
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom",
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right"
+          ],
+          "required": false,
+          "defaultValue": "bottom-right",
+          "description": "Where toasts stack (default 'bottom-right')."
         }
       ]
     },
