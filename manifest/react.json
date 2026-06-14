@@ -979,6 +979,12 @@
       "category": "Charts",
       "props": [
         {
+          "name": "centerLabel",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Content rendered in the hole (e.g. a total)."
+        },
+        {
           "name": "data",
           "type": "DonutDatum[]",
           "required": true
@@ -1135,10 +1141,27 @@
           "required": false
         },
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
           "name": "hint",
           "type": "ReactNode",
           "required": false,
           "defaultValue": "PNG, JPG or PDF up to 10MB"
+        },
+        {
+          "name": "maxFiles",
+          "type": "number",
+          "required": false,
+          "description": "Reject beyond this many files."
+        },
+        {
+          "name": "maxSize",
+          "type": "number",
+          "required": false,
+          "description": "Reject files larger than this many bytes."
         },
         {
           "name": "multiple",
@@ -1150,6 +1173,12 @@
           "name": "onFiles",
           "type": "((files: File[]) => void)",
           "required": false
+        },
+        {
+          "name": "onReject",
+          "type": "((files: File[]) => void)",
+          "required": false,
+          "description": "Called with files rejected by `maxSize` / `maxFiles`."
         }
       ]
     },

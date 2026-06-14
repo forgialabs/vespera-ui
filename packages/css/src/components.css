@@ -1833,6 +1833,14 @@ button.ui-step {
   width: 15px;
   height: 15px;
 }
+.ui-tl-item.active .ui-tl-dot {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.ui-tl-item.active .ui-tl-body > div:first-child > span:first-child {
+  color: var(--accent);
+}
 .ui-tl-body {
   flex: 1;
   min-width: 0;
@@ -2198,6 +2206,11 @@ a.ui-nav-item {
 .ui-dropzone.drag {
   border-color: var(--accent);
   background: color-mix(in oklab, var(--accent) 8%, var(--surface-2));
+}
+.ui-dropzone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .ui-dropzone .dz-icon {
   width: 42px;

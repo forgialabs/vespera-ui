@@ -72,29 +72,46 @@ export interface DonutDatum {
 @Component({
   selector: 'vsp-donut',
   template: `<div style="display: flex; align-items: center; gap: 22px">
-    <svg [attr.width]="size" [attr.height]="size" style="transform: rotate(-90deg); flex-shrink: 0">
-      <circle
-        [attr.cx]="c"
-        [attr.cy]="c"
-        [attr.r]="r"
-        fill="none"
-        stroke="var(--surface-3)"
-        [attr.stroke-width]="thickness"
-      />
-      @for (s of segs; track $index) {
+    <div
+      [style.width.px]="size"
+      [style.height.px]="size"
+      style="position: relative; flex-shrink: 0"
+    >
+      @if (centerLabel != null) {
+        <div
+          style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center"
+        >
+          {{ centerLabel }}
+        </div>
+      }
+      <svg
+        [attr.width]="size"
+        [attr.height]="size"
+        style="transform: rotate(-90deg); display: block"
+      >
         <circle
           [attr.cx]="c"
           [attr.cy]="c"
           [attr.r]="r"
           fill="none"
-          [attr.stroke]="s.color"
+          stroke="var(--surface-3)"
           [attr.stroke-width]="thickness"
-          [attr.stroke-dasharray]="s.dash"
-          [attr.stroke-dashoffset]="s.offset"
-          stroke-linecap="round"
         />
-      }
-    </svg>
+        @for (s of segs; track $index) {
+          <circle
+            [attr.cx]="c"
+            [attr.cy]="c"
+            [attr.r]="r"
+            fill="none"
+            [attr.stroke]="s.color"
+            [attr.stroke-width]="thickness"
+            [attr.stroke-dasharray]="s.dash"
+            [attr.stroke-dashoffset]="s.offset"
+            stroke-linecap="round"
+          />
+        }
+      </svg>
+    </div>
     <div style="display: flex; flex-direction: column; gap: 9px; flex: 1">
       @for (d of data; track $index) {
         <div style="display: flex; align-items: center; gap: 9px; font-size: 12.5px">
@@ -113,6 +130,7 @@ export class VspDonut {
   @Input() data: DonutDatum[] = [];
   @Input() size = 168;
   @Input() thickness = 22;
+  @Input() centerLabel?: string;
   get total(): number {
     return this.data.reduce((s, d) => s + d.value, 0) || 1;
   }

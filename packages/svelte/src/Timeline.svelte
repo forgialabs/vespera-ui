@@ -11,7 +11,7 @@
 <div class="ui-tl">
   {#each items as it, i (i)}
     {@const c = it.tone ? TONE[it.tone] : undefined}
-    <div class="ui-tl-item">
+    <div class="ui-tl-item{it.active ? ' active' : ''}">
       <span
         class="ui-tl-dot"
         style={c

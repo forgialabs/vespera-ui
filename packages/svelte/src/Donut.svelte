@@ -1,5 +1,5 @@
 <script>
-  let { data = [], size = 168, thickness = 22 } = $props();
+  let { data = [], size = 168, thickness = 22, centerLabel = undefined, center } = $props();
   let total = $derived(data.reduce((s, d) => s + d.value, 0) || 1);
   let r = $derived((size - thickness) / 2);
   let c = $derived(size / 2);
@@ -16,22 +16,33 @@
 </script>
 
 <div style="display:flex;align-items:center;gap:22px">
-  <svg width={size} height={size} style="transform:rotate(-90deg);flex-shrink:0">
-    <circle cx={c} cy={c} {r} fill="none" stroke="var(--surface-3)" stroke-width={thickness} />
-    {#each segs as s, i (i)}
-      <circle
-        cx={c}
-        cy={c}
-        {r}
-        fill="none"
-        stroke={s.color}
-        stroke-width={thickness}
-        stroke-dasharray={s.dash}
-        stroke-dashoffset={s.offset}
-        stroke-linecap="round"
-      />
-    {/each}
-  </svg>
+  <div style="position:relative;width:{size}px;height:{size}px;flex-shrink:0">
+    {#if center}
+      <div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center">
+        {@render center()}
+      </div>
+    {:else if centerLabel != null}
+      <div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center">
+        {centerLabel}
+      </div>
+    {/if}
+    <svg width={size} height={size} style="transform:rotate(-90deg);display:block">
+      <circle cx={c} cy={c} {r} fill="none" stroke="var(--surface-3)" stroke-width={thickness} />
+      {#each segs as s, i (i)}
+        <circle
+          cx={c}
+          cy={c}
+          {r}
+          fill="none"
+          stroke={s.color}
+          stroke-width={thickness}
+          stroke-dasharray={s.dash}
+          stroke-dashoffset={s.offset}
+          stroke-linecap="round"
+        />
+      {/each}
+    </svg>
+  </div>
   <div style="display:flex;flex-direction:column;gap:9px;flex:1">
     {#each data as d, i (i)}
       <div style="display:flex;align-items:center;gap:9px;font-size:12.5px">
