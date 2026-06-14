@@ -1083,12 +1083,15 @@ export interface TimelineItem {
 
 export const Timeline = defineComponent({
   name: 'VspTimeline',
-  props: { items: { type: Array as PropType<TimelineItem[]>, default: () => [] } },
+  props: {
+    items: { type: Array as PropType<TimelineItem[]>, default: () => [] },
+    orientation: { type: String as PropType<'vertical' | 'horizontal'>, default: 'vertical' },
+  },
   setup(props) {
     return () =>
       h(
         'div',
-        { class: 'ui-tl' },
+        { class: cx('ui-tl', props.orientation === 'horizontal' && 'horizontal') },
         props.items.map((it, i) => {
           const c = it.tone ? TL_TONE[it.tone] : undefined;
           return h('div', { key: i, class: cx('ui-tl-item', it.active && 'active') }, [

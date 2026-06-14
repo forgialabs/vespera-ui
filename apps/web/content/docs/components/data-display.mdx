@@ -35,6 +35,11 @@ import { Icon } from '@vespera-ui/icons';
 <Timeline items={[
   { title: 'Workspace created', time: '2d ago', tone: 'pos', icon: <Icon.check /> },
   { title: 'Member invited', time: '1d ago', tone: 'info', icon: <Icon.user /> },
+]} />
+
+// orientation="horizontal" lays the entries out left-to-right
+<Timeline orientation="horizontal" items={[
+  { title: 'Draft', tone: 'pos' }, { title: 'Review', active: true }, { title: 'Shipped' },
 ]} />`}
 >
   <DataExample />
