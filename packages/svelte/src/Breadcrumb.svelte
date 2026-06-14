@@ -1,9 +1,17 @@
 <script>
-  let { items = [] } = $props();
+  let { items = [], maxItems = undefined } = $props();
+  const ELL = { ellipsis: true };
+  let display = $derived(
+    maxItems && items.length > maxItems
+      ? [items[0], ELL, ...items.slice(items.length - (maxItems - 1))]
+      : items,
+  );
+  const lbl = (it) => (typeof it === 'object' && it ? it.label : it);
 </script>
 
-<nav style="display:flex;align-items:center;gap:7px;font-size:12.5px">
-  {#each items as it, i}
+<nav aria-label="Breadcrumb" style="display:flex;align-items:center;gap:7px;font-size:12.5px">
+  {#each display as it, i}
+    {@const last = i === display.length - 1}
     {#if i > 0}
       <svg
         viewBox="0 0 24 24"
@@ -17,11 +25,19 @@
         style="color:var(--text-faint)"><path d="M9 18l6-6-6-6" /></svg
       >
     {/if}
-    <span
-      style="color:{i === items.length - 1 ? 'var(--text)' : 'var(--text-dim)'};font-weight:{i ===
-      items.length - 1
-        ? 600
-        : 500}">{it}</span
-    >
+    {#if it === ELL}
+      <span style="color:var(--text-faint)">…</span>
+    {:else if typeof it === 'object' && it.href && !last}
+      <a
+        href={it.href}
+        style="text-decoration:none;color:{last
+          ? 'var(--text)'
+          : 'var(--text-dim)'};font-weight:{last ? 600 : 500}">{lbl(it)}</a
+      >
+    {:else}
+      <span style="color:{last ? 'var(--text)' : 'var(--text-dim)'};font-weight:{last ? 600 : 500}"
+        >{lbl(it)}</span
+      >
+    {/if}
   {/each}
 </nav>

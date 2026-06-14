@@ -734,38 +734,64 @@ export const Tabs = defineComponent({
   },
 });
 
+export type BreadcrumbItem = string | { label: string; href?: string; icon?: string };
+const BC_ELLIPSIS = Symbol('ellipsis');
+
 export const Breadcrumb = defineComponent({
   name: 'VspBreadcrumb',
-  props: { items: { type: Array as PropType<string[]>, default: () => [] } },
+  props: {
+    items: { type: Array as PropType<BreadcrumbItem[]>, default: () => [] },
+    maxItems: { type: Number, default: undefined },
+  },
   setup(props) {
-    return () =>
-      h(
+    return () => {
+      const items = props.items;
+      const display: (BreadcrumbItem | typeof BC_ELLIPSIS)[] =
+        props.maxItems && items.length > props.maxItems
+          ? [items[0]!, BC_ELLIPSIS, ...items.slice(items.length - (props.maxItems - 1))]
+          : items;
+      return h(
         'nav',
-        { style: { display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px' } },
-        props.items.flatMap((it, i) => {
-          const last = i === props.items.length - 1;
-          return [
+        {
+          'aria-label': 'Breadcrumb',
+          style: { display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px' },
+        },
+        display.flatMap((it, i) => {
+          const last = i === display.length - 1;
+          const sep =
             i > 0
               ? h(
                   'span',
                   { key: `s${i}`, style: { color: 'var(--text-faint)', display: 'flex' } },
                   [svgIcon(ICON_PATHS.chevR, 13)],
                 )
-              : null,
-            h(
-              'span',
-              {
-                key: i,
-                style: {
-                  color: last ? 'var(--text)' : 'var(--text-dim)',
-                  fontWeight: last ? 600 : 500,
-                },
-              },
-              it,
-            ),
-          ];
+              : null;
+          if (it === BC_ELLIPSIS)
+            return [sep, h('span', { key: i, style: { color: 'var(--text-faint)' } }, '…')];
+          const obj = typeof it === 'object';
+          const label = obj ? it.label : it;
+          const color = last ? 'var(--text)' : 'var(--text-dim)';
+          const weight = last ? 600 : 500;
+          const inner = [obj && it.icon ? blockIcon(it.icon, 14) : null, label];
+          const style = {
+            color,
+            fontWeight: weight,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+          };
+          const node =
+            obj && it.href && !last
+              ? h(
+                  'a',
+                  { key: i, href: it.href, style: { ...style, textDecoration: 'none' } },
+                  inner,
+                )
+              : h('span', { key: i, style }, inner);
+          return [sep, node];
         }),
       );
+    };
   },
 });
 
@@ -835,40 +861,54 @@ export const Pagination = defineComponent({
   },
 });
 
+export type StepStatus = 'done' | 'active' | 'pending' | 'error';
+export type StepperItem = string | { label: string; status?: StepStatus };
+
 export const Stepper = defineComponent({
   name: 'VspStepper',
   props: {
-    steps: { type: Array as PropType<string[]>, default: () => [] },
+    steps: { type: Array as PropType<StepperItem[]>, default: () => [] },
     current: { type: Number, default: 0 },
+    onStepClick: { type: Function as PropType<(i: number) => void>, default: undefined },
+    orientation: { type: String as PropType<'horizontal' | 'vertical'>, default: 'horizontal' },
   },
   setup(props) {
     return () =>
       h(
         'div',
-        { class: 'ui-steps' },
-        props.steps.flatMap((s, i) => [
-          i > 0
-            ? h('div', { key: `b${i}`, class: cx('ui-step-bar', i <= props.current && 'done') })
-            : null,
-          h(
-            'div',
-            {
-              key: i,
-              class: cx(
-                'ui-step',
-                i < props.current && 'done',
-                i === props.current && 'active',
-                i > props.current && 'pending',
-              ),
-            },
-            [
-              h('span', { class: 'ui-step-dot' }, [
-                i < props.current ? svgIcon(ICON_PATHS.check) : i + 1,
-              ]),
-              h('span', { class: 'ui-step-label' }, s),
-            ],
-          ),
-        ]),
+        { class: cx('ui-steps', props.orientation === 'vertical' && 'vertical') },
+        props.steps.flatMap((s, i) => {
+          const obj = typeof s === 'object';
+          const label = obj ? s.label : s;
+          const status: StepStatus =
+            obj && s.status
+              ? s.status
+              : i < props.current
+                ? 'done'
+                : i === props.current
+                  ? 'active'
+                  : 'pending';
+          const dot =
+            status === 'done' ? svgIcon(ICON_PATHS.check) : status === 'error' ? '!' : i + 1;
+          return [
+            i > 0
+              ? h('div', { key: `b${i}`, class: cx('ui-step-bar', i <= props.current && 'done') })
+              : null,
+            h(
+              props.onStepClick ? 'button' : 'div',
+              {
+                key: i,
+                type: props.onStepClick ? 'button' : undefined,
+                class: cx('ui-step', status, props.onStepClick && 'clickable'),
+                onClick: props.onStepClick ? () => props.onStepClick!(i) : undefined,
+              },
+              [
+                h('span', { class: 'ui-step-dot' }, [dot]),
+                h('span', { class: 'ui-step-label' }, label),
+              ],
+            ),
+          ];
+        }),
       );
   },
 });
