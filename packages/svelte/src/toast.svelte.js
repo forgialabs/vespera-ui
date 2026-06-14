@@ -23,5 +23,5 @@ export function toast(opts) {
   const o = typeof opts === 'string' ? { title: opts } : opts;
   const item = { id: `toast-${counter++}`, tone: 'info', ...o };
   toasts.push(item);
-  setTimeout(() => dismissToast(item.id), o.duration ?? 3600);
+  if (o.duration !== Infinity) setTimeout(() => dismissToast(item.id), o.duration ?? 3600);
 }

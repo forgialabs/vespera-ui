@@ -1334,6 +1334,54 @@
   gap: 10px;
   align-items: flex-end;
 }
+/* placement variants (default above = bottom-right) */
+.ui-toast-region[data-position='bottom-left'] {
+  right: auto;
+  left: 20px;
+  align-items: flex-start;
+}
+.ui-toast-region[data-position='bottom'] {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+.ui-toast-region[data-position='top-right'] {
+  bottom: auto;
+  top: 20px;
+}
+.ui-toast-region[data-position='top-left'] {
+  bottom: auto;
+  top: 20px;
+  right: auto;
+  left: 20px;
+  align-items: flex-start;
+}
+.ui-toast-region[data-position='top'] {
+  bottom: auto;
+  top: 20px;
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+.ui-toast-action {
+  flex: none;
+  align-self: center;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.ui-toast-action:hover {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
 .ui-toast {
   display: flex;
   align-items: flex-start;

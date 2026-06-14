@@ -1,11 +1,24 @@
-import { Component, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 
 export type ToastTone = 'info' | 'pos' | 'neg' | 'warn';
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+export type ToastPosition =
+  | 'top-left'
+  | 'top'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom'
+  | 'bottom-right';
 export interface ToastOptions {
   title?: string;
   body?: string;
   tone?: ToastTone;
+  /** Auto-dismiss after this many ms (default 3600). Pass `Infinity` to persist. */
   duration?: number;
+  action?: ToastAction;
 }
 interface ToastItem extends ToastOptions {
   id: string;
@@ -26,17 +39,19 @@ export function toast(opts: ToastOptions | string): void {
   const o: ToastOptions = typeof opts === 'string' ? { title: opts } : opts;
   const item: ToastItem = { id: `toast-${counter++}`, tone: 'info', ...o };
   toastsSignal.update((l) => [...l, item]);
-  setTimeout(
-    () => toastsSignal.update((l) => l.filter((x) => x.id !== item.id)),
-    o.duration ?? 3600,
-  );
+  if (o.duration !== Infinity) {
+    setTimeout(
+      () => toastsSignal.update((l) => l.filter((x) => x.id !== item.id)),
+      o.duration ?? 3600,
+    );
+  }
 }
 
 @Component({
   selector: 'vsp-toast-host',
-  template: `<div class="ui-toast-region">
+  template: `<div class="ui-toast-region" [attr.data-position]="position">
     @for (t of toasts(); track t.id) {
-      <div [class]="'ui-toast ' + (t.tone ?? 'info')">
+      <div [class]="'ui-toast ' + (t.tone ?? 'info')" role="status">
         <svg
           viewBox="0 0 24 24"
           width="18"
@@ -55,6 +70,11 @@ export function toast(opts: ToastOptions | string): void {
             <div class="ui-toast-body">{{ t.body }}</div>
           }
         </div>
+        @if (t.action) {
+          <button type="button" class="ui-toast-action" (click)="runAction(t)">
+            {{ t.action.label }}
+          </button>
+        }
         <button
           type="button"
           class="vsp-icon-btn"
@@ -80,11 +100,16 @@ export function toast(opts: ToastOptions | string): void {
   </div>`,
 })
 export class VspToastHost {
+  @Input() position: ToastPosition = 'bottom-right';
   toasts = toastsSignal.asReadonly();
   icon(tone?: ToastTone): string {
     return ICON[tone ?? 'info'];
   }
   dismiss(id: string): void {
     toastsSignal.update((l) => l.filter((x) => x.id !== id));
+  }
+  runAction(t: ToastItem): void {
+    t.action?.onClick();
+    this.dismiss(t.id);
   }
 }
