@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { Icon } from '@vespera-ui/icons';
 import { getPortalTarget } from './portal';
 import { cx } from './cx';
 
@@ -112,7 +113,32 @@ export interface MenuItem {
   heading?: boolean;
   sep?: boolean;
   disabled?: boolean;
+  /** Render as a checkable item — shows a tick and keeps the menu open on select. */
+  type?: 'checkbox' | 'radio';
+  checked?: boolean;
   onClick?: () => void;
+}
+
+/** Roving arrow-key focus between menu items. */
+function onMenuKey(e: import('react').KeyboardEvent<HTMLButtonElement>) {
+  const key = e.key;
+  if (key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Home' && key !== 'End') return;
+  e.preventDefault();
+  const parent = e.currentTarget.parentElement;
+  if (!parent) return;
+  const items = Array.from(
+    parent.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]:not([disabled])'),
+  );
+  const i = items.indexOf(e.currentTarget);
+  const next =
+    key === 'Home'
+      ? items[0]
+      : key === 'End'
+        ? items[items.length - 1]
+        : key === 'ArrowDown'
+          ? items[(i + 1) % items.length]
+          : items[(i - 1 + items.length) % items.length];
+  next?.focus();
 }
 
 export interface DropdownMenuProps {
@@ -143,18 +169,31 @@ export function DropdownMenu({
                 {it.label}
               </div>
             );
+          const role =
+            it.type === 'checkbox'
+              ? 'menuitemcheckbox'
+              : it.type === 'radio'
+                ? 'menuitemradio'
+                : 'menuitem';
           return (
             <button
               key={i}
               type="button"
+              role={role}
               disabled={it.disabled}
+              aria-checked={it.type ? !!it.checked : undefined}
               className={cx('ui-menu-item', it.danger && 'danger')}
               onClick={() => {
                 it.onClick?.();
-                close();
+                if (!it.type) close();
               }}
+              onKeyDown={onMenuKey}
             >
-              {it.icon}
+              {it.type ? (
+                <span className="ui-menu-check">{it.checked && <Icon.check />}</span>
+              ) : (
+                it.icon
+              )}
               {it.label}
               {it.kbd && <kbd className="ui-kbd">{it.kbd}</kbd>}
             </button>
