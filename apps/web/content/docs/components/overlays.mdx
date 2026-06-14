@@ -28,12 +28,21 @@ source.
 
 ## Sheet & popover
 
+`Dialog` and `Sheet` trap focus while open and restore it on close, and accept
+`closeOnOverlayClick` / `closeOnEsc` to opt out of dismissal. `Sheet` slides from any
+edge via `side`. `Popover` / `DropdownMenu` can be driven with controlled
+`open` + `onOpenChange`.
+
 <Preview
   demo="sheet"
   code={`import { Button, Sheet, Popover } from '@vespera-ui/react';
 
 <Popover trigger={<Button>Popover</Button>}>…anything…</Popover>
-<Sheet open={open} onClose={() => setOpen(false)} title="Settings">Drawer content</Sheet>`}
+
+// slide from the left, and don't close on backdrop click
+<Sheet open={open} onClose={() => setOpen(false)} side="left" closeOnOverlayClick={false} title="Settings">
+  Drawer content
+</Sheet>`}
 />
 
 ## Command palette

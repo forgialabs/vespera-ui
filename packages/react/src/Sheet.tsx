@@ -1,8 +1,10 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '@vespera-ui/icons';
 import { getPortalTarget } from './portal';
-import { useEsc } from './hooks';
+import { useEsc, useFocusTrap } from './hooks';
+
+export type SheetSide = 'right' | 'left' | 'top' | 'bottom';
 
 export interface SheetProps {
   open: boolean;
@@ -12,21 +14,48 @@ export interface SheetProps {
   children?: ReactNode;
   footer?: ReactNode;
   icon?: ReactNode;
+  /** Which edge the sheet slides in from (default 'right'). */
+  side?: SheetSide;
+  /** Close when the backdrop is clicked (default true). */
+  closeOnOverlayClick?: boolean;
+  /** Close when Escape is pressed (default true). */
+  closeOnEsc?: boolean;
 }
 
-export function Sheet({ open, onClose, title, desc, children, footer, icon }: SheetProps) {
-  useEsc(open, onClose);
+export function Sheet({
+  open,
+  onClose,
+  title,
+  desc,
+  children,
+  footer,
+  icon,
+  side = 'right',
+  closeOnOverlayClick = true,
+  closeOnEsc = true,
+}: SheetProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEsc(open && closeOnEsc, onClose);
+  useFocusTrap(open, ref);
   const target = open ? getPortalTarget() : null;
   if (!target) return null;
 
   return createPortal(
     <div
       className="ui-overlay"
+      data-sheet-side={side}
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose?.();
+        if (closeOnOverlayClick && e.target === e.currentTarget) onClose?.();
       }}
     >
-      <div className="ui-sheet" role="dialog" aria-modal="true">
+      <div
+        ref={ref}
+        tabIndex={-1}
+        className="ui-sheet"
+        data-side={side}
+        role="dialog"
+        aria-modal="true"
+      >
         <div className="ui-sheet-head">
           {icon && (
             <span

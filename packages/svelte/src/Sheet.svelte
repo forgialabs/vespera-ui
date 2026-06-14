@@ -1,8 +1,19 @@
 <script>
-  import { portal } from './portal.js';
-  let { open = false, title, desc, icon, footer, children, onclose } = $props();
+  import { portal, focusTrap } from './portal.js';
+  let {
+    open = false,
+    title,
+    desc,
+    icon,
+    footer,
+    children,
+    side = 'right',
+    closeOnOverlayClick = true,
+    closeOnEsc = true,
+    onclose,
+  } = $props();
   $effect(() => {
-    if (!open) return;
+    if (!open || !closeOnEsc) return;
     const onkey = (e) => {
       if (e.key === 'Escape') onclose?.();
     };
@@ -15,12 +26,13 @@
   <div
     class="ui-overlay"
     use:portal
+    data-sheet-side={side}
     role="presentation"
     onmousedown={(e) => {
-      if (e.target === e.currentTarget) onclose?.();
+      if (closeOnOverlayClick && e.target === e.currentTarget) onclose?.();
     }}
   >
-    <div class="ui-sheet" role="dialog" aria-modal="true">
+    <div class="ui-sheet" data-side={side} role="dialog" aria-modal="true" tabindex="-1" use:focusTrap>
       <div class="ui-sheet-head">
         {#if icon}<span
             style="width:38px;height:38px;border-radius:var(--r-sm);display:grid;place-items:center;background:color-mix(in oklab, var(--accent) 13%, transparent);color:var(--accent);flex-shrink:0"

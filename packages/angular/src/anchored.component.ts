@@ -1,4 +1,12 @@
-import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { VspIcon } from './icon.component';
 
 export type AnchoredAlign = 'start' | 'end';
@@ -14,7 +22,7 @@ export type AnchoredAlign = 'start' | 'end';
   template: `<span #trig style="display: inline-flex" (click)="toggle()">
       <ng-content select="[slot=trigger]" />
     </span>
-    @if (open) {
+    @if (isOpen) {
       <div #layer [class]="layerClass" [style]="layerStyle"><ng-content /></div>
     }`,
 })
@@ -22,17 +30,28 @@ export class VspAnchored {
   @Input() align: AnchoredAlign = 'start';
   @Input() width?: number;
   @Input() layerClass = 'ui-menu';
+  /** Controlled open state. Leave unset for uncontrolled. */
+  @Input('open') openInput?: boolean;
+  @Output() openChange = new EventEmitter<boolean>();
   @ViewChild('trig') trig!: ElementRef<HTMLElement>;
   @ViewChild('layer') layer?: ElementRef<HTMLElement>;
-  open = false;
+  internalOpen = false;
   rect: DOMRect | null = null;
 
+  get isOpen(): boolean {
+    return this.openInput !== undefined ? this.openInput : this.internalOpen;
+  }
+  private setOpen(next: boolean): void {
+    if (this.openInput === undefined) this.internalOpen = next;
+    this.openChange.emit(next);
+  }
   toggle(): void {
-    this.open = !this.open;
-    if (this.open) requestAnimationFrame(() => this.place());
+    const next = !this.isOpen;
+    this.setOpen(next);
+    if (next) requestAnimationFrame(() => this.place());
   }
   close(): void {
-    this.open = false;
+    this.setOpen(false);
   }
   place(): void {
     if (this.trig) this.rect = this.trig.nativeElement.getBoundingClientRect();
@@ -46,18 +65,18 @@ export class VspAnchored {
   }
   @HostListener('document:mousedown', ['$event'])
   onDoc(e: MouseEvent): void {
-    if (!this.open) return;
+    if (!this.isOpen) return;
     const t = e.target as Node;
     if (!this.layer?.nativeElement.contains(t) && !this.trig?.nativeElement.contains(t))
       this.close();
   }
   @HostListener('document:keydown.escape')
   onEsc(): void {
-    if (this.open) this.close();
+    if (this.isOpen) this.close();
   }
   @HostListener('window:resize')
   onResize(): void {
-    if (this.open) this.place();
+    if (this.isOpen) this.place();
   }
 }
 
@@ -75,7 +94,14 @@ export interface MenuItem {
 @Component({
   selector: 'vsp-dropdown-menu',
   imports: [VspAnchored, VspIcon],
-  template: `<vsp-anchored #a [align]="align" [width]="width" layerClass="ui-menu">
+  template: `<vsp-anchored
+    #a
+    [align]="align"
+    [width]="width"
+    [open]="open"
+    (openChange)="openChange.emit($event)"
+    layerClass="ui-menu"
+  >
     <span slot="trigger"><ng-content select="[slot=trigger]" /></span>
     @for (it of items; track $index) {
       @if (it.sep) {
@@ -100,6 +126,8 @@ export class VspDropdownMenu {
   @Input() items: MenuItem[] = [];
   @Input() align: AnchoredAlign = 'end';
   @Input() width?: number;
+  @Input() open?: boolean;
+  @Output() openChange = new EventEmitter<boolean>();
   itemCls(it: MenuItem): string {
     return 'ui-menu-item' + (it.danger ? ' danger' : '');
   }
@@ -108,7 +136,13 @@ export class VspDropdownMenu {
 @Component({
   selector: 'vsp-popover',
   imports: [VspAnchored],
-  template: `<vsp-anchored [align]="align" [width]="width" layerClass="ui-popover">
+  template: `<vsp-anchored
+    [align]="align"
+    [width]="width"
+    [open]="open"
+    (openChange)="openChange.emit($event)"
+    layerClass="ui-popover"
+  >
     <span slot="trigger"><ng-content select="[slot=trigger]" /></span>
     <ng-content />
   </vsp-anchored>`,
@@ -116,4 +150,6 @@ export class VspDropdownMenu {
 export class VspPopover {
   @Input() align: AnchoredAlign = 'start';
   @Input() width = 260;
+  @Input() open?: boolean;
+  @Output() openChange = new EventEmitter<boolean>();
 }

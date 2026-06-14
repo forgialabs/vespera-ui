@@ -1,20 +1,34 @@
 <script>
   import { portal } from './portal.js';
-  let { align = 'start', width, layerClass = 'ui-menu', trigger, children } = $props();
-  let open = $state(false);
+  let {
+    align = 'start',
+    width,
+    layerClass = 'ui-menu',
+    open = undefined,
+    onOpenChange,
+    trigger,
+    children,
+  } = $props();
+  let internalOpen = $state(false);
+  let isOpen = $derived(open !== undefined ? open : internalOpen);
   let rect = $state(null);
   let triggerEl = $state();
   let layerEl = $state();
   const place = () => {
     if (triggerEl) rect = triggerEl.getBoundingClientRect();
   };
-  const close = () => (open = false);
+  const setOpen = (next) => {
+    if (open === undefined) internalOpen = next;
+    onOpenChange?.(next);
+  };
+  const close = () => setOpen(false);
   const toggle = () => {
-    open = !open;
-    if (open) requestAnimationFrame(place);
+    const next = !isOpen;
+    setOpen(next);
+    if (next) requestAnimationFrame(place);
   };
   $effect(() => {
-    if (!open) return;
+    if (!isOpen) return;
     place();
     const onDoc = (e) => {
       if (!layerEl?.contains(e.target) && !triggerEl?.contains(e.target)) close();
@@ -50,7 +64,7 @@
   style="display:inline-flex">{@render trigger?.()}</span
 >
 
-{#if open && rect}
+{#if isOpen && rect}
   <div bind:this={layerEl} use:portal class={layerClass} {style}>
     {@render children?.(close)}
   </div>
