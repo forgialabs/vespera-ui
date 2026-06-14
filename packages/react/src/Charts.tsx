@@ -513,20 +513,44 @@ export interface DonutProps {
   data: DonutDatum[];
   size?: number;
   thickness?: number;
-  /** Content rendered in the hole (e.g. a total). */
+  /** Content rendered in the hole (e.g. a total). Replaced by the hovered slice's detail on hover. */
   centerLabel?: ReactNode;
+  /** Format the value shown in the hover detail. */
+  valueFormat?: (n: number) => string;
 }
 
-export function Donut({ data, size = 168, thickness = 22, centerLabel }: DonutProps) {
+export function Donut({ data, size = 168, thickness = 22, centerLabel, valueFormat }: DonutProps) {
+  const [hover, setHover] = useState<number | null>(null);
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
+  const fmt = valueFormat ?? ((n: number) => niceNum(n));
   const r = (size - thickness) / 2;
   const c = size / 2;
   const circ = 2 * Math.PI * r;
+  const segs: { offset: number; len: number; d: DonutDatum }[] = [];
   let acc = 0;
+  for (const d of data) {
+    const len = (d.value / total) * circ;
+    segs.push({ offset: acc, len, d });
+    acc += len;
+  }
+  const center =
+    hover != null ? (
+      <div>
+        <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-0.02em' }}>
+          {fmt(data[hover]!.value)}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>
+          {data[hover]!.label}
+        </div>
+      </div>
+    ) : (
+      centerLabel
+    );
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
       <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-        {centerLabel != null && (
+        {center != null && (
           <div
             style={{
               position: 'absolute',
@@ -536,7 +560,7 @@ export function Donut({ data, size = 168, thickness = 22, centerLabel }: DonutPr
               textAlign: 'center',
             }}
           >
-            {centerLabel}
+            {center}
           </div>
         )}
         <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', display: 'block' }}>
@@ -548,30 +572,42 @@ export function Donut({ data, size = 168, thickness = 22, centerLabel }: DonutPr
             stroke="var(--surface-3)"
             strokeWidth={thickness}
           />
-          {data.map((d, i) => {
-            const len = (d.value / total) * circ;
-            const seg = (
-              <circle
-                key={i}
-                cx={c}
-                cy={c}
-                r={r}
-                fill="none"
-                stroke={d.color}
-                strokeWidth={thickness}
-                strokeDasharray={`${len - 2.5} ${circ - len + 2.5}`}
-                strokeDashoffset={-acc}
-                strokeLinecap="round"
-              />
-            );
-            acc += len;
-            return seg;
-          })}
+          {segs.map(({ offset, len, d }, i) => (
+            <circle
+              key={i}
+              cx={c}
+              cy={c}
+              r={r}
+              fill="none"
+              stroke={d.color}
+              strokeWidth={thickness}
+              strokeDasharray={`${len - 2.5} ${circ - len + 2.5}`}
+              strokeDashoffset={-offset}
+              strokeLinecap="round"
+              opacity={hover == null || hover === i ? 1 : 0.3}
+              style={{ transition: 'opacity .15s', cursor: 'pointer' }}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(null)}
+            />
+          ))}
         </svg>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 9, flex: 1 }}>
         {data.map((d, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 12.5 }}>
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 9,
+              fontSize: 12.5,
+              cursor: 'pointer',
+              opacity: hover == null || hover === i ? 1 : 0.45,
+              transition: 'opacity .15s',
+            }}
+            onMouseEnter={() => setHover(i)}
+            onMouseLeave={() => setHover(null)}
+          >
             <i
               style={{ width: 9, height: 9, borderRadius: 3, background: d.color, flexShrink: 0 }}
             />

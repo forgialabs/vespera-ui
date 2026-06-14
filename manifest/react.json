@@ -1021,7 +1021,7 @@
           "name": "centerLabel",
           "type": "ReactNode",
           "required": false,
-          "description": "Content rendered in the hole (e.g. a total)."
+          "description": "Content rendered in the hole (e.g. a total). Replaced by the hovered slice's detail on hover."
         },
         {
           "name": "data",
@@ -1039,6 +1039,12 @@
           "type": "number",
           "required": false,
           "defaultValue": "22"
+        },
+        {
+          "name": "valueFormat",
+          "type": "((n: number) => string)",
+          "required": false,
+          "description": "Format the value shown in the hover detail."
         }
       ]
     },
