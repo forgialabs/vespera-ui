@@ -3355,7 +3355,10 @@ export const DatePicker = defineComponent({
     placeholder: { type: String, default: 'Pick a date' },
     min: { type: Object as PropType<Date>, default: undefined },
     max: { type: Object as PropType<Date>, default: undefined },
-    disabled: { type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>, default: undefined },
+    disabled: {
+      type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>,
+      default: undefined,
+    },
     multiple: { type: Boolean, default: false },
     values: { type: Array as PropType<Date[]>, default: () => [] },
   },
@@ -3363,7 +3366,8 @@ export const DatePicker = defineComponent({
   setup(props, { emit }) {
     const open = ref(false);
     const anchor = ref<HTMLButtonElement | null>(null);
-    const seed = (props.multiple ? props.values[props.values.length - 1] : props.modelValue) ?? new Date();
+    const seed =
+      (props.multiple ? props.values[props.values.length - 1] : props.modelValue) ?? new Date();
     const view = ref<MonthView>({ m: seed.getMonth(), y: seed.getFullYear() });
     watch(
       () => [open.value, props.modelValue, props.values] as const,
@@ -3407,7 +3411,11 @@ export const DatePicker = defineComponent({
             class: cx('ui-trigger', open.value && 'open'),
             onClick: () => (open.value = !open.value),
           },
-          [calendarIcon(16), h('span', { class: cx('val', empty && 'ph') }, label), svgIconClass(CHEV_DOWN, 16, 'chev')],
+          [
+            calendarIcon(16),
+            h('span', { class: cx('val', empty && 'ph') }, label),
+            svgIconClass(CHEV_DOWN, 16, 'chev'),
+          ],
         ),
         h(
           SelPanel,
@@ -3442,12 +3450,20 @@ export const DatePicker = defineComponent({
                   h('div', { style: { flex: 1 } }),
                   h(
                     'button',
-                    { type: 'button', class: 'btn btn-subtle btn-sm', onClick: () => emit('update:values', []) },
+                    {
+                      type: 'button',
+                      class: 'btn btn-subtle btn-sm',
+                      onClick: () => emit('update:values', []),
+                    },
                     'Clear',
                   ),
                   h(
                     'button',
-                    { type: 'button', class: 'btn btn-primary btn-sm', onClick: () => (open.value = false) },
+                    {
+                      type: 'button',
+                      class: 'btn btn-primary btn-sm',
+                      onClick: () => (open.value = false),
+                    },
                     'Done',
                   ),
                 ]),
@@ -3470,7 +3486,10 @@ export const DateRangePicker = defineComponent({
     placeholder: { type: String, default: 'Pick a range' },
     min: { type: Object as PropType<Date>, default: undefined },
     max: { type: Object as PropType<Date>, default: undefined },
-    disabled: { type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>, default: undefined },
+    disabled: {
+      type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>,
+      default: undefined,
+    },
     minNights: { type: Number, default: undefined },
     maxNights: { type: Number, default: undefined },
     presets: { type: Array as PropType<RangePreset[]>, default: undefined },

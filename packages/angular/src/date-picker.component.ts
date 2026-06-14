@@ -296,7 +296,9 @@ export class VspCalendar {
             </span>
             <div style="flex: 1"></div>
             <button type="button" class="btn btn-subtle btn-sm" (click)="clearAll()">Clear</button>
-            <button type="button" class="btn btn-primary btn-sm" (click)="open = false">Done</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="open = false">
+              Done
+            </button>
           </div>
         }
       }

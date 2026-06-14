@@ -477,9 +477,7 @@ export function DateRangePicker({
                   type="button"
                   className={cx(
                     'ui-cal-preset',
-                    sameDay(p.range.start, value.start) &&
-                      sameDay(p.range.end, value.end) &&
-                      'on',
+                    sameDay(p.range.start, value.start) && sameDay(p.range.end, value.end) && 'on',
                   )}
                   onClick={() => onChange?.(p.range)}
                 >
