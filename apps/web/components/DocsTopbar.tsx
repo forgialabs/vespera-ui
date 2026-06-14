@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@vespera-ui/icons';
 import { CommandPalette, IconButton, useCmdK } from '@vespera-ui/react';
@@ -86,20 +87,18 @@ export function DocsTopbar({ pages, tree }: { pages: NavPage[]; tree: SidebarNod
         <kbd className="ui-kbd">⌘K</kbd>
       </button>
       <div style={{ flex: 1 }} />
+      <nav className="vsp-top-links">
+        <Link href="/demo">Playground</Link>
+        <Link href="/admin">Admin</Link>
+        <a href="https://github.com/forgialabs/vespera-ui" target="_blank" rel="noopener">
+          GitHub
+        </a>
+      </nav>
       <IconButton
         icon={theme === 'dark' ? <Icon.sun /> : <Icon.moon />}
         label="Toggle theme"
         onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       />
-      <a
-        href="https://github.com/forgialabs/vespera-ui"
-        target="_blank"
-        rel="noopener"
-        aria-label="GitHub"
-        style={{ display: 'grid', placeItems: 'center', width: 36, height: 36, color: 'var(--text-dim)' }}
-      >
-        <Icon.layers style={{ width: 18, height: 18 }} />
-      </a>
 
       <CommandPalette
         open={open}

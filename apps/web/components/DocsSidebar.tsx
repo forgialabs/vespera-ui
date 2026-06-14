@@ -119,6 +119,16 @@ export function SidebarNav({ tree, onNav }: { tree: SidebarNode[]; onNav?: () =>
           <Node key={i} node={n} pathname={pathname} onNav={onNav} />
         ))}
       </nav>
+      {/* live demos — not doc pages, but reachable from the docs chrome */}
+      <div style={{ marginTop: 8, borderTop: '1px solid var(--border)', paddingTop: 6 }}>
+        <div style={groupLabel}>Live demos</div>
+        <Link className="vsp-nav-link" href="/demo" onClick={onNav}>
+          Interactive playground
+        </Link>
+        <Link className="vsp-nav-link" href="/admin" onClick={onNav}>
+          Admin console
+        </Link>
+      </div>
     </>
   );
 }

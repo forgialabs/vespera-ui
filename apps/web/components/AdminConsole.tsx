@@ -1,5 +1,6 @@
 'use client';
 import { useState, type CSSProperties, type ReactNode } from 'react';
+import Link from 'next/link';
 import { Icon } from '@vespera-ui/icons';
 import {
   ApiKeysBlock,
@@ -374,7 +375,11 @@ export function AdminConsole() {
         className="vsp-side"
         style={{ display: 'flex', flexDirection: 'column', padding: '16px 12px', gap: 2, position: 'relative', zIndex: 1 }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 8px 14px' }}>
+        <Link
+          href="/"
+          aria-label="Vespera home"
+          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 8px 12px', textDecoration: 'none', color: 'inherit' }}
+        >
           <span
             style={{
               width: 30,
@@ -392,7 +397,26 @@ export function AdminConsole() {
             <b style={{ fontSize: 15, letterSpacing: '-.01em', display: 'block', lineHeight: 1.1 }}>Vespera</b>
             <span className="eyebrow">Acme Inc</span>
           </div>
-        </div>
+        </Link>
+
+        <Link
+          href="/docs"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '7px 10px',
+            marginBottom: 8,
+            borderRadius: 'var(--r-sm)',
+            color: 'var(--text-dim)',
+            textDecoration: 'none',
+            fontSize: 12.5,
+            fontWeight: 500,
+          }}
+        >
+          <Icon.chevLeft style={{ width: 14, height: 14 }} />
+          Back to docs
+        </Link>
 
         <NavGroup label="Workspace" defaultOpen>
           {navFor('Workspace')}
