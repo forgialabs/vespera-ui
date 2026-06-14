@@ -3161,6 +3161,43 @@ const sameDay = (a: Date | null | undefined, b: Date | null | undefined) =>
   a.getDate() === b.getDate();
 
 const stripTime = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const nightsBetween = (a: Date, b: Date) =>
+  Math.abs(Math.round((stripTime(b).getTime() - stripTime(a).getTime()) / 86400000));
+
+/**
+ * Flexible date matcher used by the pickers' `disabled` prop. Accepts a `Date`,
+ * `Date[]`, `{ from, to }`, `{ before }`, `{ after }`, `{ dayOfWeek: [0,6] }`, a
+ * `(date) => boolean` predicate, or an array of any of these (any match wins).
+ */
+export type DateMatcher =
+  | Date
+  | Date[]
+  | { from: Date; to: Date }
+  | { before: Date }
+  | { after: Date }
+  | { dayOfWeek: number[] }
+  | ((date: Date) => boolean);
+
+/** True when `d` satisfies the matcher (or any matcher in the array). */
+export function matchesDate(d: Date, matcher?: DateMatcher | DateMatcher[]): boolean {
+  if (!matcher) return false;
+  if (Array.isArray(matcher)) return matcher.some((m) => matchesDate(d, m as DateMatcher));
+  if (matcher instanceof Date) return sameDay(d, matcher);
+  if (typeof matcher === 'function') return matcher(d);
+  const x = stripTime(d);
+  if ('from' in matcher && 'to' in matcher)
+    return x >= stripTime(matcher.from) && x <= stripTime(matcher.to);
+  if ('before' in matcher) return x < stripTime(matcher.before);
+  if ('after' in matcher) return x > stripTime(matcher.after);
+  if ('dayOfWeek' in matcher) return matcher.dayOfWeek.includes(d.getDay());
+  return false;
+}
+
+/** A named shortcut shown in the range picker's preset rail. */
+export interface RangePreset {
+  label: string;
+  range: DateRange;
+}
 
 interface GridDay {
   dt: Date;
@@ -3221,12 +3258,23 @@ export const Calendar = defineComponent({
     isSelected: { type: Function as PropType<(d: Date) => boolean>, default: () => false },
     isInRange: { type: Function as PropType<(d: Date) => boolean>, default: undefined },
     isRangeEnd: { type: Function as PropType<(d: Date) => RangeEdge>, default: undefined },
+    isDisabled: { type: Function as PropType<(d: Date) => boolean>, default: undefined },
+    min: { type: Object as PropType<Date>, default: undefined },
+    max: { type: Object as PropType<Date>, default: undefined },
   },
   emits: ['update:view', 'pick'],
   setup(props, { emit }) {
     return () => {
       const today = stripTime(new Date());
       const days = monthGrid(props.view.y, props.view.m);
+      const minD = props.min ? stripTime(props.min) : null;
+      const maxD = props.max ? stripTime(props.max) : null;
+      const prevDisabled = !!minD && new Date(props.view.y, props.view.m, 1) <= minD;
+      const nextDisabled = !!maxD && new Date(props.view.y, props.view.m + 1, 0) >= maxD;
+      const dayDisabled = (dt: Date) =>
+        !!props.isDisabled?.(dt) ||
+        (!!minD && stripTime(dt) < minD) ||
+        (!!maxD && stripTime(dt) > maxD);
       const nav = (delta: number) => {
         let m = props.view.m + delta;
         let y = props.view.y;
@@ -3248,6 +3296,7 @@ export const Calendar = defineComponent({
               type: 'button',
               class: 'ui-cal-nav',
               'aria-label': 'Previous month',
+              disabled: prevDisabled,
               onClick: () => nav(-1),
             },
             [svgIcon('M15 18l-6-6 6-6', 16)],
@@ -3259,6 +3308,7 @@ export const Calendar = defineComponent({
               type: 'button',
               class: 'ui-cal-nav',
               'aria-label': 'Next month',
+              disabled: nextDisabled,
               onClick: () => nav(1),
             },
             [svgIcon('M9 18l6-6-6-6', 16)],
@@ -3270,11 +3320,13 @@ export const Calendar = defineComponent({
             const sel = props.isSelected(dt);
             const range = props.isInRange?.(dt);
             const rEdge = props.isRangeEnd?.(dt);
+            const dis = dayDisabled(dt);
             return h(
               'button',
               {
                 key: i,
                 type: 'button',
+                disabled: dis,
                 class: cx(
                   'ui-cal-day',
                   muted && 'muted',
@@ -3283,8 +3335,9 @@ export const Calendar = defineComponent({
                   range && !sel && 'inrange',
                   rEdge === 'start' && 'rstart',
                   rEdge === 'end' && 'rend',
+                  dis && 'disabled',
                 ),
-                onClick: () => emit('pick', stripTime(dt)),
+                onClick: () => !dis && emit('pick', stripTime(dt)),
               },
               String(dt.getDate()),
             );
@@ -3300,21 +3353,52 @@ export const DatePicker = defineComponent({
   props: {
     modelValue: { type: Object as PropType<Date | null>, default: null },
     placeholder: { type: String, default: 'Pick a date' },
+    min: { type: Object as PropType<Date>, default: undefined },
+    max: { type: Object as PropType<Date>, default: undefined },
+    disabled: { type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>, default: undefined },
+    multiple: { type: Boolean, default: false },
+    values: { type: Array as PropType<Date[]>, default: () => [] },
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ['update:modelValue', 'change', 'update:values'],
   setup(props, { emit }) {
     const open = ref(false);
     const anchor = ref<HTMLButtonElement | null>(null);
-    const base = props.modelValue ?? new Date();
-    const view = ref<MonthView>({ m: base.getMonth(), y: base.getFullYear() });
+    const seed = (props.multiple ? props.values[props.values.length - 1] : props.modelValue) ?? new Date();
+    const view = ref<MonthView>({ m: seed.getMonth(), y: seed.getFullYear() });
     watch(
-      () => [open.value, props.modelValue] as const,
-      ([o, v]) => {
+      () => [open.value, props.modelValue, props.values] as const,
+      ([o]) => {
+        const v = props.multiple ? props.values[props.values.length - 1] : props.modelValue;
         if (o && v) view.value = { m: v.getMonth(), y: v.getFullYear() };
       },
     );
-    return () =>
-      h('div', { style: { display: 'contents' } }, [
+    return () => {
+      const list = props.values;
+      const isDisabled = (d: Date) => matchesDate(d, props.disabled);
+      const label = props.multiple
+        ? list.length
+          ? list.length === 1
+            ? fmtDate(list[0])
+            : `${list.length} dates`
+          : props.placeholder
+        : props.modelValue
+          ? fmtDate(props.modelValue)
+          : props.placeholder;
+      const empty = props.multiple ? !list.length : !props.modelValue;
+      const pick = (d: Date) => {
+        if (props.multiple) {
+          const exists = list.some((x) => sameDay(x, d));
+          const next = exists
+            ? list.filter((x) => !sameDay(x, d))
+            : [...list, d].sort((a, b) => a.getTime() - b.getTime());
+          emit('update:values', next);
+        } else {
+          emit('update:modelValue', d);
+          emit('change', d);
+          open.value = false;
+        }
+      };
+      return h('div', { style: { display: 'contents' } }, [
         h(
           'button',
           {
@@ -3323,15 +3407,7 @@ export const DatePicker = defineComponent({
             class: cx('ui-trigger', open.value && 'open'),
             onClick: () => (open.value = !open.value),
           },
-          [
-            calendarIcon(16),
-            h(
-              'span',
-              { class: cx('val', !props.modelValue && 'ph') },
-              props.modelValue ? fmtDate(props.modelValue) : props.placeholder,
-            ),
-            svgIconClass(CHEV_DOWN, 16, 'chev'),
-          ],
+          [calendarIcon(16), h('span', { class: cx('val', empty && 'ph') }, label), svgIconClass(CHEV_DOWN, 16, 'chev')],
         ),
         h(
           SelPanel,
@@ -3343,20 +3419,44 @@ export const DatePicker = defineComponent({
             onClose: () => (open.value = false),
           },
           {
-            default: () =>
-              h(Calendar, {
+            default: () => {
+              const cal = h(Calendar, {
                 view: view.value,
+                min: props.min,
+                max: props.max,
+                isDisabled,
                 'onUpdate:view': (v: MonthView) => (view.value = v),
-                isSelected: (d: Date) => sameDay(d, props.modelValue),
-                onPick: (d: Date) => {
-                  emit('update:modelValue', d);
-                  emit('change', d);
-                  open.value = false;
-                },
-              }),
+                isSelected: (d: Date) =>
+                  props.multiple ? list.some((x) => sameDay(x, d)) : sameDay(d, props.modelValue),
+                onPick: pick,
+              });
+              if (!props.multiple) return cal;
+              return [
+                cal,
+                h('div', { class: 'ui-combo-foot' }, [
+                  h(
+                    'span',
+                    { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)' } },
+                    list.length ? `${list.length} selected` : 'Select dates',
+                  ),
+                  h('div', { style: { flex: 1 } }),
+                  h(
+                    'button',
+                    { type: 'button', class: 'btn btn-subtle btn-sm', onClick: () => emit('update:values', []) },
+                    'Clear',
+                  ),
+                  h(
+                    'button',
+                    { type: 'button', class: 'btn btn-primary btn-sm', onClick: () => (open.value = false) },
+                    'Done',
+                  ),
+                ]),
+              ];
+            },
           },
         ),
       ]);
+    };
   },
 });
 
@@ -3368,6 +3468,12 @@ export const DateRangePicker = defineComponent({
       default: () => ({ start: null, end: null }),
     },
     placeholder: { type: String, default: 'Pick a range' },
+    min: { type: Object as PropType<Date>, default: undefined },
+    max: { type: Object as PropType<Date>, default: undefined },
+    disabled: { type: [Object, Array, Function] as PropType<DateMatcher | DateMatcher[]>, default: undefined },
+    minNights: { type: Number, default: undefined },
+    maxNights: { type: Number, default: undefined },
+    presets: { type: Array as PropType<RangePreset[]>, default: undefined },
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
@@ -3390,6 +3496,15 @@ export const DateRangePicker = defineComponent({
       const rangeEnd = (d: Date): RangeEdge => {
         if (sameDay(d, value.start) && value.end) return 'start';
         if (sameDay(d, value.end)) return 'end';
+        return false;
+      };
+      const isDisabled = (d: Date) => {
+        if (matchesDate(d, props.disabled)) return true;
+        if (value.start && !value.end && !sameDay(d, value.start)) {
+          const n = nightsBetween(value.start, d);
+          if (props.minNights != null && n < props.minNights) return true;
+          if (props.maxNights != null && n > props.maxNights) return true;
+        }
         return false;
       };
       const label = value.start
@@ -3423,20 +3538,48 @@ export const DateRangePicker = defineComponent({
           },
           {
             default: () => [
-              h(Calendar, {
-                view: view.value,
-                'onUpdate:view': (v: MonthView) => (view.value = v),
-                isSelected: (d: Date) => sameDay(d, value.start) || sameDay(d, value.end),
-                isInRange: inRange,
-                isRangeEnd: rangeEnd,
-                onPick: pick,
-              }),
+              h('div', { class: 'ui-cal-wrap' }, [
+                props.presets?.length
+                  ? h(
+                      'div',
+                      { class: 'ui-cal-presets' },
+                      props.presets.map((p) =>
+                        h(
+                          'button',
+                          {
+                            key: p.label,
+                            type: 'button',
+                            class: cx(
+                              'ui-cal-preset',
+                              sameDay(p.range.start, value.start) &&
+                                sameDay(p.range.end, value.end) &&
+                                'on',
+                            ),
+                            onClick: () => set(p.range),
+                          },
+                          p.label,
+                        ),
+                      ),
+                    )
+                  : null,
+                h(Calendar, {
+                  view: view.value,
+                  min: props.min,
+                  max: props.max,
+                  isDisabled,
+                  'onUpdate:view': (v: MonthView) => (view.value = v),
+                  isSelected: (d: Date) => sameDay(d, value.start) || sameDay(d, value.end),
+                  isInRange: inRange,
+                  isRangeEnd: rangeEnd,
+                  onPick: pick,
+                }),
+              ]),
               h('div', { class: 'ui-combo-foot' }, [
                 h(
                   'span',
                   { class: 'mono', style: { fontSize: '11px', color: 'var(--text-faint)' } },
                   value.start && value.end
-                    ? `${Math.round((value.end.getTime() - value.start.getTime()) / 86400000) + 1} days`
+                    ? `${nightsBetween(value.start, value.end) + 1} days`
                     : 'Select start & end',
                 ),
                 h('div', { style: { flex: 1 } }),

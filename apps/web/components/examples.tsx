@@ -206,10 +206,19 @@ export function DataExample() {
 
 export function DatePickerExample() {
   const [d, setD] = useState<Date | null>(null);
+  const [days, setDays] = useState<Date[]>([]);
+  const today = new Date();
   return (
-    <div style={{ width: '100%', maxWidth: 260 }}>
-      <Field label={`Date${d ? ` · ${fmtDate(d)}` : ''}`}>
-        <DatePicker value={d} onChange={setD} />
+    <div style={{ display: 'grid', gap: 16, width: '100%', maxWidth: 280 }}>
+      <Field label={`No past dates · no weekends${d ? ` · ${fmtDate(d)}` : ''}`}>
+        <DatePicker
+          value={d}
+          onChange={setD}
+          disabled={[{ before: today }, { dayOfWeek: [0, 6] }]}
+        />
+      </Field>
+      <Field label={`Multiple${days.length ? ` · ${days.length} selected` : ''}`}>
+        <DatePicker multiple values={days} onValuesChange={setDays} />
       </Field>
     </div>
   );

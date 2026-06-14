@@ -1,10 +1,19 @@
 <script>
   import SelPanel from './SelPanel.svelte';
   import Calendar from './Calendar.svelte';
-  import { fmtDate, sameDay } from './dates.js';
+  import { fmtDate, sameDay, matchesDate, nightsBetween } from './dates.js';
 
-  let { value = $bindable({ start: null, end: null }), placeholder = 'Pick a range', onchange } =
-    $props();
+  let {
+    value = $bindable({ start: null, end: null }),
+    placeholder = 'Pick a range',
+    min = undefined,
+    max = undefined,
+    disabled = undefined,
+    minNights = undefined,
+    maxNights = undefined,
+    presets = undefined,
+    onchange,
+  } = $props();
 
   let open = $state(false);
   let anchorEl = $state();
@@ -26,6 +35,16 @@
     if (sameDay(d, value.end)) return 'end';
     return false;
   }
+  // While choosing the end, also block days that would violate min/maxNights.
+  const isDisabled = (d) => {
+    if (matchesDate(d, disabled)) return true;
+    if (value.start && !value.end && !sameDay(d, value.start)) {
+      const n = nightsBetween(value.start, d);
+      if (minNights != null && n < minNights) return true;
+      if (maxNights != null && n > maxNights) return true;
+    }
+    return false;
+  };
 
   let label = $derived(
     value.start
@@ -70,17 +89,35 @@
   >
 </button>
 <SelPanel {open} anchor={anchorEl} auto menuClass="ui-menu" onclose={() => (open = false)}>
-  <Calendar
-    bind:view
-    isSelected={(d) => sameDay(d, value.start) || sameDay(d, value.end)}
-    isInRange={inRange}
-    isRangeEnd={rangeEnd}
-    onpick={pick}
-  />
+  <div class="ui-cal-wrap">
+    {#if presets?.length}
+      <div class="ui-cal-presets">
+        {#each presets as p (p.label)}
+          <button
+            type="button"
+            class="ui-cal-preset {sameDay(p.range.start, value.start) && sameDay(p.range.end, value.end) ? 'on' : ''}"
+            onclick={() => set(p.range)}
+          >
+            {p.label}
+          </button>
+        {/each}
+      </div>
+    {/if}
+    <Calendar
+      bind:view
+      {min}
+      {max}
+      {isDisabled}
+      isSelected={(d) => sameDay(d, value.start) || sameDay(d, value.end)}
+      isInRange={inRange}
+      isRangeEnd={rangeEnd}
+      onpick={pick}
+    />
+  </div>
   <div class="ui-combo-foot">
     <span class="mono" style="font-size:11px;color:var(--text-faint)">
       {#if value.start && value.end}
-        {Math.round((value.end.getTime() - value.start.getTime()) / 86400000) + 1} days
+        {nightsBetween(value.start, value.end) + 1} days
       {:else}
         Select start &amp; end
       {/if}

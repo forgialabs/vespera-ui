@@ -29,6 +29,37 @@ const sameDay = (a: Date | null | undefined, b: Date | null | undefined): boolea
   a.getDate() === b.getDate();
 
 const stripTime = (d: Date): Date => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const nightsBetween = (a: Date, b: Date): number =>
+  Math.abs(Math.round((stripTime(b).getTime() - stripTime(a).getTime()) / 86400000));
+
+/**
+ * Flexible date matcher used by the pickers' `disabled` input. Accepts a `Date`,
+ * `Date[]`, `{ from, to }`, `{ before }`, `{ after }`, `{ dayOfWeek: [0,6] }`, a
+ * `(date) => boolean` predicate, or an array of any of these (any match wins).
+ */
+export type DateMatcher =
+  | Date
+  | Date[]
+  | { from: Date; to: Date }
+  | { before: Date }
+  | { after: Date }
+  | { dayOfWeek: number[] }
+  | ((date: Date) => boolean);
+
+/** True when `d` satisfies the matcher (or any matcher in the array). */
+export function matchesDate(d: Date, matcher?: DateMatcher | DateMatcher[]): boolean {
+  if (!matcher) return false;
+  if (Array.isArray(matcher)) return matcher.some((m) => matchesDate(d, m as DateMatcher));
+  if (matcher instanceof Date) return sameDay(d, matcher);
+  if (typeof matcher === 'function') return matcher(d);
+  const x = stripTime(d);
+  if ('from' in matcher && 'to' in matcher)
+    return x >= stripTime(matcher.from) && x <= stripTime(matcher.to);
+  if ('before' in matcher) return x < stripTime(matcher.before);
+  if ('after' in matcher) return x > stripTime(matcher.after);
+  if ('dayOfWeek' in matcher) return matcher.dayOfWeek.includes(d.getDay());
+  return false;
+}
 
 interface GridDay {
   dt: Date;
@@ -60,6 +91,11 @@ export interface DateRange {
   start: Date | null;
   end: Date | null;
 }
+/** A named shortcut shown in the range picker's preset rail. */
+export interface RangePreset {
+  label: string;
+  range: DateRange;
+}
 
 /* ---------------- Calendar (month grid) ---------------- */
 
@@ -67,7 +103,13 @@ export interface DateRange {
   selector: 'vsp-calendar',
   template: `<div class="ui-cal">
     <div class="ui-cal-head">
-      <button type="button" class="ui-cal-nav" aria-label="Previous month" (click)="nav(-1)">
+      <button
+        type="button"
+        class="ui-cal-nav"
+        aria-label="Previous month"
+        [disabled]="prevDisabled"
+        (click)="nav(-1)"
+      >
         <svg
           viewBox="0 0 24 24"
           width="16"
@@ -82,7 +124,13 @@ export interface DateRange {
         </svg>
       </button>
       <span class="ttl">{{ months[view.m] }} {{ view.y }}</span>
-      <button type="button" class="ui-cal-nav" aria-label="Next month" (click)="nav(1)">
+      <button
+        type="button"
+        class="ui-cal-nav"
+        aria-label="Next month"
+        [disabled]="nextDisabled"
+        (click)="nav(1)"
+      >
         <svg
           viewBox="0 0 24 24"
           width="16"
@@ -102,7 +150,12 @@ export interface DateRange {
         <div class="ui-cal-dow">{{ d }}</div>
       }
       @for (g of days; track i; let i = $index) {
-        <button type="button" [class]="dayClass(g.dt, g.muted)" (click)="pick.emit(strip(g.dt))">
+        <button
+          type="button"
+          [class]="dayClass(g.dt, g.muted)"
+          [disabled]="dayDisabled(g.dt)"
+          (click)="dayDisabled(g.dt) ? null : pick.emit(strip(g.dt))"
+        >
           {{ g.dt.getDate() }}
         </button>
       }
@@ -115,6 +168,9 @@ export class VspCalendar {
   @Input() isSelected: (d: Date) => boolean = () => false;
   @Input() isInRange?: (d: Date) => boolean;
   @Input() isRangeEnd?: (d: Date) => RangeEdge;
+  @Input() isDisabled?: (d: Date) => boolean;
+  @Input() min?: Date;
+  @Input() max?: Date;
   @Output() pick = new EventEmitter<Date>();
 
   dow = DOW;
@@ -125,6 +181,22 @@ export class VspCalendar {
   get days(): GridDay[] {
     return monthGrid(this.view.y, this.view.m);
   }
+  private get minD(): Date | null {
+    return this.min ? stripTime(this.min) : null;
+  }
+  private get maxD(): Date | null {
+    return this.max ? stripTime(this.max) : null;
+  }
+  get prevDisabled(): boolean {
+    return !!this.minD && new Date(this.view.y, this.view.m, 1) <= this.minD;
+  }
+  get nextDisabled(): boolean {
+    return !!this.maxD && new Date(this.view.y, this.view.m + 1, 0) >= this.maxD;
+  }
+  dayDisabled = (dt: Date): boolean =>
+    !!this.isDisabled?.(dt) ||
+    (!!this.minD && stripTime(dt) < this.minD) ||
+    (!!this.maxD && stripTime(dt) > this.maxD);
 
   nav(delta: number): void {
     let m = this.view.m + delta;
@@ -152,6 +224,7 @@ export class VspCalendar {
       range && !sel && 'inrange',
       rEdge === 'start' && 'rstart',
       rEdge === 'end' && 'rend',
+      this.dayDisabled(dt) && 'disabled',
     ]
       .filter(Boolean)
       .join(' ');
@@ -184,7 +257,7 @@ export class VspCalendar {
         <rect x="3" y="4" width="18" height="18" rx="2" />
         <path d="M16 2v4M8 2v4M3 10h18" />
       </svg>
-      <span [class]="'val' + (value ? '' : ' ph')">{{ value ? fmt(value) : placeholder }}</span>
+      <span [class]="'val' + (empty ? ' ph' : '')">{{ label }}</span>
       <svg
         class="chev"
         viewBox="0 0 24 24"
@@ -210,9 +283,22 @@ export class VspCalendar {
         <vsp-calendar
           [view]="view"
           (viewChange)="view = $event"
+          [min]="min"
+          [max]="max"
+          [isDisabled]="isDisabledFn"
           [isSelected]="isSelectedFn"
           (pick)="choose($event)"
         />
+        @if (multiple) {
+          <div class="ui-combo-foot">
+            <span class="mono" style="font-size: 11px; color: var(--text-faint)">
+              {{ values.length ? values.length + ' selected' : 'Select dates' }}
+            </span>
+            <div style="flex: 1"></div>
+            <button type="button" class="btn btn-subtle btn-sm" (click)="clearAll()">Clear</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="open = false">Done</button>
+          </div>
+        }
       }
     </vsp-sel-panel>
   `,
@@ -221,6 +307,12 @@ export class VspDatePicker implements OnChanges {
   @Input() value: Date | null = null;
   @Output() valueChange = new EventEmitter<Date>();
   @Input() placeholder = 'Pick a date';
+  @Input() min?: Date;
+  @Input() max?: Date;
+  @Input() disabled?: DateMatcher | DateMatcher[];
+  @Input() multiple = false;
+  @Input() values: Date[] = [];
+  @Output() valuesChange = new EventEmitter<Date[]>();
 
   open = false;
   view: MonthView;
@@ -232,16 +324,44 @@ export class VspDatePicker implements OnChanges {
   }
 
   ngOnChanges(c: SimpleChanges): void {
-    if ((c['value'] || c['open']) && this.value) {
-      this.view = { m: this.value.getMonth(), y: this.value.getFullYear() };
+    const v = this.multiple ? this.values[this.values.length - 1] : this.value;
+    if ((c['value'] || c['values'] || c['open']) && v) {
+      this.view = { m: v.getMonth(), y: v.getFullYear() };
     }
   }
 
-  isSelectedFn = (d: Date): boolean => sameDay(d, this.value);
+  get label(): string {
+    if (this.multiple)
+      return this.values.length
+        ? this.values.length === 1
+          ? fmtDate(this.values[0])
+          : `${this.values.length} dates`
+        : this.placeholder;
+    return this.value ? fmtDate(this.value) : this.placeholder;
+  }
+  get empty(): boolean {
+    return this.multiple ? !this.values.length : !this.value;
+  }
+
+  isDisabledFn = (d: Date): boolean => matchesDate(d, this.disabled);
+  isSelectedFn = (d: Date): boolean =>
+    this.multiple ? this.values.some((x) => sameDay(x, d)) : sameDay(d, this.value);
   choose(d: Date): void {
-    this.value = d;
-    this.valueChange.emit(d);
-    this.open = false;
+    if (this.multiple) {
+      const exists = this.values.some((x) => sameDay(x, d));
+      this.values = exists
+        ? this.values.filter((x) => !sameDay(x, d))
+        : [...this.values, d].sort((a, b) => a.getTime() - b.getTime());
+      this.valuesChange.emit(this.values);
+    } else {
+      this.value = d;
+      this.valueChange.emit(d);
+      this.open = false;
+    }
+  }
+  clearAll(): void {
+    this.values = [];
+    this.valuesChange.emit(this.values);
   }
 }
 
@@ -294,14 +414,32 @@ export class VspDatePicker implements OnChanges {
       (close)="open = false"
     >
       @if (open) {
-        <vsp-calendar
-          [view]="view"
-          (viewChange)="view = $event"
-          [isSelected]="isSelectedFn"
-          [isInRange]="isInRangeFn"
-          [isRangeEnd]="isRangeEndFn"
-          (pick)="pick($event)"
-        />
+        <div class="ui-cal-wrap">
+          @if (presets?.length) {
+            <div class="ui-cal-presets">
+              @for (p of presets; track p.label) {
+                <button
+                  type="button"
+                  [class]="'ui-cal-preset' + (isPresetActive(p) ? ' on' : '')"
+                  (click)="set(p.range)"
+                >
+                  {{ p.label }}
+                </button>
+              }
+            </div>
+          }
+          <vsp-calendar
+            [view]="view"
+            (viewChange)="view = $event"
+            [min]="min"
+            [max]="max"
+            [isDisabled]="isDisabledFn"
+            [isSelected]="isSelectedFn"
+            [isInRange]="isInRangeFn"
+            [isRangeEnd]="isRangeEndFn"
+            (pick)="pick($event)"
+          />
+        </div>
         <div class="ui-combo-foot">
           <span class="mono" style="font-size: 11px; color: var(--text-faint)">
             {{ footLabel }}
@@ -324,6 +462,12 @@ export class VspDateRangePicker {
   @Input() value: DateRange = { start: null, end: null };
   @Output() valueChange = new EventEmitter<DateRange>();
   @Input() placeholder = 'Pick a range';
+  @Input() min?: Date;
+  @Input() max?: Date;
+  @Input() disabled?: DateMatcher | DateMatcher[];
+  @Input() minNights?: number;
+  @Input() maxNights?: number;
+  @Input() presets?: RangePreset[];
 
   open = false;
   view: MonthView;
@@ -343,6 +487,16 @@ export class VspDateRangePicker {
     else if (d < v.start) this.set({ start: d, end: v.start });
     else this.set({ start: v.start, end: d });
   }
+  isDisabledFn = (d: Date): boolean => {
+    if (matchesDate(d, this.disabled)) return true;
+    const v = this.value;
+    if (v.start && !v.end && !sameDay(d, v.start)) {
+      const n = nightsBetween(v.start, d);
+      if (this.minNights != null && n < this.minNights) return true;
+      if (this.maxNights != null && n > this.maxNights) return true;
+    }
+    return false;
+  };
   isSelectedFn = (d: Date): boolean => sameDay(d, this.value.start) || sameDay(d, this.value.end);
   isInRangeFn = (d: Date): boolean =>
     !!this.value.start && !!this.value.end && d > this.value.start && d < this.value.end;
@@ -351,6 +505,9 @@ export class VspDateRangePicker {
     if (sameDay(d, this.value.end)) return 'end';
     return false;
   };
+  isPresetActive(p: RangePreset): boolean {
+    return sameDay(p.range.start, this.value.start) && sameDay(p.range.end, this.value.end);
+  }
 
   get label(): string {
     const v = this.value;
@@ -362,8 +519,6 @@ export class VspDateRangePicker {
   }
   get footLabel(): string {
     const v = this.value;
-    return v.start && v.end
-      ? `${Math.round((v.end.getTime() - v.start.getTime()) / 86400000) + 1} days`
-      : 'Select start & end';
+    return v.start && v.end ? `${nightsBetween(v.start, v.end) + 1} days` : 'Select start & end';
   }
 }

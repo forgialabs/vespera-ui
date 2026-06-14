@@ -2117,6 +2117,55 @@
   color: var(--accent-ink);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
 }
+.ui-cal-day.disabled,
+.ui-cal-day:disabled {
+  color: var(--text-faint);
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+.ui-cal-day.disabled:hover,
+.ui-cal-day:disabled:hover {
+  background: transparent;
+}
+.ui-cal-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* range picker: preset shortcut rail beside the calendar */
+.ui-cal-wrap {
+  display: flex;
+  align-items: stretch;
+}
+.ui-cal-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 12px 8px;
+  border-right: 1px solid var(--border);
+  min-width: 124px;
+}
+.ui-cal-preset {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+}
+.ui-cal-preset:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.ui-cal-preset.on {
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+}
 
 /* ---------- event calendar (month / agenda) ---------- */
 .ui-cb {
