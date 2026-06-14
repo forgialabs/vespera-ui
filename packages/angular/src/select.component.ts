@@ -397,7 +397,25 @@ export class VspSelect {
           (qChange)="q = $event"
           (activeIdxChange)="active = $event"
           (pick)="pick($event)"
-        />
+        >
+          @if (canCreate) {
+            <button footer type="button" class="ui-combo-create" (click)="create()">
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Create “{{ q.trim() }}”
+            </button>
+          }
+        </vsp-combo-list>
       }
     </vsp-sel-panel>
   `,
@@ -415,10 +433,24 @@ export class VspCombobox {
   @Input() emptyText?: string;
   @Input() id?: string;
   @Input() name?: string;
+  @Input() creatable = false;
+  @Output() created = new EventEmitter<string>();
 
   open = false;
   q = '';
   active = 0;
+
+  get canCreate(): boolean {
+    const t = this.q.trim();
+    return (
+      this.creatable && !!t && !this.opts.some((o) => o.label.toLowerCase() === t.toLowerCase())
+    );
+  }
+  create(): void {
+    this.created.emit(this.q.trim());
+    this.open = false;
+    this.q = '';
+  }
 
   get opts(): SelectOption[] {
     return this.options.map(normalize);

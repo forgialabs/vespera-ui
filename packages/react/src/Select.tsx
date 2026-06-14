@@ -340,6 +340,10 @@ export interface ComboboxProps {
   id?: string;
   /** Submits the selected value under this name in a form. */
   name?: string;
+  /** Offer a "Create …" row for the typed query when it matches nothing. */
+  creatable?: boolean;
+  /** Called with the typed text when the create row is chosen. */
+  onCreate?: (value: string) => void;
 }
 
 export function Combobox({
@@ -355,6 +359,8 @@ export function Combobox({
   emptyText,
   id,
   name,
+  creatable,
+  onCreate,
 }: ComboboxProps) {
   const opts = options.map(normalizeOption);
   const [open, setOpen] = useState(false);
@@ -364,8 +370,16 @@ export function Combobox({
 
   const sel = opts.find((o) => o.value === value);
   const items = opts.filter((o) => o.label.toLowerCase().includes(q.toLowerCase()));
+  const trimmed = q.trim();
+  const canCreate =
+    !!creatable && !!trimmed && !opts.some((o) => o.label.toLowerCase() === trimmed.toLowerCase());
   const pick = (o: SelectOption) => {
     onChange?.(o.value);
+    setOpen(false);
+    setQ('');
+  };
+  const create = () => {
+    onCreate?.(trimmed);
     setOpen(false);
     setQ('');
   };
@@ -408,6 +422,14 @@ export function Combobox({
           searchPlaceholder={searchPlaceholder}
           loading={loading}
           emptyText={emptyText}
+          footer={
+            canCreate ? (
+              <button type="button" className="ui-combo-create" onClick={create}>
+                <Icon.plus />
+                Create “{trimmed}”
+              </button>
+            ) : undefined
+          }
         />
       </SelPanel>
     </>
