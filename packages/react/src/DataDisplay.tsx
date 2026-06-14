@@ -126,6 +126,8 @@ export interface TimelineItem {
   body?: ReactNode;
   icon?: ReactNode;
   tone?: TimelineTone;
+  /** Highlight this entry as the current one. */
+  active?: boolean;
 }
 
 const tlTone: Record<TimelineTone, string> = {
@@ -145,7 +147,7 @@ export function Timeline({ items }: TimelineProps) {
       {items.map((it, i) => {
         const c = it.tone ? tlTone[it.tone] : undefined;
         return (
-          <div key={i} className="ui-tl-item">
+          <div key={i} className={cx('ui-tl-item', it.active && 'active')}>
             <span
               className="ui-tl-dot"
               style={

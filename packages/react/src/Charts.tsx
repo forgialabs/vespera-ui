@@ -357,9 +357,11 @@ export interface DonutProps {
   data: DonutDatum[];
   size?: number;
   thickness?: number;
+  /** Content rendered in the hole (e.g. a total). */
+  centerLabel?: ReactNode;
 }
 
-export function Donut({ data, size = 168, thickness = 22 }: DonutProps) {
+export function Donut({ data, size = 168, thickness = 22, centerLabel }: DonutProps) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   const r = (size - thickness) / 2;
   const c = size / 2;
@@ -367,28 +369,50 @@ export function Donut({ data, size = 168, thickness = 22 }: DonutProps) {
   let acc = 0;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
-        <circle cx={c} cy={c} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={thickness} />
-        {data.map((d, i) => {
-          const len = (d.value / total) * circ;
-          const seg = (
-            <circle
-              key={i}
-              cx={c}
-              cy={c}
-              r={r}
-              fill="none"
-              stroke={d.color}
-              strokeWidth={thickness}
-              strokeDasharray={`${len - 2.5} ${circ - len + 2.5}`}
-              strokeDashoffset={-acc}
-              strokeLinecap="round"
-            />
-          );
-          acc += len;
-          return seg;
-        })}
-      </svg>
+      <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+        {centerLabel != null && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              placeItems: 'center',
+              textAlign: 'center',
+            }}
+          >
+            {centerLabel}
+          </div>
+        )}
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', display: 'block' }}>
+          <circle
+            cx={c}
+            cy={c}
+            r={r}
+            fill="none"
+            stroke="var(--surface-3)"
+            strokeWidth={thickness}
+          />
+          {data.map((d, i) => {
+            const len = (d.value / total) * circ;
+            const seg = (
+              <circle
+                key={i}
+                cx={c}
+                cy={c}
+                r={r}
+                fill="none"
+                stroke={d.color}
+                strokeWidth={thickness}
+                strokeDasharray={`${len - 2.5} ${circ - len + 2.5}`}
+                strokeDashoffset={-acc}
+                strokeLinecap="round"
+              />
+            );
+            acc += len;
+            return seg;
+          })}
+        </svg>
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 9, flex: 1 }}>
         {data.map((d, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 12.5 }}>

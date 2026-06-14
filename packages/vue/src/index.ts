@@ -1078,6 +1078,7 @@ export interface TimelineItem {
   time?: string;
   body?: string;
   tone?: 'pos' | 'neg' | 'warn' | 'info';
+  active?: boolean;
 }
 
 export const Timeline = defineComponent({
@@ -1090,7 +1091,7 @@ export const Timeline = defineComponent({
         { class: 'ui-tl' },
         props.items.map((it, i) => {
           const c = it.tone ? TL_TONE[it.tone] : undefined;
-          return h('div', { key: i, class: 'ui-tl-item' }, [
+          return h('div', { key: i, class: cx('ui-tl-item', it.active && 'active') }, [
             h(
               'span',
               {
@@ -1413,8 +1414,9 @@ export const Donut = defineComponent({
     data: { type: Array as PropType<DonutDatum[]>, default: () => [] },
     size: { type: Number, default: 168 },
     thickness: { type: Number, default: 22 },
+    centerLabel: { type: String, default: undefined },
   },
-  setup(props) {
+  setup(props, { slots }) {
     return () => {
       const total = props.data.reduce((s, d) => s + d.value, 0) || 1;
       const r = (props.size - props.thickness) / 2;
@@ -1438,24 +1440,53 @@ export const Donut = defineComponent({
         acc += len;
         return seg;
       });
+      const center = slots.center?.() ?? props.centerLabel;
       return h('div', { style: { display: 'flex', alignItems: 'center', gap: '22px' } }, [
         h(
-          'svg',
+          'div',
           {
-            width: props.size,
-            height: props.size,
-            style: { transform: 'rotate(-90deg)', flexShrink: 0 },
+            style: {
+              position: 'relative',
+              width: px(props.size),
+              height: px(props.size),
+              flexShrink: 0,
+            },
           },
           [
-            h('circle', {
-              cx: c,
-              cy: c,
-              r,
-              fill: 'none',
-              stroke: 'var(--surface-3)',
-              'stroke-width': props.thickness,
-            }),
-            ...segs,
+            center != null
+              ? h(
+                  'div',
+                  {
+                    style: {
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'grid',
+                      placeItems: 'center',
+                      textAlign: 'center',
+                    },
+                  },
+                  center,
+                )
+              : null,
+            h(
+              'svg',
+              {
+                width: props.size,
+                height: props.size,
+                style: { transform: 'rotate(-90deg)', display: 'block' },
+              },
+              [
+                h('circle', {
+                  cx: c,
+                  cy: c,
+                  r,
+                  fill: 'none',
+                  stroke: 'var(--surface-3)',
+                  'stroke-width': props.thickness,
+                }),
+                ...segs,
+              ],
+            ),
           ],
         ),
         h(
@@ -3616,28 +3647,50 @@ export const FileDropzone = defineComponent({
     hint: { type: String, default: 'PNG, JPG or PDF up to 10MB' },
     accept: { type: String, default: undefined },
     multiple: { type: Boolean, default: true },
+    maxSize: { type: Number, default: undefined },
+    maxFiles: { type: Number, default: undefined },
+    disabled: Boolean,
   },
-  emits: ['files'],
+  emits: ['files', 'reject'],
   setup(props, { emit }) {
     const drag = ref(false);
     const inputRef = ref<HTMLInputElement | null>(null);
     const take = (list: FileList | null) => {
-      if (list && list.length) emit('files', Array.from(list));
+      if (!list || !list.length) return;
+      let files = Array.from(list);
+      const rejected: File[] = [];
+      if (props.maxSize != null)
+        files = files.filter((f) => {
+          if (f.size > props.maxSize!) {
+            rejected.push(f);
+            return false;
+          }
+          return true;
+        });
+      if (props.maxFiles != null && files.length > props.maxFiles) {
+        rejected.push(...files.slice(props.maxFiles));
+        files = files.slice(0, props.maxFiles);
+      }
+      if (rejected.length) emit('reject', rejected);
+      if (files.length) emit('files', files);
     };
     return () =>
       h(
         'div',
         {
-          class: cx('ui-dropzone', drag.value && 'drag'),
+          class: cx('ui-dropzone', drag.value && 'drag', props.disabled && 'disabled'),
           role: 'button',
-          tabindex: 0,
-          onClick: () => inputRef.value?.click(),
+          tabindex: props.disabled ? -1 : 0,
+          'aria-disabled': props.disabled || undefined,
+          onClick: () => !props.disabled && inputRef.value?.click(),
           onDragover: (e: DragEvent) => {
+            if (props.disabled) return;
             e.preventDefault();
             drag.value = true;
           },
           onDragleave: () => (drag.value = false),
           onDrop: (e: DragEvent) => {
+            if (props.disabled) return;
             e.preventDefault();
             drag.value = false;
             take(e.dataTransfer?.files ?? null);

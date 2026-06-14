@@ -229,6 +229,13 @@ export interface FileDropzoneProps {
   accept?: string;
   multiple?: boolean;
   onFiles?: (files: File[]) => void;
+  /** Reject files larger than this many bytes. */
+  maxSize?: number;
+  /** Reject beyond this many files. */
+  maxFiles?: number;
+  /** Called with files rejected by `maxSize` / `maxFiles`. */
+  onReject?: (files: File[]) => void;
+  disabled?: boolean;
 }
 
 export function FileDropzone({
@@ -236,24 +243,47 @@ export function FileDropzone({
   accept,
   multiple = true,
   onFiles,
+  maxSize,
+  maxFiles,
+  onReject,
+  disabled,
 }: FileDropzoneProps) {
   const [drag, setDrag] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const take = (list: FileList | null) => {
-    if (list && list.length) onFiles?.(Array.from(list));
+    if (!list || !list.length) return;
+    let files = Array.from(list);
+    const rejected: File[] = [];
+    if (maxSize != null)
+      files = files.filter((f) => {
+        if (f.size > maxSize) {
+          rejected.push(f);
+          return false;
+        }
+        return true;
+      });
+    if (maxFiles != null && files.length > maxFiles) {
+      rejected.push(...files.slice(maxFiles));
+      files = files.slice(0, maxFiles);
+    }
+    if (rejected.length) onReject?.(rejected);
+    if (files.length) onFiles?.(files);
   };
   return (
     <div
-      className={cx('ui-dropzone', drag && 'drag')}
+      className={cx('ui-dropzone', drag && 'drag', disabled && 'disabled')}
       role="button"
-      tabIndex={0}
-      onClick={() => inputRef.current?.click()}
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled || undefined}
+      onClick={() => !disabled && inputRef.current?.click()}
       onDragOver={(e) => {
+        if (disabled) return;
         e.preventDefault();
         setDrag(true);
       }}
       onDragLeave={() => setDrag(false)}
       onDrop={(e) => {
+        if (disabled) return;
         e.preventDefault();
         setDrag(false);
         take(e.dataTransfer.files);

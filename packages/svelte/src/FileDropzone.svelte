@@ -1,26 +1,54 @@
 <script>
-  let { hint = 'PNG, JPG or PDF up to 10MB', accept = undefined, multiple = true, onfiles } = $props();
+  let {
+    hint = 'PNG, JPG or PDF up to 10MB',
+    accept = undefined,
+    multiple = true,
+    maxSize = undefined,
+    maxFiles = undefined,
+    disabled = false,
+    onfiles,
+    onreject,
+  } = $props();
 
   let drag = $state(false);
   let inputEl = $state();
 
   function take(list) {
-    if (list && list.length) onfiles?.(Array.from(list));
+    if (!list || !list.length) return;
+    let files = Array.from(list);
+    const rejected = [];
+    if (maxSize != null)
+      files = files.filter((f) => {
+        if (f.size > maxSize) {
+          rejected.push(f);
+          return false;
+        }
+        return true;
+      });
+    if (maxFiles != null && files.length > maxFiles) {
+      rejected.push(...files.slice(maxFiles));
+      files = files.slice(0, maxFiles);
+    }
+    if (rejected.length) onreject?.(rejected);
+    if (files.length) onfiles?.(files);
   }
 </script>
 
 <div
-  class="ui-dropzone {drag ? 'drag' : ''}"
+  class="ui-dropzone {drag ? 'drag' : ''}{disabled ? ' disabled' : ''}"
   role="button"
-  tabindex="0"
-  onclick={() => inputEl?.click()}
-  onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && inputEl?.click()}
+  tabindex={disabled ? -1 : 0}
+  aria-disabled={disabled || undefined}
+  onclick={() => !disabled && inputEl?.click()}
+  onkeydown={(e) => !disabled && (e.key === 'Enter' || e.key === ' ') && inputEl?.click()}
   ondragover={(e) => {
+    if (disabled) return;
     e.preventDefault();
     drag = true;
   }}
   ondragleave={() => (drag = false)}
   ondrop={(e) => {
+    if (disabled) return;
     e.preventDefault();
     drag = false;
     take(e.dataTransfer?.files ?? null);

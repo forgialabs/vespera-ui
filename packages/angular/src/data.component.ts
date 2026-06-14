@@ -113,6 +113,7 @@ export interface TimelineItem {
   time?: string;
   body?: string;
   tone?: TimelineTone;
+  active?: boolean;
 }
 const TL_TONE: Record<TimelineTone, string> = {
   pos: 'var(--success)',
@@ -125,7 +126,7 @@ const TL_TONE: Record<TimelineTone, string> = {
   selector: 'vsp-timeline',
   template: `<div class="ui-tl">
     @for (it of items; track $index) {
-      <div class="ui-tl-item">
+      <div [class]="it.active ? 'ui-tl-item active' : 'ui-tl-item'">
         <span class="ui-tl-dot" [style]="dotStyle(it.tone)">
           <svg
             viewBox="0 0 24 24"
