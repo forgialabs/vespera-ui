@@ -2,17 +2,27 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'vsp-number-stepper',
-  template: `<div class="ui-stepper">
+  template: `<div [class]="disabled ? 'ui-stepper disabled' : 'ui-stepper'">
     <button
       type="button"
       aria-label="Decrease"
-      [disabled]="min != null && value <= min"
+      [disabled]="disabled || (min != null && value <= min)"
       (click)="set(value - step)"
     >
       −
     </button>
-    <span class="val"
-      >{{ value }}
+    <span class="val">
+      <input
+        [id]="id"
+        class="ui-stepper-input"
+        type="text"
+        inputmode="decimal"
+        [value]="value"
+        [disabled]="disabled"
+        aria-label="Value"
+        (input)="onInput($event)"
+        (blur)="set(value)"
+      />
       @if (unit) {
         <i>{{ unit }}</i>
       }
@@ -20,7 +30,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     <button
       type="button"
       aria-label="Increase"
-      [disabled]="max != null && value >= max"
+      [disabled]="disabled || (max != null && value >= max)"
       (click)="set(value + step)"
     >
       +
@@ -34,12 +44,22 @@ export class VspNumberStepper {
   @Input() max?: number;
   @Input() step = 1;
   @Input() unit?: string;
+  @Input() disabled = false;
+  @Input() id?: string;
   set(v: number): void {
     let n = v;
     if (this.min != null && n < this.min) n = this.min;
     if (this.max != null && n > this.max) n = this.max;
     this.value = n;
     this.valueChange.emit(n);
+  }
+  onInput(e: Event): void {
+    const raw = (e.target as HTMLInputElement).value;
+    const n = Number(raw);
+    if (raw !== '' && raw !== '-' && Number.isFinite(n)) {
+      this.value = n;
+      this.valueChange.emit(n);
+    }
   }
 }
 

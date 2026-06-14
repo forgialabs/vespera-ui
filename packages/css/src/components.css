@@ -464,6 +464,29 @@
   padding: 8px 10px;
   border-top: 1px solid var(--border);
 }
+.ui-combo-create {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-combo-create:hover {
+  background: var(--hover);
+}
+.ui-combo-create svg {
+  width: 15px;
+  height: 15px;
+}
 
 /* themed select trigger (drop-in for native <select>) */
 .ui-selectbtn {
@@ -1709,6 +1732,23 @@ button.ui-step {
   font-style: normal;
   font-size: 11px;
   color: var(--text-faint);
+}
+.ui-stepper-input {
+  width: 100%;
+  min-width: 30px;
+  max-width: 56px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  text-align: center;
+  font: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  padding: 0;
+}
+.ui-stepper.disabled {
+  opacity: 0.5;
 }
 
 /* tree */

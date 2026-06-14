@@ -16,6 +16,8 @@ export interface NumberStepperProps {
   max?: number;
   step?: number;
   unit?: ReactNode;
+  disabled?: boolean;
+  id?: string;
 }
 
 export function NumberStepper({
@@ -25,31 +27,48 @@ export function NumberStepper({
   max,
   step = 1,
   unit,
+  disabled,
+  id,
 }: NumberStepperProps) {
-  const set = (v: number) => {
+  const clamp = (v: number) => {
     let next = v;
     if (min != null && next < min) next = min;
     if (max != null && next > max) next = max;
-    onChange?.(next);
+    return next;
   };
+  const set = (v: number) => onChange?.(clamp(v));
   return (
-    <div className="ui-stepper">
+    <div className={cx('ui-stepper', disabled && 'disabled')}>
       <button
         type="button"
         onClick={() => set(value - step)}
-        disabled={min != null && value <= min}
+        disabled={disabled || (min != null && value <= min)}
         aria-label="Decrease"
       >
         −
       </button>
       <span className="val">
-        {value}
+        <input
+          id={id}
+          className="ui-stepper-input"
+          type="text"
+          inputMode="decimal"
+          value={String(value)}
+          disabled={disabled}
+          onChange={(e) => {
+            const raw = e.currentTarget.value;
+            const n = Number(raw);
+            if (raw !== '' && raw !== '-' && Number.isFinite(n)) onChange?.(n);
+          }}
+          onBlur={() => set(value)}
+          aria-label="Value"
+        />
         {unit && <i>{unit}</i>}
       </span>
       <button
         type="button"
         onClick={() => set(value + step)}
-        disabled={max != null && value >= max}
+        disabled={disabled || (max != null && value >= max)}
         aria-label="Increase"
       >
         +

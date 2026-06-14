@@ -14,7 +14,9 @@
     emptyText = undefined,
     id = undefined,
     name = undefined,
+    creatable = false,
     onchange,
+    oncreate,
   } = $props();
 
   let open = $state(false);
@@ -27,6 +29,11 @@
   let opts = $derived(options.map(normalize));
   let sel = $derived(opts.find((o) => o.value === value));
   let items = $derived(opts.filter((o) => o.label.toLowerCase().includes(q.toLowerCase())));
+  let canCreate = $derived(
+    creatable &&
+      !!q.trim() &&
+      !opts.some((o) => o.label.toLowerCase() === q.trim().toLowerCase()),
+  );
 
   function set(v) {
     value = v;
@@ -34,6 +41,11 @@
   }
   function pick(o) {
     set(o.value);
+    open = false;
+    q = '';
+  }
+  function create() {
+    oncreate?.(q.trim());
     open = false;
     q = '';
   }
@@ -99,5 +111,23 @@
     onq={(v) => (q = v)}
     onactive={(v) => (active = v)}
     onpick={pick}
-  />
+  >
+    {#snippet footer()}
+      {#if canCreate}
+        <button type="button" class="ui-combo-create" onclick={create}>
+          <svg
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg
+          >
+          Create “{q.trim()}”
+        </button>
+      {/if}
+    {/snippet}
+  </ComboList>
 </SelPanel>

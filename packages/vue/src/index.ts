@@ -1593,29 +1593,46 @@ export const NumberStepper = defineComponent({
     max: { type: Number, default: undefined },
     step: { type: Number, default: 1 },
     unit: { type: String, default: undefined },
+    disabled: Boolean,
+    id: { type: String, default: undefined },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
-    const set = (v: number) => {
+    const clamp = (v: number) => {
       let n = v;
       if (props.min != null && n < props.min) n = props.min;
       if (props.max != null && n > props.max) n = props.max;
-      emit('update:modelValue', n);
+      return n;
     };
+    const set = (v: number) => emit('update:modelValue', clamp(v));
     return () =>
-      h('div', { class: 'ui-stepper' }, [
+      h('div', { class: cx('ui-stepper', props.disabled && 'disabled') }, [
         h(
           'button',
           {
             type: 'button',
             'aria-label': 'Decrease',
-            disabled: props.min != null && props.modelValue <= props.min,
+            disabled: props.disabled || (props.min != null && props.modelValue <= props.min),
             onClick: () => set(props.modelValue - props.step),
           },
           '−',
         ),
         h('span', { class: 'val' }, [
-          props.modelValue,
+          h('input', {
+            id: props.id,
+            class: 'ui-stepper-input',
+            type: 'text',
+            inputmode: 'decimal',
+            value: String(props.modelValue),
+            disabled: props.disabled,
+            'aria-label': 'Value',
+            onInput: (e: Event) => {
+              const raw = (e.target as HTMLInputElement).value;
+              const n = Number(raw);
+              if (raw !== '' && raw !== '-' && Number.isFinite(n)) emit('update:modelValue', n);
+            },
+            onBlur: () => set(props.modelValue),
+          }),
           props.unit ? h('i', null, props.unit) : null,
         ]),
         h(
@@ -1623,7 +1640,7 @@ export const NumberStepper = defineComponent({
           {
             type: 'button',
             'aria-label': 'Increase',
-            disabled: props.max != null && props.modelValue >= props.max,
+            disabled: props.disabled || (props.max != null && props.modelValue >= props.max),
             onClick: () => set(props.modelValue + props.step),
           },
           '+',
@@ -3247,8 +3264,9 @@ export const Combobox = defineComponent({
     emptyText: { type: String, default: undefined },
     id: { type: String, default: undefined },
     name: { type: String, default: undefined },
+    creatable: Boolean,
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ['update:modelValue', 'change', 'create'],
   setup(props, { emit }) {
     const open = ref(false);
     const q = ref('');
@@ -3258,12 +3276,22 @@ export const Combobox = defineComponent({
       const opts = props.options.map(normalizeOption);
       const sel = opts.find((o) => o.value === props.modelValue);
       const items = opts.filter((o) => o.label.toLowerCase().includes(q.value.toLowerCase()));
+      const trimmed = q.value.trim();
+      const canCreate =
+        props.creatable &&
+        !!trimmed &&
+        !opts.some((o) => o.label.toLowerCase() === trimmed.toLowerCase());
       const set = (v: SelectValue | null) => {
         emit('update:modelValue', v);
         emit('change', v);
       };
       const pick = (o: SelectOption) => {
         set(o.value);
+        open.value = false;
+        q.value = '';
+      };
+      const create = () => {
+        emit('create', trimmed);
         open.value = false;
         q.value = '';
       };
@@ -3305,18 +3333,30 @@ export const Combobox = defineComponent({
           { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
           {
             default: () =>
-              h(ComboList, {
-                q: q.value,
-                'onUpdate:q': (v: string) => (q.value = v),
-                items,
-                activeIdx: active.value,
-                'onUpdate:activeIdx': (v: number) => (active.value = v),
-                isSel: (o: SelectOption) => o.value === props.modelValue,
-                searchPlaceholder: props.searchPlaceholder,
-                loading: props.loading,
-                emptyText: props.emptyText,
-                onPick: pick,
-              }),
+              h(
+                ComboList,
+                {
+                  q: q.value,
+                  'onUpdate:q': (v: string) => (q.value = v),
+                  items,
+                  activeIdx: active.value,
+                  'onUpdate:activeIdx': (v: number) => (active.value = v),
+                  isSel: (o: SelectOption) => o.value === props.modelValue,
+                  searchPlaceholder: props.searchPlaceholder,
+                  loading: props.loading,
+                  emptyText: props.emptyText,
+                  onPick: pick,
+                },
+                canCreate
+                  ? {
+                      footer: () =>
+                        h('button', { type: 'button', class: 'ui-combo-create', onClick: create }, [
+                          svgIcon('M12 5v14M5 12h14', 15),
+                          `Create “${trimmed}”`,
+                        ]),
+                    }
+                  : undefined,
+              ),
           },
         ),
       ];

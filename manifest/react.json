@@ -644,6 +644,12 @@
           "required": false
         },
         {
+          "name": "creatable",
+          "type": "boolean",
+          "required": false,
+          "description": "Offer a \"Create …\" row for the typed query when it matches nothing."
+        },
+        {
           "name": "disabled",
           "type": "boolean",
           "required": false,
@@ -683,6 +689,12 @@
           "name": "onChange",
           "type": "((value: SelectValue | null) => void)",
           "required": false
+        },
+        {
+          "name": "onCreate",
+          "type": "((value: string) => void)",
+          "required": false,
+          "description": "Called with the typed text when the create row is chosen."
         },
         {
           "name": "options",
@@ -1433,6 +1445,16 @@
       "name": "NumberStepper",
       "category": "Forms & inputs",
       "props": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false
+        },
         {
           "name": "max",
           "type": "number",
