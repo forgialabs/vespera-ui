@@ -1524,6 +1524,39 @@
   color: var(--accent);
   box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 14%, transparent);
 }
+.ui-step.error .ui-step-dot {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.ui-step.error .ui-step-label {
+  color: var(--danger);
+}
+button.ui-step {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 0;
+}
+.ui-step.clickable {
+  cursor: pointer;
+}
+.ui-steps.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.ui-steps.vertical .ui-step {
+  width: 100%;
+}
+.ui-steps.vertical .ui-step-bar {
+  width: 1.6px;
+  height: auto;
+  min-height: 20px;
+  flex: none;
+  margin: 4px 0 4px 13px;
+  align-self: flex-start;
+}
 .ui-step-label {
   font-size: 12.5px;
   font-weight: 600;

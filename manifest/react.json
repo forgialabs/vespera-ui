@@ -396,8 +396,14 @@
       "props": [
         {
           "name": "items",
-          "type": "ReactNode[]",
+          "type": "BreadcrumbItem[]",
           "required": true
+        },
+        {
+          "name": "maxItems",
+          "type": "number",
+          "required": false,
+          "description": "Collapse the middle into an ellipsis when there are more than this many."
         }
       ]
     },
@@ -2110,8 +2116,24 @@
           "required": true
         },
         {
+          "name": "onStepClick",
+          "type": "((index: number) => void)",
+          "required": false,
+          "description": "Make steps clickable (e.g. to jump back)."
+        },
+        {
+          "name": "orientation",
+          "type": "enum",
+          "values": [
+            "horizontal",
+            "vertical"
+          ],
+          "required": false,
+          "defaultValue": "horizontal"
+        },
+        {
           "name": "steps",
-          "type": "ReactNode[]",
+          "type": "StepperItem[]",
           "required": true
         }
       ]

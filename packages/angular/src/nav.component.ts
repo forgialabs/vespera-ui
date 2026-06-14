@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { VspIcon } from './icon.component';
 
 export type TabItem = string | { value: string; label: string; count?: number; disabled?: boolean };
+export type BreadcrumbItem = string | { label: string; href?: string; icon?: string };
+const BC_ELL = { ellipsis: true };
 
 @Component({
   selector: 'vsp-tabs',
@@ -44,8 +47,12 @@ export class VspTabs {
 
 @Component({
   selector: 'vsp-breadcrumb',
-  template: `<nav style="display: flex; align-items: center; gap: 7px; font-size: 12.5px">
-    @for (it of items; track $index; let i = $index, last = $last) {
+  imports: [VspIcon],
+  template: `<nav
+    aria-label="Breadcrumb"
+    style="display: flex; align-items: center; gap: 7px; font-size: 12.5px"
+  >
+    @for (it of display; track $index; let i = $index, last = $last) {
       @if (i > 0) {
         <svg
           viewBox="0 0 24 24"
@@ -61,16 +68,65 @@ export class VspTabs {
           <path d="M9 18l6-6-6-6" />
         </svg>
       }
-      <span
-        [style.color]="last ? 'var(--text)' : 'var(--text-dim)'"
-        [style.fontWeight]="last ? 600 : 500"
-        >{{ it }}</span
-      >
+      @if (isEll(it)) {
+        <span style="color: var(--text-faint)">…</span>
+      } @else if (hrefOf(it) && !last) {
+        <a
+          [href]="hrefOf(it)"
+          style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px"
+          [style.color]="last ? 'var(--text)' : 'var(--text-dim)'"
+          [style.fontWeight]="last ? 600 : 500"
+        >
+          @if (iconOf(it)) {
+            <vsp-icon [name]="iconOf(it)!" [size]="14" />
+          }
+          {{ lbl(it) }}
+        </a>
+      } @else {
+        <span
+          style="display: inline-flex; align-items: center; gap: 5px"
+          [style.color]="last ? 'var(--text)' : 'var(--text-dim)'"
+          [style.fontWeight]="last ? 600 : 500"
+        >
+          @if (iconOf(it)) {
+            <vsp-icon [name]="iconOf(it)!" [size]="14" />
+          }
+          {{ lbl(it) }}
+        </span>
+      }
     }
   </nav>`,
 })
 export class VspBreadcrumb {
-  @Input() items: string[] = [];
+  @Input() items: BreadcrumbItem[] = [];
+  @Input() maxItems?: number;
+  readonly ELL = BC_ELL;
+  get display(): unknown[] {
+    if (this.maxItems && this.items.length > this.maxItems)
+      return [
+        this.items[0],
+        this.ELL,
+        ...this.items.slice(this.items.length - (this.maxItems - 1)),
+      ];
+    return this.items;
+  }
+  isEll(it: unknown): boolean {
+    return it === this.ELL;
+  }
+  private obj(it: unknown): { label: string; href?: string; icon?: string } | null {
+    return typeof it === 'object' && it !== this.ELL
+      ? (it as { label: string; href?: string; icon?: string })
+      : null;
+  }
+  lbl(it: unknown): string {
+    return this.obj(it)?.label ?? (it as string);
+  }
+  hrefOf(it: unknown): string | undefined {
+    return this.obj(it)?.href;
+  }
+  iconOf(it: unknown): string | undefined {
+    return this.obj(it)?.icon;
+  }
 }
 
 interface PageItem {
@@ -159,44 +215,84 @@ export class VspPagination {
   }
 }
 
+export type StepStatus = 'done' | 'active' | 'pending' | 'error';
+export type StepperItem = string | { label: string; status?: StepStatus };
+
 @Component({
   selector: 'vsp-stepper',
-  template: `<div class="ui-steps">
+  template: `<div [class]="'ui-steps' + (orientation === 'vertical' ? ' vertical' : '')">
     @for (s of steps; track $index; let i = $index) {
       @if (i > 0) {
         <div [class]="barCls(i)"></div>
       }
-      <div [class]="stepCls(i)">
-        <span class="ui-step-dot">
-          @if (i < current) {
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
-          } @else {
-            {{ i + 1 }}
-          }
-        </span>
-        <span class="ui-step-label">{{ s }}</span>
-      </div>
+      @if (onStepClick) {
+        <button type="button" [class]="stepCls(i, s)" (click)="onStepClick(i)">
+          <span class="ui-step-dot">
+            @if (statusOf(i, s) === 'done') {
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            } @else if (statusOf(i, s) === 'error') {
+              !
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="ui-step-label">{{ lbl(s) }}</span>
+        </button>
+      } @else {
+        <div [class]="stepCls(i, s)">
+          <span class="ui-step-dot">
+            @if (statusOf(i, s) === 'done') {
+              <svg
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            } @else if (statusOf(i, s) === 'error') {
+              !
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="ui-step-label">{{ lbl(s) }}</span>
+        </div>
+      }
     }
   </div>`,
 })
 export class VspStepper {
-  @Input() steps: string[] = [];
+  @Input() steps: StepperItem[] = [];
   @Input() current = 0;
+  @Input() onStepClick?: (i: number) => void;
+  @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
+  lbl(s: StepperItem): string {
+    return typeof s === 'object' ? s.label : s;
+  }
+  statusOf(i: number, s: StepperItem): StepStatus {
+    if (typeof s === 'object' && s.status) return s.status;
+    return i < this.current ? 'done' : i === this.current ? 'active' : 'pending';
+  }
   barCls(i: number): string {
     return 'ui-step-bar' + (i <= this.current ? ' done' : '');
   }
-  stepCls(i: number): string {
-    return 'ui-step ' + (i < this.current ? 'done' : i === this.current ? 'active' : 'pending');
+  stepCls(i: number, s: StepperItem): string {
+    return 'ui-step ' + this.statusOf(i, s) + (this.onStepClick ? ' clickable' : '');
   }
 }
