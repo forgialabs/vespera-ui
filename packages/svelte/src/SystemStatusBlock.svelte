@@ -1,6 +1,8 @@
 <script>
   import Block from './Block.svelte';
   import Badge from './Badge.svelte';
+  import BlockSkeleton from './BlockSkeleton.svelte';
+  import BlockEmpty from './BlockEmpty.svelte';
 
   const STATUS_TONE = {
     operational: 'pos',
@@ -16,7 +18,7 @@
     { name: 'Billing', status: 'maintenance', uptime: 99.8 },
   ];
 
-  let { services = DEFAULT_SERVICES } = $props();
+  let { services = DEFAULT_SERVICES, loading = false, empty } = $props();
 
   let allOk = $derived(services.every((s) => s.status === 'operational'));
   let accent = $derived(allOk ? 'var(--success)' : 'var(--warning)');
@@ -40,8 +42,15 @@
     <div style="flex:1"></div>
     <span class="eyebrow">Updated 30s ago</span>
   </div>
-  <div style="padding:14px;padding-top:4px;padding-bottom:8px">
-    {#each services as s (s.name)}
+  {#if loading}
+    <BlockSkeleton />
+  {:else if services.length === 0}
+    {#if empty}{@render empty()}{:else}
+      <BlockEmpty title="No services" desc="No monitored services yet." />
+    {/if}
+  {:else}
+    <div style="padding:14px;padding-top:4px;padding-bottom:8px">
+      {#each services as s (s.name)}
       <div class="ui-row" style="align-items:center">
         <div style="width:150px;flex-shrink:0">
           <div style="font-weight:600;font-size:13.5px">{s.name}</div>
@@ -62,6 +71,7 @@
         >
         <Badge tone={STATUS_TONE[s.status]} dot>{s.status}</Badge>
       </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/if}
 </Block>

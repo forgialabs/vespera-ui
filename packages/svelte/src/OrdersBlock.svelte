@@ -5,6 +5,8 @@
   import Tabs from './Tabs.svelte';
   import DropdownMenu from './DropdownMenu.svelte';
   import Icon from './Icon.svelte';
+  import BlockSkeleton from './BlockSkeleton.svelte';
+  import BlockEmpty from './BlockEmpty.svelte';
 
   const ORDER_TONE = { fulfilled: 'pos', processing: 'info', pending: 'warn', refunded: 'neg' };
   const DEFAULT_ORDERS = [
@@ -22,7 +24,9 @@
     { label: 'Cancel', icon: 'x', danger: true },
   ];
 
-  let { orders = DEFAULT_ORDERS } = $props();
+  const ALL_COLUMNS = ['customer', 'item', 'status', 'amount'];
+  let { orders = DEFAULT_ORDERS, columns = ALL_COLUMNS, loading = false, empty } = $props();
+  const col = (c) => columns.includes(c);
 
   let tab = $state('all');
   let sel = $state(new Set());
@@ -68,76 +72,95 @@
       <button type="button" class="btn btn-primary btn-sm"><Icon name="plus" size={15} />New order</button>
     {/if}
   </div>
-  <div style="overflow-x:auto">
-    <table class="ui-table" style="min-width:720px">
-      <thead>
-        <tr>
-          <th style="width:44px">
-            <span
-              class="ui-check{allSel ? ' on' : ''}"
-              role="checkbox"
-              aria-checked={allSel}
-              tabindex="-1"
-              onclick={toggleAll}
-              onkeydown={(e) => e.key === 'Enter' && toggleAll()}
-            >
-              <Icon name="check" size={14} />
-            </span>
-          </th>
-          <th><span class="eyebrow">Order</span></th>
-          <th><span class="eyebrow">Customer</span></th>
-          <th><span class="eyebrow">Item</span></th>
-          <th><span class="eyebrow">Status</span></th>
-          <th style="text-align:right"><span class="eyebrow">Amount</span></th>
-          <th style="width:44px"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each rows as o (o.id)}
-          <tr
-            style={sel.has(o.id)
-              ? 'background:color-mix(in oklab, var(--accent) 7%, transparent)'
-              : ''}
-          >
-            <td>
+  {#if loading}
+    <BlockSkeleton />
+  {:else if rows.length === 0}
+    {#if empty}
+      {@render empty()}
+    {:else}
+      <BlockEmpty
+        title="No orders"
+        desc={tab === 'all' ? 'New orders will appear here.' : `No ${tab} orders right now.`}
+      />
+    {/if}
+  {:else}
+    <div style="overflow-x:auto">
+      <table class="ui-table" style="min-width:720px">
+        <thead>
+          <tr>
+            <th style="width:44px">
               <span
-                class="ui-check{sel.has(o.id) ? ' on' : ''}"
+                class="ui-check{allSel ? ' on' : ''}"
                 role="checkbox"
-                aria-checked={sel.has(o.id)}
+                aria-checked={allSel}
                 tabindex="-1"
-                onclick={() => toggle(o.id)}
-                onkeydown={(e) => e.key === 'Enter' && toggle(o.id)}
+                onclick={toggleAll}
+                onkeydown={(e) => e.key === 'Enter' && toggleAll()}
               >
                 <Icon name="check" size={14} />
               </span>
-            </td>
-            <td class="mono" style="font-weight:600">{o.id}</td>
-            <td>
-              <div style="display:flex;align-items:center;gap:10px">
-                <Avatar name={o.company} hue={o.hue} size={28} />
-                <span style="font-weight:500">{o.company}</span>
-              </div>
-            </td>
-            <td style="color:var(--text-dim)">{o.item}</td>
-            <td><Badge tone={ORDER_TONE[o.state]} dot>{o.state}</Badge></td>
-            <td class="tnum" style="text-align:right;font-weight:700">${o.amount.toLocaleString()}</td>
-            <td>
-              <DropdownMenu items={ROW_MENU}>
-                {#snippet trigger()}
-                  <button
-                    type="button"
-                    class="vsp-icon-btn"
-                    style="width:30px;height:30px;border:0;background:transparent"
-                    aria-label="Row actions"
-                  >
-                    <Icon name="more" size={18} />
-                  </button>
-                {/snippet}
-              </DropdownMenu>
-            </td>
+            </th>
+            <th><span class="eyebrow">Order</span></th>
+            {#if col('customer')}<th><span class="eyebrow">Customer</span></th>{/if}
+            {#if col('item')}<th><span class="eyebrow">Item</span></th>{/if}
+            {#if col('status')}<th><span class="eyebrow">Status</span></th>{/if}
+            {#if col('amount')}<th style="text-align:right"><span class="eyebrow">Amount</span></th>{/if}
+            <th style="width:44px"></th>
           </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          {#each rows as o (o.id)}
+            <tr
+              style={sel.has(o.id)
+                ? 'background:color-mix(in oklab, var(--accent) 7%, transparent)'
+                : ''}
+            >
+              <td>
+                <span
+                  class="ui-check{sel.has(o.id) ? ' on' : ''}"
+                  role="checkbox"
+                  aria-checked={sel.has(o.id)}
+                  tabindex="-1"
+                  onclick={() => toggle(o.id)}
+                  onkeydown={(e) => e.key === 'Enter' && toggle(o.id)}
+                >
+                  <Icon name="check" size={14} />
+                </span>
+              </td>
+              <td class="mono" style="font-weight:600">{o.id}</td>
+              {#if col('customer')}
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <Avatar name={o.company} hue={o.hue} size={28} />
+                    <span style="font-weight:500">{o.company}</span>
+                  </div>
+                </td>
+              {/if}
+              {#if col('item')}<td style="color:var(--text-dim)">{o.item}</td>{/if}
+              {#if col('status')}<td><Badge tone={ORDER_TONE[o.state]} dot>{o.state}</Badge></td>{/if}
+              {#if col('amount')}
+                <td class="tnum" style="text-align:right;font-weight:700"
+                  >${o.amount.toLocaleString()}</td
+                >
+              {/if}
+              <td>
+                <DropdownMenu items={ROW_MENU}>
+                  {#snippet trigger()}
+                    <button
+                      type="button"
+                      class="vsp-icon-btn"
+                      style="width:30px;height:30px;border:0;background:transparent"
+                      aria-label="Row actions"
+                    >
+                      <Icon name="more" size={18} />
+                    </button>
+                  {/snippet}
+                </DropdownMenu>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
 </Block>

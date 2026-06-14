@@ -1634,6 +1634,32 @@ button.ui-step {
   border-width: 3px;
 }
 
+/* ---------- empty state ---------- */
+.ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 38px 16px;
+  text-align: center;
+  color: var(--text-faint);
+}
+.ui-empty > svg {
+  width: 26px;
+  height: 26px;
+  opacity: 0.55;
+}
+.ui-empty-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+.ui-empty-desc {
+  font-size: 12.5px;
+  max-width: 280px;
+}
+
 /* ---------- accordion ---------- */
 .ui-acc {
   border: 1px solid var(--border);

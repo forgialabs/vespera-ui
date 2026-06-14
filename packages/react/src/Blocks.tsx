@@ -10,6 +10,7 @@ import { Tabs } from './Tabs';
 import { Tooltip } from './Tooltip';
 import { Select } from './Select';
 import { DropdownMenu } from './Anchored';
+import { Skeleton } from './Feedback';
 import { toast } from './Toast';
 
 /* ---------------- shared frame ---------------- */
@@ -53,6 +54,43 @@ function Bar({ children }: { children: ReactNode }) {
 
 function Body({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return <div style={{ padding: 14, ...style }}>{children}</div>;
+}
+
+/* loading + empty affordances shared by the data blocks */
+
+/** A stack of shimmer rows shown while a block's data is loading. */
+function BlockSkeleton({ rows = 4 }: { rows?: number }) {
+  return (
+    <Body style={{ display: 'grid', gap: 16 }}>
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Skeleton w={32} h={32} r={9} />
+          <Skeleton w={`${30 + ((i * 13) % 35)}%`} h={12} />
+          <div style={{ flex: 1 }} />
+          <Skeleton w={68} h={12} />
+        </div>
+      ))}
+    </Body>
+  );
+}
+
+/** Default empty placeholder; overridden wholesale when `emptyState` is given. */
+function BlockEmpty({ title, desc }: { title: string; desc?: string }) {
+  return (
+    <div className="ui-empty">
+      <Icon.inbox />
+      <div className="ui-empty-title">{title}</div>
+      {desc && <div className="ui-empty-desc">{desc}</div>}
+    </div>
+  );
+}
+
+/** Shared props for the data-driven blocks. */
+export interface BlockDataProps {
+  /** Show a shimmer skeleton instead of content. */
+  loading?: boolean;
+  /** Custom node rendered when there are no rows (replaces the default). */
+  emptyState?: ReactNode;
 }
 
 /* ===================== Orders ===================== */
@@ -126,12 +164,23 @@ const DEFAULT_ORDERS: Order[] = [
   },
 ];
 
-export interface OrdersBlockProps {
+/** Optional columns of the orders table (id + row menu are always shown). */
+export type OrderColumn = 'customer' | 'item' | 'status' | 'amount';
+const ALL_ORDER_COLUMNS: OrderColumn[] = ['customer', 'item', 'status', 'amount'];
+
+export interface OrdersBlockProps extends BlockDataProps {
   orders?: Order[];
+  /** Which optional columns to show, in order. Defaults to all four. */
+  columns?: OrderColumn[];
 }
 
 /** Operational table: tab filters, bulk selection, status badges, row menu. */
-export function OrdersBlock({ orders = DEFAULT_ORDERS }: OrdersBlockProps) {
+export function OrdersBlock({
+  orders = DEFAULT_ORDERS,
+  columns = ALL_ORDER_COLUMNS,
+  loading,
+  emptyState,
+}: OrdersBlockProps) {
   const [tab, setTab] = useState('all');
   const [sel, setSel] = useState<Set<string>>(() => new Set());
   const rows = orders.filter((o) => tab === 'all' || o.state === tab);
@@ -150,6 +199,7 @@ export function OrdersBlock({ orders = DEFAULT_ORDERS }: OrdersBlockProps) {
       else n.add(id);
       return n;
     });
+  const col = (c: OrderColumn) => columns.includes(c);
 
   return (
     <Block
@@ -189,101 +239,126 @@ export function OrdersBlock({ orders = DEFAULT_ORDERS }: OrdersBlockProps) {
           </>
         )}
       </Bar>
-      <div style={{ overflowX: 'auto' }}>
-        <table className="ui-table" style={{ minWidth: 720 }}>
-          <thead>
-            <tr>
-              <th style={{ width: 44 }}>
-                <span
-                  className={cx('ui-check', allSel && 'on')}
-                  onClick={toggleAll}
-                  role="checkbox"
-                  aria-checked={allSel}
-                >
-                  <Icon.check />
-                </span>
-              </th>
-              <th>
-                <span className="eyebrow">Order</span>
-              </th>
-              <th>
-                <span className="eyebrow">Customer</span>
-              </th>
-              <th>
-                <span className="eyebrow">Item</span>
-              </th>
-              <th>
-                <span className="eyebrow">Status</span>
-              </th>
-              <th style={{ textAlign: 'right' }}>
-                <span className="eyebrow">Amount</span>
-              </th>
-              <th style={{ width: 44 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((o) => (
-              <tr
-                key={o.id}
-                style={{
-                  background: sel.has(o.id)
-                    ? 'color-mix(in oklab, var(--accent) 7%, transparent)'
-                    : undefined,
-                }}
-              >
-                <td>
+      {loading ? (
+        <BlockSkeleton />
+      ) : rows.length === 0 ? (
+        (emptyState ?? (
+          <BlockEmpty
+            title="No orders"
+            desc={tab === 'all' ? 'New orders will appear here.' : `No ${tab} orders right now.`}
+          />
+        ))
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="ui-table" style={{ minWidth: 720 }}>
+            <thead>
+              <tr>
+                <th style={{ width: 44 }}>
                   <span
-                    className={cx('ui-check', sel.has(o.id) && 'on')}
-                    onClick={() => toggle(o.id)}
+                    className={cx('ui-check', allSel && 'on')}
+                    onClick={toggleAll}
                     role="checkbox"
-                    aria-checked={sel.has(o.id)}
+                    aria-checked={allSel}
                   >
                     <Icon.check />
                   </span>
-                </td>
-                <td className="mono" style={{ fontWeight: 600 }}>
-                  {o.id}
-                </td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Avatar name={o.company} hue={o.hue} size={28} />
-                    <span style={{ fontWeight: 500 }}>{o.company}</span>
-                  </div>
-                </td>
-                <td style={{ color: 'var(--text-dim)' }}>{o.item}</td>
-                <td>
-                  <Badge tone={ORDER_TONE[o.state]} dot>
-                    {o.state}
-                  </Badge>
-                </td>
-                <td className="tnum" style={{ textAlign: 'right', fontWeight: 700 }}>
-                  ${o.amount.toLocaleString()}
-                </td>
-                <td>
-                  <DropdownMenu
-                    trigger={
-                      <button
-                        type="button"
-                        className="vsp-icon-btn"
-                        style={{ width: 30, height: 30, border: 0, background: 'transparent' }}
-                        aria-label="Row actions"
-                      >
-                        <Icon.more />
-                      </button>
-                    }
-                    items={[
-                      { label: 'View order', icon: <Icon.eye /> },
-                      { label: 'Refund', icon: <Icon.refresh /> },
-                      { sep: true },
-                      { label: 'Cancel', icon: <Icon.x />, danger: true },
-                    ]}
-                  />
-                </td>
+                </th>
+                <th>
+                  <span className="eyebrow">Order</span>
+                </th>
+                {col('customer') && (
+                  <th>
+                    <span className="eyebrow">Customer</span>
+                  </th>
+                )}
+                {col('item') && (
+                  <th>
+                    <span className="eyebrow">Item</span>
+                  </th>
+                )}
+                {col('status') && (
+                  <th>
+                    <span className="eyebrow">Status</span>
+                  </th>
+                )}
+                {col('amount') && (
+                  <th style={{ textAlign: 'right' }}>
+                    <span className="eyebrow">Amount</span>
+                  </th>
+                )}
+                <th style={{ width: 44 }} />
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map((o) => (
+                <tr
+                  key={o.id}
+                  style={{
+                    background: sel.has(o.id)
+                      ? 'color-mix(in oklab, var(--accent) 7%, transparent)'
+                      : undefined,
+                  }}
+                >
+                  <td>
+                    <span
+                      className={cx('ui-check', sel.has(o.id) && 'on')}
+                      onClick={() => toggle(o.id)}
+                      role="checkbox"
+                      aria-checked={sel.has(o.id)}
+                    >
+                      <Icon.check />
+                    </span>
+                  </td>
+                  <td className="mono" style={{ fontWeight: 600 }}>
+                    {o.id}
+                  </td>
+                  {col('customer') && (
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Avatar name={o.company} hue={o.hue} size={28} />
+                        <span style={{ fontWeight: 500 }}>{o.company}</span>
+                      </div>
+                    </td>
+                  )}
+                  {col('item') && <td style={{ color: 'var(--text-dim)' }}>{o.item}</td>}
+                  {col('status') && (
+                    <td>
+                      <Badge tone={ORDER_TONE[o.state]} dot>
+                        {o.state}
+                      </Badge>
+                    </td>
+                  )}
+                  {col('amount') && (
+                    <td className="tnum" style={{ textAlign: 'right', fontWeight: 700 }}>
+                      ${o.amount.toLocaleString()}
+                    </td>
+                  )}
+                  <td>
+                    <DropdownMenu
+                      trigger={
+                        <button
+                          type="button"
+                          className="vsp-icon-btn"
+                          style={{ width: 30, height: 30, border: 0, background: 'transparent' }}
+                          aria-label="Row actions"
+                        >
+                          <Icon.more />
+                        </button>
+                      }
+                      items={[
+                        { label: 'View order', icon: <Icon.eye /> },
+                        { label: 'Refund', icon: <Icon.refresh /> },
+                        { sep: true },
+                        { label: 'Cancel', icon: <Icon.x />, danger: true },
+                      ]}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </Block>
   );
 }
@@ -305,12 +380,16 @@ const DEFAULT_MEMBERS: TeamMember[] = [
   { id: 3, name: 'Noor Haddad', email: 'noor@beacon.com', hue: 40, role: 'Viewer' },
 ];
 
-export interface TeamRolesBlockProps {
+export interface TeamRolesBlockProps extends BlockDataProps {
   members?: TeamMember[];
 }
 
 /** Member list with inline role selects and a per-row action menu. */
-export function TeamRolesBlock({ members: initial = DEFAULT_MEMBERS }: TeamRolesBlockProps) {
+export function TeamRolesBlock({
+  members: initial = DEFAULT_MEMBERS,
+  loading,
+  emptyState,
+}: TeamRolesBlockProps) {
   const [members, setMembers] = useState(initial);
   return (
     <Block title="Team & roles" desc="Manage members and permissions with inline role selects.">
@@ -323,50 +402,60 @@ export function TeamRolesBlock({ members: initial = DEFAULT_MEMBERS }: TeamRoles
           Invite
         </Button>
       </Bar>
-      <Body style={{ paddingTop: 4, paddingBottom: 4 }}>
-        {members.map((m) => (
-          <div key={m.id} className="ui-row">
-            <Avatar name={m.name} hue={m.hue} size={38} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.name}</div>
-              <div className="mono" style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>
-                {m.email}
+      {loading ? (
+        <BlockSkeleton />
+      ) : members.length === 0 ? (
+        (emptyState ?? (
+          <BlockEmpty title="No members" desc="Invite teammates to collaborate here." />
+        ))
+      ) : (
+        <Body style={{ paddingTop: 4, paddingBottom: 4 }}>
+          {members.map((m) => (
+            <div key={m.id} className="ui-row">
+              <Avatar name={m.name} hue={m.hue} size={38} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.name}</div>
+                <div className="mono" style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>
+                  {m.email}
+                </div>
               </div>
+              {m.role === 'Owner' ? (
+                <Badge tone="info">Owner</Badge>
+              ) : (
+                <div style={{ width: 130 }}>
+                  <Select
+                    value={m.role}
+                    onChange={(v) =>
+                      setMembers((x) =>
+                        x.map((y) => (y.id === m.id ? { ...y, role: String(v) } : y)),
+                      )
+                    }
+                    options={['Admin', 'Editor', 'Viewer']}
+                  />
+                </div>
+              )}
+              <DropdownMenu
+                trigger={
+                  <button
+                    type="button"
+                    className="vsp-icon-btn"
+                    style={{ width: 32, height: 32 }}
+                    aria-label="Member actions"
+                  >
+                    <Icon.more />
+                  </button>
+                }
+                items={[
+                  { label: 'Resend invite', icon: <Icon.mail /> },
+                  { label: 'Transfer ownership', icon: <Icon.shield /> },
+                  { sep: true },
+                  { label: 'Remove', icon: <Icon.x />, danger: true },
+                ]}
+              />
             </div>
-            {m.role === 'Owner' ? (
-              <Badge tone="info">Owner</Badge>
-            ) : (
-              <div style={{ width: 130 }}>
-                <Select
-                  value={m.role}
-                  onChange={(v) =>
-                    setMembers((x) => x.map((y) => (y.id === m.id ? { ...y, role: String(v) } : y)))
-                  }
-                  options={['Admin', 'Editor', 'Viewer']}
-                />
-              </div>
-            )}
-            <DropdownMenu
-              trigger={
-                <button
-                  type="button"
-                  className="vsp-icon-btn"
-                  style={{ width: 32, height: 32 }}
-                  aria-label="Member actions"
-                >
-                  <Icon.more />
-                </button>
-              }
-              items={[
-                { label: 'Resend invite', icon: <Icon.mail /> },
-                { label: 'Transfer ownership', icon: <Icon.shield /> },
-                { sep: true },
-                { label: 'Remove', icon: <Icon.x />, danger: true },
-              ]}
-            />
-          </div>
-        ))}
-      </Body>
+          ))}
+        </Body>
+      )}
     </Block>
   );
 }
@@ -396,12 +485,16 @@ const DEFAULT_SERVICES: Service[] = [
   { name: 'Billing', status: 'maintenance', uptime: 99.8 },
 ];
 
-export interface SystemStatusBlockProps {
+export interface SystemStatusBlockProps extends BlockDataProps {
   services?: Service[];
 }
 
 /** Live service health with 30-day uptime bars. */
-export function SystemStatusBlock({ services = DEFAULT_SERVICES }: SystemStatusBlockProps) {
+export function SystemStatusBlock({
+  services = DEFAULT_SERVICES,
+  loading,
+  emptyState,
+}: SystemStatusBlockProps) {
   const allOk = services.every((s) => s.status === 'operational');
   return (
     <Block title="System status" desc="Live service health with 30-day uptime bars.">
@@ -421,46 +514,52 @@ export function SystemStatusBlock({ services = DEFAULT_SERVICES }: SystemStatusB
         <div style={{ flex: 1 }} />
         <span className="eyebrow">Updated 30s ago</span>
       </Bar>
-      <Body style={{ paddingTop: 4, paddingBottom: 8 }}>
-        {services.map((s) => (
-          <div key={s.name} className="ui-row" style={{ alignItems: 'center' }}>
-            <div style={{ width: 150, flexShrink: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 13.5 }}>{s.name}</div>
+      {loading ? (
+        <BlockSkeleton />
+      ) : services.length === 0 ? (
+        (emptyState ?? <BlockEmpty title="No services" desc="No monitored services yet." />)
+      ) : (
+        <Body style={{ paddingTop: 4, paddingBottom: 8 }}>
+          {services.map((s) => (
+            <div key={s.name} className="ui-row" style={{ alignItems: 'center' }}>
+              <div style={{ width: 150, flexShrink: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: 13.5 }}>{s.name}</div>
+              </div>
+              <div style={{ flex: 1, display: 'flex', gap: 2, alignItems: 'flex-end', height: 26 }}>
+                {Array.from({ length: 44 }).map((_, i) => {
+                  const bad =
+                    (s.status === 'degraded' && i > 38 && i < 42) ||
+                    (s.status === 'maintenance' && i === 43);
+                  return (
+                    <span
+                      key={i}
+                      style={{
+                        flex: 1,
+                        height: bad ? '60%' : '100%',
+                        borderRadius: 2,
+                        background: bad
+                          ? s.status === 'degraded'
+                            ? 'var(--warning)'
+                            : 'var(--accent)'
+                          : 'color-mix(in oklab, var(--success) 70%, transparent)',
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <span
+                className="mono tnum"
+                style={{ width: 56, textAlign: 'right', fontSize: 12, color: 'var(--text-dim)' }}
+              >
+                {s.uptime}%
+              </span>
+              <Badge tone={STATUS_TONE[s.status]} dot>
+                {s.status}
+              </Badge>
             </div>
-            <div style={{ flex: 1, display: 'flex', gap: 2, alignItems: 'flex-end', height: 26 }}>
-              {Array.from({ length: 44 }).map((_, i) => {
-                const bad =
-                  (s.status === 'degraded' && i > 38 && i < 42) ||
-                  (s.status === 'maintenance' && i === 43);
-                return (
-                  <span
-                    key={i}
-                    style={{
-                      flex: 1,
-                      height: bad ? '60%' : '100%',
-                      borderRadius: 2,
-                      background: bad
-                        ? s.status === 'degraded'
-                          ? 'var(--warning)'
-                          : 'var(--accent)'
-                        : 'color-mix(in oklab, var(--success) 70%, transparent)',
-                    }}
-                  />
-                );
-              })}
-            </div>
-            <span
-              className="mono tnum"
-              style={{ width: 56, textAlign: 'right', fontSize: 12, color: 'var(--text-dim)' }}
-            >
-              {s.uptime}%
-            </span>
-            <Badge tone={STATUS_TONE[s.status]} dot>
-              {s.status}
-            </Badge>
-          </div>
-        ))}
-      </Body>
+          ))}
+        </Body>
+      )}
     </Block>
   );
 }
@@ -504,12 +603,16 @@ const DEFAULT_KEYS: ApiKey[] = [
   },
 ];
 
-export interface ApiKeysBlockProps {
+export interface ApiKeysBlockProps extends BlockDataProps {
   keys?: ApiKey[];
 }
 
 /** Reveal, copy, and revoke API credentials; secrets stay masked by default. */
-export function ApiKeysBlock({ keys: initial = DEFAULT_KEYS }: ApiKeysBlockProps) {
+export function ApiKeysBlock({
+  keys: initial = DEFAULT_KEYS,
+  loading,
+  emptyState,
+}: ApiKeysBlockProps) {
   const [keys, setKeys] = useState(initial);
   const [revealed, setRevealed] = useState<Set<number>>(() => new Set());
   const toggleReveal = (id: number) =>
@@ -537,71 +640,79 @@ export function ApiKeysBlock({ keys: initial = DEFAULT_KEYS }: ApiKeysBlockProps
           Create key
         </Button>
       </Bar>
-      <Body style={{ paddingTop: 4, paddingBottom: 4 }}>
-        {keys.map((k) => {
-          const show = revealed.has(k.id);
-          return (
-            <div key={k.id} className="ui-row">
-              <div style={{ minWidth: 96 }}>
-                <div style={{ fontWeight: 600, fontSize: 13.5 }}>{k.name}</div>
-                <div className="eyebrow" style={{ marginTop: 2 }}>
-                  {k.created}
+      {loading ? (
+        <BlockSkeleton />
+      ) : keys.length === 0 ? (
+        (emptyState ?? (
+          <BlockEmpty title="No API keys" desc="Create a key to start making requests." />
+        ))
+      ) : (
+        <Body style={{ paddingTop: 4, paddingBottom: 4 }}>
+          {keys.map((k) => {
+            const show = revealed.has(k.id);
+            return (
+              <div key={k.id} className="ui-row">
+                <div style={{ minWidth: 96 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13.5 }}>{k.name}</div>
+                  <div className="eyebrow" style={{ marginTop: 2 }}>
+                    {k.created}
+                  </div>
                 </div>
+                <code
+                  className="mono"
+                  style={{
+                    flex: 1,
+                    fontSize: 12.5,
+                    color: 'var(--text-dim)',
+                    background: 'var(--surface-2)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--r-sm)',
+                    padding: '7px 11px',
+                    letterSpacing: '.02em',
+                  }}
+                >
+                  {show ? k.secret : k.token}
+                </code>
+                <Tooltip label={show ? 'Hide' : 'Reveal'}>
+                  <button
+                    type="button"
+                    className="vsp-icon-btn"
+                    style={{ width: 34, height: 34 }}
+                    onClick={() => toggleReveal(k.id)}
+                    aria-label={show ? 'Hide secret' : 'Reveal secret'}
+                  >
+                    <Icon.eye />
+                  </button>
+                </Tooltip>
+                <Tooltip label="Copy">
+                  <button
+                    type="button"
+                    className="vsp-icon-btn"
+                    style={{ width: 34, height: 34 }}
+                    onClick={() => toast({ title: 'Copied to clipboard' })}
+                    aria-label="Copy secret"
+                  >
+                    <Icon.doc />
+                  </button>
+                </Tooltip>
+                <span className="eyebrow" style={{ width: 66, textAlign: 'right' }}>
+                  {k.last}
+                </span>
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  onClick={() => {
+                    setKeys((x) => x.filter((y) => y.id !== k.id));
+                    toast({ tone: 'neg', title: 'Key revoked' });
+                  }}
+                >
+                  Revoke
+                </Button>
               </div>
-              <code
-                className="mono"
-                style={{
-                  flex: 1,
-                  fontSize: 12.5,
-                  color: 'var(--text-dim)',
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--r-sm)',
-                  padding: '7px 11px',
-                  letterSpacing: '.02em',
-                }}
-              >
-                {show ? k.secret : k.token}
-              </code>
-              <Tooltip label={show ? 'Hide' : 'Reveal'}>
-                <button
-                  type="button"
-                  className="vsp-icon-btn"
-                  style={{ width: 34, height: 34 }}
-                  onClick={() => toggleReveal(k.id)}
-                  aria-label={show ? 'Hide secret' : 'Reveal secret'}
-                >
-                  <Icon.eye />
-                </button>
-              </Tooltip>
-              <Tooltip label="Copy">
-                <button
-                  type="button"
-                  className="vsp-icon-btn"
-                  style={{ width: 34, height: 34 }}
-                  onClick={() => toast({ title: 'Copied to clipboard' })}
-                  aria-label="Copy secret"
-                >
-                  <Icon.doc />
-                </button>
-              </Tooltip>
-              <span className="eyebrow" style={{ width: 66, textAlign: 'right' }}>
-                {k.last}
-              </span>
-              <Button
-                variant="subtle"
-                size="sm"
-                onClick={() => {
-                  setKeys((x) => x.filter((y) => y.id !== k.id));
-                  toast({ tone: 'neg', title: 'Key revoked' });
-                }}
-              >
-                Revoke
-              </Button>
-            </div>
-          );
-        })}
-      </Body>
+            );
+          })}
+        </Body>
+      )}
     </Block>
   );
 }
@@ -654,12 +765,16 @@ const DEFAULT_AUDIT: AuditEntry[] = [
   },
 ];
 
-export interface AuditLogBlockProps {
+export interface AuditLogBlockProps extends BlockDataProps {
   entries?: AuditEntry[];
 }
 
 /** A chronological trail of privileged actions, as a timeline. */
-export function AuditLogBlock({ entries = DEFAULT_AUDIT }: AuditLogBlockProps) {
+export function AuditLogBlock({
+  entries = DEFAULT_AUDIT,
+  loading,
+  emptyState,
+}: AuditLogBlockProps) {
   return (
     <Block title="Audit log" desc="A chronological trail of every privileged action.">
       <Bar>
@@ -670,60 +785,66 @@ export function AuditLogBlock({ entries = DEFAULT_AUDIT }: AuditLogBlockProps) {
           Export log
         </Button>
       </Bar>
-      <Body>
-        <div style={{ position: 'relative', paddingLeft: 8 }}>
-          {entries.map((e, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                gap: 14,
-                paddingBottom: i < entries.length - 1 ? 20 : 0,
-                position: 'relative',
-              }}
-            >
-              {i < entries.length - 1 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    left: 15,
-                    top: 32,
-                    bottom: 0,
-                    width: 1.5,
-                    background: 'var(--border)',
-                  }}
-                />
-              )}
-              <span
+      {loading ? (
+        <BlockSkeleton />
+      ) : entries.length === 0 ? (
+        (emptyState ?? <BlockEmpty title="No activity" desc="Privileged actions will show here." />)
+      ) : (
+        <Body>
+          <div style={{ position: 'relative', paddingLeft: 8 }}>
+            {entries.map((e, i) => (
+              <div
+                key={i}
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 9,
-                  flexShrink: 0,
-                  display: 'grid',
-                  placeItems: 'center',
-                  background: 'var(--surface-3)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-dim)',
-                  zIndex: 1,
+                  display: 'flex',
+                  gap: 14,
+                  paddingBottom: i < entries.length - 1 ? 20 : 0,
+                  position: 'relative',
                 }}
               >
-                {e.icon}
-              </span>
-              <div style={{ flex: 1, paddingTop: 5 }}>
-                <div style={{ fontSize: 13.5 }}>
-                  <b style={{ fontWeight: 700 }}>{e.who}</b>{' '}
-                  <span style={{ color: 'var(--text-dim)' }}>{e.action}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
-                  <Badge tone="muted">{e.tag}</Badge>
-                  <span className="eyebrow">{e.time}</span>
+                {i < entries.length - 1 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: 15,
+                      top: 32,
+                      bottom: 0,
+                      width: 1.5,
+                      background: 'var(--border)',
+                    }}
+                  />
+                )}
+                <span
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 9,
+                    flexShrink: 0,
+                    display: 'grid',
+                    placeItems: 'center',
+                    background: 'var(--surface-3)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-dim)',
+                    zIndex: 1,
+                  }}
+                >
+                  {e.icon}
+                </span>
+                <div style={{ flex: 1, paddingTop: 5 }}>
+                  <div style={{ fontSize: 13.5 }}>
+                    <b style={{ fontWeight: 700 }}>{e.who}</b>{' '}
+                    <span style={{ color: 'var(--text-dim)' }}>{e.action}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
+                    <Badge tone="muted">{e.tag}</Badge>
+                    <span className="eyebrow">{e.time}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </Body>
+            ))}
+          </div>
+        </Body>
+      )}
     </Block>
   );
 }

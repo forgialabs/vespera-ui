@@ -2,6 +2,8 @@
   import Block from './Block.svelte';
   import Tooltip from './Tooltip.svelte';
   import Icon from './Icon.svelte';
+  import BlockSkeleton from './BlockSkeleton.svelte';
+  import BlockEmpty from './BlockEmpty.svelte';
   import { toast } from './toast.svelte.js';
   import { untrack } from 'svelte';
 
@@ -11,7 +13,7 @@
     { id: 3, name: 'CI / CD', token: 'vsp_live_19cc…7a4b', secret: 'vsp_live_19cc8e2f0b6d7a4b', created: 'Apr 21, 2026', last: '12h ago' },
   ];
 
-  let { keys: initial = DEFAULT_KEYS } = $props();
+  let { keys: initial = DEFAULT_KEYS, loading = false, empty } = $props();
   let keys = $state(untrack(() => initial.map((k) => ({ ...k }))));
   let revealed = $state(new Set());
 
@@ -40,8 +42,15 @@
       <Icon name="plus" size={15} />Create key
     </button>
   </div>
-  <div style="padding:14px;padding-top:4px;padding-bottom:4px">
-    {#each keys as k (k.id)}
+  {#if loading}
+    <BlockSkeleton />
+  {:else if keys.length === 0}
+    {#if empty}{@render empty()}{:else}
+      <BlockEmpty title="No API keys" desc="Create a key to start making requests." />
+    {/if}
+  {:else}
+    <div style="padding:14px;padding-top:4px;padding-bottom:4px">
+      {#each keys as k (k.id)}
       {@const show = revealed.has(k.id)}
       <div class="ui-row">
         <div style="min-width:96px">
@@ -78,6 +87,7 @@
         <span class="eyebrow" style="width:66px;text-align:right">{k.last}</span>
         <button type="button" class="btn btn-subtle btn-sm" onclick={() => revoke(k.id)}>Revoke</button>
       </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/if}
 </Block>

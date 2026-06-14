@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ContentChild, ElementRef, Input } from '@angular/core';
 import { VspBlock } from './blocks.component';
 import { VspBadge, type BadgeTone } from './badge.component';
 import { VspAvatar } from './media.component';
@@ -7,7 +7,11 @@ import { VspTooltip } from './tooltip.component';
 import { VspSelect } from './select.component';
 import { VspDropdownMenu, type MenuItem } from './anchored.component';
 import { VspIcon } from './icon.component';
+import { VspBlockSkeleton, VspBlockEmpty } from './block-state.component';
 import { toast } from './toast.component';
+
+export type OrderColumn = 'customer' | 'item' | 'status' | 'amount';
+const ALL_ORDER_COLUMNS: OrderColumn[] = ['customer', 'item', 'status', 'amount'];
 
 /* ===================== Orders ===================== */
 
@@ -86,7 +90,16 @@ const ROW_MENU: MenuItem[] = [
 /** Operational table: tab filters, bulk selection, status badges, row menu. */
 @Component({
   selector: 'vsp-orders-block',
-  imports: [VspBlock, VspBadge, VspAvatar, VspTabs, VspDropdownMenu, VspIcon],
+  imports: [
+    VspBlock,
+    VspBadge,
+    VspAvatar,
+    VspTabs,
+    VspDropdownMenu,
+    VspIcon,
+    VspBlockSkeleton,
+    VspBlockEmpty,
+  ],
   template: `<vsp-block
     title="Orders"
     desc="Operational table with tab filters, bulk selection, inline status and a row action menu."
@@ -113,84 +126,121 @@ const ROW_MENU: MenuItem[] = [
         </button>
       }
     </div>
-    <div style="overflow-x: auto">
-      <table class="ui-table" style="min-width: 720px">
-        <thead>
-          <tr>
-            <th style="width: 44px">
-              <span
-                [class]="'ui-check' + (allSel ? ' on' : '')"
-                role="checkbox"
-                [attr.aria-checked]="allSel"
-                (click)="toggleAll()"
-              >
-                <vsp-icon name="check" [size]="14" />
-              </span>
-            </th>
-            <th><span class="eyebrow">Order</span></th>
-            <th><span class="eyebrow">Customer</span></th>
-            <th><span class="eyebrow">Item</span></th>
-            <th><span class="eyebrow">Status</span></th>
-            <th style="text-align: right"><span class="eyebrow">Amount</span></th>
-            <th style="width: 44px"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (o of rows; track o.id) {
-            <tr
-              [style.background]="
-                sel.has(o.id) ? 'color-mix(in oklab, var(--accent) 7%, transparent)' : null
-              "
-            >
-              <td>
+    @if (loading) {
+      <vsp-block-skeleton />
+    } @else if (rows.length === 0) {
+      <ng-content select="[slot=empty]" />
+      @if (!emptySlot) {
+        <vsp-block-empty
+          title="No orders"
+          [desc]="
+            tab === 'all' ? 'New orders will appear here.' : 'No ' + tab + ' orders right now.'
+          "
+        />
+      }
+    } @else {
+      <div style="overflow-x: auto">
+        <table class="ui-table" style="min-width: 720px">
+          <thead>
+            <tr>
+              <th style="width: 44px">
                 <span
-                  [class]="'ui-check' + (sel.has(o.id) ? ' on' : '')"
+                  [class]="'ui-check' + (allSel ? ' on' : '')"
                   role="checkbox"
-                  [attr.aria-checked]="sel.has(o.id)"
-                  (click)="toggle(o.id)"
+                  [attr.aria-checked]="allSel"
+                  (click)="toggleAll()"
                 >
                   <vsp-icon name="check" [size]="14" />
                 </span>
-              </td>
-              <td class="mono" style="font-weight: 600">{{ o.id }}</td>
-              <td>
-                <div style="display: flex; align-items: center; gap: 10px">
-                  <vsp-avatar [name]="o.company" [hue]="o.hue" [size]="28" />
-                  <span style="font-weight: 500">{{ o.company }}</span>
-                </div>
-              </td>
-              <td style="color: var(--text-dim)">{{ o.item }}</td>
-              <td>
-                <vsp-badge [tone]="orderTone(o.state)" [dot]="true">{{ o.state }}</vsp-badge>
-              </td>
-              <td class="tnum" style="text-align: right; font-weight: 700">
-                \${{ o.amount.toLocaleString() }}
-              </td>
-              <td>
-                <vsp-dropdown-menu [items]="rowMenu">
-                  <button
-                    slot="trigger"
-                    type="button"
-                    class="vsp-icon-btn"
-                    style="width: 30px; height: 30px; border: 0; background: transparent"
-                    aria-label="Row actions"
-                  >
-                    <vsp-icon name="more" [size]="18" />
-                  </button>
-                </vsp-dropdown-menu>
-              </td>
+              </th>
+              <th><span class="eyebrow">Order</span></th>
+              @if (col('customer')) {
+                <th><span class="eyebrow">Customer</span></th>
+              }
+              @if (col('item')) {
+                <th><span class="eyebrow">Item</span></th>
+              }
+              @if (col('status')) {
+                <th><span class="eyebrow">Status</span></th>
+              }
+              @if (col('amount')) {
+                <th style="text-align: right"><span class="eyebrow">Amount</span></th>
+              }
+              <th style="width: 44px"></th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (o of rows; track o.id) {
+              <tr
+                [style.background]="
+                  sel.has(o.id) ? 'color-mix(in oklab, var(--accent) 7%, transparent)' : null
+                "
+              >
+                <td>
+                  <span
+                    [class]="'ui-check' + (sel.has(o.id) ? ' on' : '')"
+                    role="checkbox"
+                    [attr.aria-checked]="sel.has(o.id)"
+                    (click)="toggle(o.id)"
+                  >
+                    <vsp-icon name="check" [size]="14" />
+                  </span>
+                </td>
+                <td class="mono" style="font-weight: 600">{{ o.id }}</td>
+                @if (col('customer')) {
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                      <vsp-avatar [name]="o.company" [hue]="o.hue" [size]="28" />
+                      <span style="font-weight: 500">{{ o.company }}</span>
+                    </div>
+                  </td>
+                }
+                @if (col('item')) {
+                  <td style="color: var(--text-dim)">{{ o.item }}</td>
+                }
+                @if (col('status')) {
+                  <td>
+                    <vsp-badge [tone]="orderTone(o.state)" [dot]="true">{{ o.state }}</vsp-badge>
+                  </td>
+                }
+                @if (col('amount')) {
+                  <td class="tnum" style="text-align: right; font-weight: 700">
+                    \${{ o.amount.toLocaleString() }}
+                  </td>
+                }
+                <td>
+                  <vsp-dropdown-menu [items]="rowMenu">
+                    <button
+                      slot="trigger"
+                      type="button"
+                      class="vsp-icon-btn"
+                      style="width: 30px; height: 30px; border: 0; background: transparent"
+                      aria-label="Row actions"
+                    >
+                      <vsp-icon name="more" [size]="18" />
+                    </button>
+                  </vsp-dropdown-menu>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </vsp-block>`,
 })
 export class VspOrdersBlock {
   @Input() orders: Order[] = DEFAULT_ORDERS;
+  @Input() columns: OrderColumn[] = ALL_ORDER_COLUMNS;
+  @Input() loading = false;
+  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   tab = 'all';
   sel = new Set<string>();
   rowMenu = ROW_MENU;
+
+  col(c: OrderColumn): boolean {
+    return this.columns.includes(c);
+  }
 
   get tabs() {
     return [
@@ -248,7 +298,16 @@ const MEMBER_MENU: MenuItem[] = [
 /** Member list with inline role selects and a per-row action menu. */
 @Component({
   selector: 'vsp-team-roles-block',
-  imports: [VspBlock, VspBadge, VspAvatar, VspSelect, VspDropdownMenu, VspIcon],
+  imports: [
+    VspBlock,
+    VspBadge,
+    VspAvatar,
+    VspSelect,
+    VspDropdownMenu,
+    VspIcon,
+    VspBlockSkeleton,
+    VspBlockEmpty,
+  ],
   template: `<vsp-block
     title="Team & roles"
     desc="Manage members and permissions with inline role selects."
@@ -264,45 +323,56 @@ const MEMBER_MENU: MenuItem[] = [
         <vsp-icon name="mail" [size]="15" />Invite
       </button>
     </div>
-    <div style="padding: 14px; padding-top: 4px; padding-bottom: 4px">
-      @for (m of members; track m.id) {
-        <div class="ui-row">
-          <vsp-avatar [name]="m.name" [hue]="m.hue" [size]="38" />
-          <div style="flex: 1; min-width: 0">
-            <div style="font-weight: 600; font-size: 13.5px">{{ m.name }}</div>
-            <div class="mono" style="font-size: 11.5px; color: var(--text-faint)">
-              {{ m.email }}
-            </div>
-          </div>
-          @if (m.role === 'Owner') {
-            <vsp-badge tone="info">Owner</vsp-badge>
-          } @else {
-            <div style="width: 130px">
-              <vsp-select
-                [value]="m.role"
-                [options]="roleOptions"
-                (valueChange)="setRole(m.id, $event)"
-              />
-            </div>
-          }
-          <vsp-dropdown-menu [items]="memberMenu">
-            <button
-              slot="trigger"
-              type="button"
-              class="vsp-icon-btn"
-              style="width: 32px; height: 32px"
-              aria-label="Member actions"
-            >
-              <vsp-icon name="more" [size]="18" />
-            </button>
-          </vsp-dropdown-menu>
-        </div>
+    @if (loading) {
+      <vsp-block-skeleton />
+    } @else if (members.length === 0) {
+      <ng-content select="[slot=empty]" />
+      @if (!emptySlot) {
+        <vsp-block-empty title="No members" desc="Invite teammates to collaborate here." />
       }
-    </div>
+    } @else {
+      <div style="padding: 14px; padding-top: 4px; padding-bottom: 4px">
+        @for (m of members; track m.id) {
+          <div class="ui-row">
+            <vsp-avatar [name]="m.name" [hue]="m.hue" [size]="38" />
+            <div style="flex: 1; min-width: 0">
+              <div style="font-weight: 600; font-size: 13.5px">{{ m.name }}</div>
+              <div class="mono" style="font-size: 11.5px; color: var(--text-faint)">
+                {{ m.email }}
+              </div>
+            </div>
+            @if (m.role === 'Owner') {
+              <vsp-badge tone="info">Owner</vsp-badge>
+            } @else {
+              <div style="width: 130px">
+                <vsp-select
+                  [value]="m.role"
+                  [options]="roleOptions"
+                  (valueChange)="setRole(m.id, $event)"
+                />
+              </div>
+            }
+            <vsp-dropdown-menu [items]="memberMenu">
+              <button
+                slot="trigger"
+                type="button"
+                class="vsp-icon-btn"
+                style="width: 32px; height: 32px"
+                aria-label="Member actions"
+              >
+                <vsp-icon name="more" [size]="18" />
+              </button>
+            </vsp-dropdown-menu>
+          </div>
+        }
+      </div>
+    }
   </vsp-block>`,
 })
 export class VspTeamRolesBlock {
   @Input() members: TeamMember[] = DEFAULT_MEMBERS.map((m) => ({ ...m }));
+  @Input() loading = false;
+  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   memberMenu = MEMBER_MENU;
   roleOptions = ['Admin', 'Editor', 'Viewer'];
 
@@ -352,7 +422,7 @@ const DEFAULT_KEYS: ApiKey[] = [
 /** Reveal, copy, and revoke API credentials; secrets stay masked by default. */
 @Component({
   selector: 'vsp-api-keys-block',
-  imports: [VspBlock, VspTooltip, VspIcon],
+  imports: [VspBlock, VspTooltip, VspIcon, VspBlockSkeleton, VspBlockEmpty],
   template: `<vsp-block
     title="API keys"
     desc="Reveal, copy, and revoke credentials. Secrets stay masked by default."
@@ -367,49 +437,62 @@ const DEFAULT_KEYS: ApiKey[] = [
         <vsp-icon name="plus" [size]="15" />Create key
       </button>
     </div>
-    <div style="padding: 14px; padding-top: 4px; padding-bottom: 4px">
-      @for (k of keys; track k.id) {
-        <div class="ui-row">
-          <div style="min-width: 96px">
-            <div style="font-weight: 600; font-size: 13.5px">{{ k.name }}</div>
-            <div class="eyebrow" style="margin-top: 2px">{{ k.created }}</div>
-          </div>
-          <code
-            class="mono"
-            style="flex: 1; font-size: 12.5px; color: var(--text-dim); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 7px 11px; letter-spacing: 0.02em"
-            >{{ revealed.has(k.id) ? k.secret : k.token }}</code
-          >
-          <vsp-tooltip [label]="revealed.has(k.id) ? 'Hide' : 'Reveal'">
-            <button
-              type="button"
-              class="vsp-icon-btn"
-              style="width: 34px; height: 34px"
-              [attr.aria-label]="revealed.has(k.id) ? 'Hide secret' : 'Reveal secret'"
-              (click)="toggleReveal(k.id)"
-            >
-              <vsp-icon name="eye" [size]="16" />
-            </button>
-          </vsp-tooltip>
-          <vsp-tooltip label="Copy">
-            <button
-              type="button"
-              class="vsp-icon-btn"
-              style="width: 34px; height: 34px"
-              aria-label="Copy secret"
-              (click)="copied()"
-            >
-              <vsp-icon name="doc" [size]="16" />
-            </button>
-          </vsp-tooltip>
-          <span class="eyebrow" style="width: 66px; text-align: right">{{ k.last }}</span>
-          <button type="button" class="btn btn-subtle btn-sm" (click)="revoke(k.id)">Revoke</button>
-        </div>
+    @if (loading) {
+      <vsp-block-skeleton />
+    } @else if (keys.length === 0) {
+      <ng-content select="[slot=empty]" />
+      @if (!emptySlot) {
+        <vsp-block-empty title="No API keys" desc="Create a key to start making requests." />
       }
-    </div>
+    } @else {
+      <div style="padding: 14px; padding-top: 4px; padding-bottom: 4px">
+        @for (k of keys; track k.id) {
+          <div class="ui-row">
+            <div style="min-width: 96px">
+              <div style="font-weight: 600; font-size: 13.5px">{{ k.name }}</div>
+              <div class="eyebrow" style="margin-top: 2px">{{ k.created }}</div>
+            </div>
+            <code
+              class="mono"
+              style="flex: 1; font-size: 12.5px; color: var(--text-dim); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 7px 11px; letter-spacing: 0.02em"
+              >{{ revealed.has(k.id) ? k.secret : k.token }}</code
+            >
+            <vsp-tooltip [label]="revealed.has(k.id) ? 'Hide' : 'Reveal'">
+              <button
+                type="button"
+                class="vsp-icon-btn"
+                style="width: 34px; height: 34px"
+                [attr.aria-label]="revealed.has(k.id) ? 'Hide secret' : 'Reveal secret'"
+                (click)="toggleReveal(k.id)"
+              >
+                <vsp-icon name="eye" [size]="16" />
+              </button>
+            </vsp-tooltip>
+            <vsp-tooltip label="Copy">
+              <button
+                type="button"
+                class="vsp-icon-btn"
+                style="width: 34px; height: 34px"
+                aria-label="Copy secret"
+                (click)="copied()"
+              >
+                <vsp-icon name="doc" [size]="16" />
+              </button>
+            </vsp-tooltip>
+            <span class="eyebrow" style="width: 66px; text-align: right">{{ k.last }}</span>
+            <button type="button" class="btn btn-subtle btn-sm" (click)="revoke(k.id)">
+              Revoke
+            </button>
+          </div>
+        }
+      </div>
+    }
   </vsp-block>`,
 })
 export class VspApiKeysBlock {
   @Input() keys: ApiKey[] = DEFAULT_KEYS.map((k) => ({ ...k }));
+  @Input() loading = false;
+  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   revealed = new Set<number>();
 
   toggleReveal(id: number): void {

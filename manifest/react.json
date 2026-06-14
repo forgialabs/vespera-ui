@@ -138,10 +138,22 @@
       "description": "Reveal, copy, and revoke API credentials; secrets stay masked by default.",
       "props": [
         {
+          "name": "emptyState",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Custom node rendered when there are no rows (replaces the default)."
+        },
+        {
           "name": "keys",
           "type": "ApiKey[]",
           "required": false,
           "defaultValue": "[\n  {\n    id: 1,\n    name: 'Production',\n    token: 'vsp_live_8f2a…d91c',\n    secret: 'vsp_live_8f2a39c4e7b1d91c',\n    created: 'Jan 14, 2026',\n    last: '2m ago',\n  },\n  {\n    id: 2,\n    name: 'Staging',\n    token: 'vsp_test_4b7e…02fa',\n    secret: 'vsp_test_4b7e1d9a55c302fa',\n    created: 'Mar 02, 2026',\n    last: '3d ago',\n  },\n  {\n    id: 3,\n    name: 'CI / CD',\n    token: 'vsp_live_19cc…7a4b',\n    secret: 'vsp_live_19cc8e2f0b6d7a4b',\n    created: 'Apr 21, 2026',\n    last: '12h ago',\n  },\n]"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a shimmer skeleton instead of content."
         }
       ]
     },
@@ -192,10 +204,22 @@
       "description": "A chronological trail of privileged actions, as a timeline.",
       "props": [
         {
+          "name": "emptyState",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Custom node rendered when there are no rows (replaces the default)."
+        },
+        {
           "name": "entries",
           "type": "AuditEntry[]",
           "required": false,
           "defaultValue": "[\n  {\n    who: 'Avery Quinn',\n    action: 'updated billing settings',\n    tag: 'Settings',\n    time: '2 min ago',\n    icon: <Icon.settings />,\n  },\n  {\n    who: 'Maya Okafor',\n    action: 'upgraded to Enterprise',\n    tag: 'Billing',\n    time: '38 min ago',\n    icon: <Icon.arrowUp />,\n  },\n  {\n    who: 'System',\n    action: 'rotated production API key',\n    tag: 'Security',\n    time: '1 hr ago',\n    icon: <Icon.shield />,\n  },\n  {\n    who: 'Leo Vega',\n    action: 'invited 4 members',\n    tag: 'Team',\n    time: '3 hr ago',\n    icon: <Icon.users />,\n  },\n  {\n    who: 'Billing',\n    action: 'flagged failed payment · Cobalt',\n    tag: 'Billing',\n    time: '5 hr ago',\n    icon: <Icon.bell />,\n  },\n]"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a shimmer skeleton instead of content."
         }
       ]
     },
@@ -1569,6 +1593,25 @@
       "description": "Operational table: tab filters, bulk selection, status badges, row menu.",
       "props": [
         {
+          "name": "columns",
+          "type": "OrderColumn[]",
+          "required": false,
+          "defaultValue": "['customer', 'item', 'status', 'amount']",
+          "description": "Which optional columns to show, in order. Defaults to all four."
+        },
+        {
+          "name": "emptyState",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Custom node rendered when there are no rows (replaces the default)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a shimmer skeleton instead of content."
+        },
+        {
           "name": "orders",
           "type": "Order[]",
           "required": false,
@@ -2274,6 +2317,18 @@
       "description": "Live service health with 30-day uptime bars.",
       "props": [
         {
+          "name": "emptyState",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Custom node rendered when there are no rows (replaces the default)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a shimmer skeleton instead of content."
+        },
+        {
           "name": "services",
           "type": "Service[]",
           "required": false,
@@ -2323,6 +2378,18 @@
       "category": "Blocks",
       "description": "Member list with inline role selects and a per-row action menu.",
       "props": [
+        {
+          "name": "emptyState",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Custom node rendered when there are no rows (replaces the default)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a shimmer skeleton instead of content."
+        },
         {
           "name": "members",
           "type": "TeamMember[]",
