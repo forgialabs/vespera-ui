@@ -1176,22 +1176,29 @@ export const Accordion = defineComponent({
     items: { type: Array as PropType<AccordionItem[]>, default: () => [] },
     multiple: Boolean,
     defaultOpen: { type: Array as PropType<number[]>, default: () => [] },
+    open: { type: Array as PropType<number[]>, default: undefined },
   },
-  setup(props) {
-    const open = ref(new Set<number>(props.defaultOpen));
+  emits: ['update:open', 'openChange'],
+  setup(props, { emit }) {
+    const internal = ref(new Set<number>(props.defaultOpen));
+    const openSet = computed(() =>
+      props.open !== undefined ? new Set<number>(props.open) : internal.value,
+    );
     const toggle = (i: number) => {
-      const s = open.value;
+      const s = openSet.value;
       const n = new Set<number>(props.multiple ? s : []);
       if (s.has(i)) n.delete(i);
       else n.add(i);
-      open.value = n;
+      if (props.open === undefined) internal.value = n;
+      emit('update:open', [...n]);
+      emit('openChange', [...n]);
     };
     return () =>
       h(
         'div',
         { class: 'ui-acc' },
         props.items.map((it, i) =>
-          h('div', { key: i, class: cx('ui-acc-item', open.value.has(i) && 'open') }, [
+          h('div', { key: i, class: cx('ui-acc-item', openSet.value.has(i) && 'open') }, [
             h('button', { type: 'button', class: 'ui-acc-head', onClick: () => toggle(i) }, [
               it.title,
               h(
@@ -1721,15 +1728,30 @@ export const Tree = defineComponent({
   props: {
     data: { type: Array as PropType<TreeNodeData[]>, default: () => [] },
     defaultExpanded: { type: Array as PropType<string[]>, default: () => [] },
+    expanded: { type: Array as PropType<string[]>, default: undefined },
+    selected: { type: String as PropType<string | null>, default: undefined },
   },
-  setup(props) {
-    const expanded = ref(new Set<string>(props.defaultExpanded));
-    const selected = ref<string | null>(null);
+  emits: ['update:expanded', 'update:selected', 'select'],
+  setup(props, { emit }) {
+    const expInternal = ref(new Set<string>(props.defaultExpanded));
+    const selInternal = ref<string | null>(null);
+    const expandedSet = computed(() =>
+      props.expanded !== undefined ? new Set<string>(props.expanded) : expInternal.value,
+    );
+    const selectedId = computed(() =>
+      props.selected !== undefined ? props.selected : selInternal.value,
+    );
     const toggle = (id: string) => {
-      const n = new Set(expanded.value);
+      const n = new Set(expandedSet.value);
       if (n.has(id)) n.delete(id);
       else n.add(id);
-      expanded.value = n;
+      if (props.expanded === undefined) expInternal.value = n;
+      emit('update:expanded', [...n]);
+    };
+    const select = (id: string) => {
+      if (props.selected === undefined) selInternal.value = id;
+      emit('update:selected', id);
+      emit('select', id);
     };
     return () =>
       h(
@@ -1739,10 +1761,10 @@ export const Tree = defineComponent({
           h(VspTreeNode, {
             key: i,
             node: n,
-            expanded: expanded.value,
-            selected: selected.value,
+            expanded: expandedSet.value,
+            selected: selectedId.value,
             toggle,
-            select: (id: string) => (selected.value = id),
+            select,
           }),
         ),
       );

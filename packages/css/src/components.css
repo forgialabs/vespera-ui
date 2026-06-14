@@ -1826,9 +1826,18 @@
     background 0.12s,
     color 0.12s;
 }
+a.ui-nav-item {
+  text-decoration: none;
+  box-sizing: border-box;
+}
 .ui-nav-item:hover {
   background: var(--hover);
   color: var(--text);
+}
+.ui-nav-item.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .ui-nav-item.on {
   background: color-mix(in oklab, var(--accent) 13%, transparent);

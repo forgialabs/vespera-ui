@@ -13,21 +13,33 @@ export interface AccordionProps {
   /** Allow multiple panels open at once. */
   multiple?: boolean;
   defaultOpen?: number[];
+  /** Controlled open indices. Omit for uncontrolled (the default). */
+  open?: number[];
+  /** Notified with the next set of open indices whenever a panel toggles. */
+  onOpenChange?: (open: number[]) => void;
 }
 
-export function Accordion({ items, multiple, defaultOpen = [] }: AccordionProps) {
-  const [open, setOpen] = useState<Set<number>>(() => new Set(defaultOpen));
-  const toggle = (i: number) =>
-    setOpen((s) => {
-      const n = new Set(multiple ? s : []);
-      if (s.has(i)) n.delete(i);
-      else n.add(i);
-      return n;
-    });
+export function Accordion({
+  items,
+  multiple,
+  defaultOpen = [],
+  open,
+  onOpenChange,
+}: AccordionProps) {
+  const controlled = open !== undefined;
+  const [internal, setInternal] = useState<Set<number>>(() => new Set(defaultOpen));
+  const openSet = controlled ? new Set(open) : internal;
+  const toggle = (i: number) => {
+    const n = new Set(multiple ? openSet : []);
+    if (openSet.has(i)) n.delete(i);
+    else n.add(i);
+    if (!controlled) setInternal(n);
+    onOpenChange?.([...n]);
+  };
   return (
     <div className="ui-acc">
       {items.map((it, i) => (
-        <div key={i} className={cx('ui-acc-item', open.has(i) && 'open')}>
+        <div key={i} className={cx('ui-acc-item', openSet.has(i) && 'open')}>
           <button type="button" className="ui-acc-head" onClick={() => toggle(i)}>
             {it.icon}
             {it.title}

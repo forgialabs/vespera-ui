@@ -64,14 +64,44 @@ export interface NavItemProps {
   onClick?: () => void;
   /** Set when nested under a `NavGroup`. */
   sub?: boolean;
+  /** Render as a link instead of a button (real sidebars are links). */
+  href?: string;
+  disabled?: boolean;
 }
 
-export function NavItem({ icon, label, active, badge, onClick, sub }: NavItemProps) {
-  return (
-    <button type="button" className={cx('ui-nav-item', active && 'on')} onClick={onClick}>
+export function NavItem({
+  icon,
+  label,
+  active,
+  badge,
+  onClick,
+  sub,
+  href,
+  disabled,
+}: NavItemProps) {
+  const className = cx('ui-nav-item', active && 'on', disabled && 'disabled');
+  const inner = (
+    <>
       {icon}
       <span style={{ flex: sub ? 'none' : 1 }}>{label}</span>
       {badge != null && <span className="ui-nav-badge">{badge}</span>}
+    </>
+  );
+  if (href && !disabled) {
+    return (
+      <a
+        href={href}
+        className={className}
+        onClick={onClick}
+        aria-current={active ? 'page' : undefined}
+      >
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <button type="button" disabled={disabled} className={className} onClick={onClick}>
+      {inner}
     </button>
   );
 }

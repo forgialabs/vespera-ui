@@ -1,18 +1,20 @@
 <script>
   import { untrack } from 'svelte';
-  let { items = [], multiple = false, defaultOpen = [] } = $props();
-  let open = $state(untrack(() => new Set(defaultOpen)));
+  let { items = [], multiple = false, defaultOpen = [], open = undefined, onOpenChange } = $props();
+  let internal = $state(untrack(() => new Set(defaultOpen)));
+  let openSet = $derived(open !== undefined ? new Set(open) : internal);
   const toggle = (i) => {
-    const n = new Set(multiple ? open : []);
-    if (open.has(i)) n.delete(i);
+    const n = new Set(multiple ? openSet : []);
+    if (openSet.has(i)) n.delete(i);
     else n.add(i);
-    open = n;
+    if (open === undefined) internal = n;
+    onOpenChange?.([...n]);
   };
 </script>
 
 <div class="ui-acc">
   {#each items as it, i (i)}
-    <div class="ui-acc-item{open.has(i) ? ' open' : ''}">
+    <div class="ui-acc-item{openSet.has(i) ? ' open' : ''}">
       <button type="button" class="ui-acc-head" onclick={() => toggle(i)}>
         {it.title}
         <svg

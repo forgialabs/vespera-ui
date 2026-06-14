@@ -37,6 +37,18 @@
           "type": "boolean",
           "required": false,
           "description": "Allow multiple panels open at once."
+        },
+        {
+          "name": "onOpenChange",
+          "type": "((open: number[]) => void)",
+          "required": false,
+          "description": "Notified with the next set of open indices whenever a panel toggles."
+        },
+        {
+          "name": "open",
+          "type": "number[]",
+          "required": false,
+          "description": "Controlled open indices. Omit for uncontrolled (the default)."
         }
       ]
     },
@@ -1319,6 +1331,17 @@
           "required": false
         },
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "required": false,
+          "description": "Render as a link instead of a button (real sidebars are links)."
+        },
+        {
           "name": "icon",
           "type": "ReactNode",
           "required": false
@@ -2181,6 +2204,28 @@
           "type": "string[]",
           "required": false,
           "defaultValue": "[]"
+        },
+        {
+          "name": "expanded",
+          "type": "string[]",
+          "required": false,
+          "description": "Controlled expanded node ids. Omit for uncontrolled."
+        },
+        {
+          "name": "onExpandedChange",
+          "type": "((expanded: string[]) => void)",
+          "required": false
+        },
+        {
+          "name": "onSelect",
+          "type": "((id: string) => void)",
+          "required": false
+        },
+        {
+          "name": "selected",
+          "type": "string | null",
+          "required": false,
+          "description": "Controlled selected node id. Omit for uncontrolled."
         }
       ]
     },

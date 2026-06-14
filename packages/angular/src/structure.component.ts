@@ -148,17 +148,25 @@ export class VspAccordion implements OnInit {
   @Input() items: AccordionItem[] = [];
   @Input() multiple = false;
   @Input() defaultOpen: number[] = [];
-  private open = new Set<number>();
+  /** Controlled open indices. Omit for uncontrolled. */
+  @Input() open?: number[];
+  @Output() openChange = new EventEmitter<number[]>();
+  private internal = new Set<number>();
   ngOnInit(): void {
-    this.open = new Set(this.defaultOpen);
+    this.internal = new Set(this.defaultOpen);
+  }
+  private get openSet(): Set<number> {
+    return this.open !== undefined ? new Set(this.open) : this.internal;
   }
   toggle(i: number): void {
-    const n = new Set<number>(this.multiple ? this.open : []);
-    if (this.open.has(i)) n.delete(i);
+    const cur = this.openSet;
+    const n = new Set<number>(this.multiple ? cur : []);
+    if (cur.has(i)) n.delete(i);
     else n.add(i);
-    this.open = n;
+    if (this.open === undefined) this.internal = n;
+    this.openChange.emit([...n]);
   }
   itemCls(i: number): string {
-    return 'ui-acc-item' + (this.open.has(i) ? ' open' : '');
+    return 'ui-acc-item' + (this.openSet.has(i) ? ' open' : '');
   }
 }
