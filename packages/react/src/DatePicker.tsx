@@ -304,10 +304,10 @@ export function DatePicker({
   const list = values ?? [];
   const base = (multiple ? list[list.length - 1] : value) ?? new Date();
   const [view, setView] = useState<MonthView>({ m: base.getMonth(), y: base.getFullYear() });
+  // Re-sync the visible month to the selection whenever the panel opens.
   useEffect(() => {
     const v = multiple ? list[list.length - 1] : value;
     if (open && v) setView({ m: v.getMonth(), y: v.getFullYear() });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const isDisabled = (d: Date) => matchesDate(d, disabled);
