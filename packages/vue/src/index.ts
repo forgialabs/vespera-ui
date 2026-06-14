@@ -144,10 +144,18 @@ export const Divider = defineComponent({
 
 export const Spinner = defineComponent({
   name: 'VspSpinner',
-  props: { size: { type: String as PropType<'lg'>, default: undefined } },
+  props: {
+    size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: 'md' },
+    label: { type: String, default: undefined },
+  },
   setup(props) {
     return () =>
-      h('span', { class: cx('ui-spinner', props.size === 'lg' && 'lg'), 'aria-hidden': 'true' });
+      h('span', {
+        class: cx('ui-spinner', props.size === 'sm' && 'sm', props.size === 'lg' && 'lg'),
+        role: props.label ? 'status' : undefined,
+        'aria-label': props.label,
+        'aria-hidden': props.label ? undefined : 'true',
+      });
   },
 });
 
@@ -2492,28 +2500,50 @@ export const Popover = defineComponent({
   },
 });
 
+export type TooltipSide = 'top' | 'bottom' | 'left' | 'right';
+const TIP_TRANSFORM: Record<TooltipSide, string> = {
+  top: 'translate(-50%,-100%)',
+  bottom: 'translateX(-50%)',
+  left: 'translate(-100%,-50%)',
+  right: 'translateY(-50%)',
+};
+
 export const Tooltip = defineComponent({
   name: 'VspTooltip',
   props: {
     label: { type: String, default: undefined },
-    side: { type: String as PropType<'top' | 'bottom'>, default: 'top' },
+    side: { type: String as PropType<TooltipSide>, default: 'top' },
+    delay: { type: Number, default: 0 },
+    disabled: Boolean,
   },
   setup(props, { slots }) {
     const show = ref(false);
     const pos = ref({ x: 0, y: 0 });
     const elRef = ref<HTMLElement | null>(null);
+    let timer: number | null = null;
     const place = () => {
       const el = elRef.value;
       if (!el) return;
       const r = el.getBoundingClientRect();
-      pos.value = {
-        x: r.left + r.width / 2,
-        y: props.side === 'bottom' ? r.bottom + 8 : r.top - 8,
-      };
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      if (props.side === 'bottom') pos.value = { x: cx, y: r.bottom + 8 };
+      else if (props.side === 'left') pos.value = { x: r.left - 8, y: cy };
+      else if (props.side === 'right') pos.value = { x: r.right + 8, y: cy };
+      else pos.value = { x: cx, y: r.top - 8 };
     };
     const enter = () => {
+      if (props.disabled) return;
       place();
-      show.value = true;
+      if (props.delay > 0) timer = window.setTimeout(() => (show.value = true), props.delay);
+      else show.value = true;
+    };
+    const leave = () => {
+      if (timer != null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+      show.value = false;
     };
     return () => {
       const target = show.value ? getPortalTarget() : null;
@@ -2523,9 +2553,9 @@ export const Tooltip = defineComponent({
           ref: elRef,
           style: { display: 'inline-flex' },
           onMouseenter: enter,
-          onMouseleave: () => (show.value = false),
+          onMouseleave: leave,
           onFocusin: enter,
-          onFocusout: () => (show.value = false),
+          onFocusout: leave,
         },
         [
           slots.default?.(),
@@ -2535,11 +2565,11 @@ export const Tooltip = defineComponent({
                   'div',
                   {
                     class: 'ui-tip',
+                    role: 'tooltip',
                     style: {
                       left: `${pos.value.x}px`,
                       top: `${pos.value.y}px`,
-                      transform:
-                        props.side === 'bottom' ? 'translateX(-50%)' : 'translate(-50%,-100%)',
+                      transform: TIP_TRANSFORM[props.side],
                     },
                   },
                   props.label,

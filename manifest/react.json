@@ -1992,12 +1992,21 @@
           "required": false
         },
         {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible label — makes the spinner a live status region for screen readers."
+        },
+        {
           "name": "size",
           "type": "enum",
           "values": [
+            "sm",
+            "md",
             "lg"
           ],
-          "required": false
+          "required": false,
+          "defaultValue": "md"
         }
       ]
     },
@@ -2268,6 +2277,19 @@
       "category": "Overlays",
       "props": [
         {
+          "name": "delay",
+          "type": "number",
+          "required": false,
+          "defaultValue": "0",
+          "description": "Delay before showing, in ms (default 0)."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Suppress the tooltip entirely."
+        },
+        {
           "name": "label",
           "type": "ReactNode",
           "required": true
@@ -2276,6 +2298,8 @@
           "name": "side",
           "type": "enum",
           "values": [
+            "right",
+            "left",
             "top",
             "bottom"
           ],

@@ -2,12 +2,18 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'vsp-spinner',
-  template: `<span [class]="cls" aria-hidden="true"></span>`,
+  template: `<span
+    [class]="cls"
+    [attr.role]="label ? 'status' : null"
+    [attr.aria-label]="label"
+    [attr.aria-hidden]="label ? null : 'true'"
+  ></span>`,
 })
 export class VspSpinner {
-  @Input() size?: 'lg';
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
+  @Input() label?: string;
   get cls(): string {
-    return this.size === 'lg' ? 'ui-spinner lg' : 'ui-spinner';
+    return 'ui-spinner' + (this.size === 'sm' ? ' sm' : '') + (this.size === 'lg' ? ' lg' : '');
   }
 }
 
