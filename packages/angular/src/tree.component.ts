@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 export interface TreeNodeData {
   id?: string;
@@ -70,7 +70,7 @@ export interface TreeNodeData {
             }}</span>
           }
         </div>
-        @if (hasKids(n) && expanded.has(id(n))) {
+        @if (hasKids(n) && expandedSet.has(id(n))) {
           <div class="ui-tree-children">
             @for (c of n.children; track $index) {
               <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: c }" />
@@ -83,11 +83,23 @@ export interface TreeNodeData {
 export class VspTree implements OnInit {
   @Input() data: TreeNodeData[] = [];
   @Input() defaultExpanded: string[] = [];
-  expanded = new Set<string>();
-  selected: string | null = null;
+  /** Controlled expanded node ids. Omit for uncontrolled. */
+  @Input('expanded') expandedInput?: string[];
+  @Output() expandedChange = new EventEmitter<string[]>();
+  /** Controlled selected node id. Omit for uncontrolled. */
+  @Input('selected') selectedInput?: string | null;
+  @Output() select = new EventEmitter<string>();
+  private internalExpanded = new Set<string>();
+  private internalSelected: string | null = null;
 
   ngOnInit(): void {
-    this.expanded = new Set(this.defaultExpanded);
+    this.internalExpanded = new Set(this.defaultExpanded);
+  }
+  get expandedSet(): Set<string> {
+    return this.expandedInput !== undefined ? new Set(this.expandedInput) : this.internalExpanded;
+  }
+  get selectedId(): string | null {
+    return this.selectedInput !== undefined ? this.selectedInput : this.internalSelected;
   }
   id(n: TreeNodeData): string {
     return n.id ?? n.label;
@@ -98,17 +110,21 @@ export class VspTree implements OnInit {
   rowCls(n: TreeNodeData): string {
     const i = this.id(n);
     return (
-      'ui-tree-row' + (this.expanded.has(i) ? ' open' : '') + (this.selected === i ? ' sel' : '')
+      'ui-tree-row' +
+      (this.expandedSet.has(i) ? ' open' : '') +
+      (this.selectedId === i ? ' sel' : '')
     );
   }
   activate(n: TreeNodeData): void {
     const i = this.id(n);
     if (this.hasKids(n)) {
-      const next = new Set(this.expanded);
+      const next = new Set(this.expandedSet);
       if (next.has(i)) next.delete(i);
       else next.add(i);
-      this.expanded = next;
+      if (this.expandedInput === undefined) this.internalExpanded = next;
+      this.expandedChange.emit([...next]);
     }
-    this.selected = i;
+    if (this.selectedInput === undefined) this.internalSelected = i;
+    this.select.emit(i);
   }
 }

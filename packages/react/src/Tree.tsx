@@ -79,28 +79,49 @@ function TreeNode({ node, expanded, toggle, selected, select }: TreeNodeProps) {
 export interface TreeProps {
   data: TreeNodeData[];
   defaultExpanded?: string[];
+  /** Controlled expanded node ids. Omit for uncontrolled. */
+  expanded?: string[];
+  onExpandedChange?: (expanded: string[]) => void;
+  /** Controlled selected node id. Omit for uncontrolled. */
+  selected?: string | null;
+  onSelect?: (id: string) => void;
 }
 
-export function Tree({ data, defaultExpanded = [] }: TreeProps) {
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(defaultExpanded));
-  const [selected, setSelected] = useState<string | null>(null);
-  const toggle = (id: string) =>
-    setExpanded((s) => {
-      const n = new Set(s);
-      if (n.has(id)) n.delete(id);
-      else n.add(id);
-      return n;
-    });
+export function Tree({
+  data,
+  defaultExpanded = [],
+  expanded,
+  onExpandedChange,
+  selected,
+  onSelect,
+}: TreeProps) {
+  const expControlled = expanded !== undefined;
+  const selControlled = selected !== undefined;
+  const [expInternal, setExpInternal] = useState<Set<string>>(() => new Set(defaultExpanded));
+  const [selInternal, setSelInternal] = useState<string | null>(null);
+  const expandedSet = expControlled ? new Set(expanded) : expInternal;
+  const selectedId = selControlled ? selected : selInternal;
+  const toggle = (id: string) => {
+    const n = new Set(expandedSet);
+    if (n.has(id)) n.delete(id);
+    else n.add(id);
+    if (!expControlled) setExpInternal(n);
+    onExpandedChange?.([...n]);
+  };
+  const select = (id: string) => {
+    if (!selControlled) setSelInternal(id);
+    onSelect?.(id);
+  };
   return (
     <div className="ui-tree">
       {data.map((n, i) => (
         <TreeNode
           key={i}
           node={n}
-          expanded={expanded}
+          expanded={expandedSet}
           toggle={toggle}
-          selected={selected}
-          select={setSelected}
+          selected={selectedId}
+          select={select}
         />
       ))}
     </div>
