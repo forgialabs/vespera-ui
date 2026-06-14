@@ -1,5 +1,6 @@
 'use client';
 import { useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { Icon } from '@vespera-ui/icons';
 import {
   Alert,
@@ -70,18 +71,40 @@ export function Playground() {
 
       <div className="wrap">
         <header className="demo-head">
-          <div
-            className="vsp-brand-mark"
-            style={{ width: 38, height: 38, borderRadius: 11 }}
-          />
-          <div>
-            <h1 style={{ margin: 0, fontSize: 22, letterSpacing: '-0.02em' }}>Vespera</h1>
-            <div className="eyebrow">interactive playground · @vespera-ui/react</div>
-          </div>
+          <Link
+            href="/"
+            aria-label="Vespera home"
+            style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: 'inherit' }}
+          >
+            <div className="vsp-brand-mark" style={{ width: 38, height: 38, borderRadius: 11 }} />
+            <div>
+              <h1 style={{ margin: 0, fontSize: 22, letterSpacing: '-0.02em' }}>Vespera</h1>
+              <div className="eyebrow">interactive playground · @vespera-ui/react</div>
+            </div>
+          </Link>
           <div style={{ flex: 1 }} />
           <Badge tone="info" dot>
             live
           </Badge>
+          <Link
+            href="/docs"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              height: 'var(--ctrl-h)',
+              padding: '0 12px',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--r-sm)',
+              color: 'var(--text-dim)',
+              textDecoration: 'none',
+              fontSize: 13.5,
+              fontWeight: 500,
+            }}
+          >
+            <Icon.chevLeft style={{ width: 15, height: 15 }} />
+            Docs
+          </Link>
           <IconButton
             icon={theme === 'dark' ? <Icon.sun /> : <Icon.moon />}
             label="Toggle theme"
