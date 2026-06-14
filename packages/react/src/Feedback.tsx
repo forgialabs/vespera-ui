@@ -56,10 +56,19 @@ export function Skeleton({ w = '100%', h = 12, r = 7, style }: SkeletonProps) {
 }
 
 export interface SpinnerProps {
-  size?: 'lg';
+  size?: 'sm' | 'md' | 'lg';
+  /** Accessible label — makes the spinner a live status region for screen readers. */
+  label?: string;
   className?: string;
 }
 
-export function Spinner({ size, className }: SpinnerProps) {
-  return <span className={cx('ui-spinner', size === 'lg' && 'lg', className)} aria-hidden />;
+export function Spinner({ size = 'md', label, className }: SpinnerProps) {
+  return (
+    <span
+      className={cx('ui-spinner', size === 'sm' && 'sm', size === 'lg' && 'lg', className)}
+      role={label ? 'status' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+    />
+  );
 }
