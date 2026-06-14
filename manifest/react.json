@@ -545,6 +545,42 @@
           "required": false
         },
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the control."
+        },
+        {
+          "name": "emptyText",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Message when there are no options/matches."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "For a `<label htmlFor>` association."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark invalid (red border) for form validation."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a loading state in the list (e.g. while fetching async options)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Submits the selected value under this name in a form."
+        },
+        {
           "name": "onChange",
           "type": "((value: SelectValue | null) => void)",
           "required": false
@@ -1093,9 +1129,45 @@
       "category": "Forms & inputs",
       "props": [
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the control."
+        },
+        {
+          "name": "emptyText",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Message when there are no options/matches."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "For a `<label htmlFor>` association."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark invalid (red border) for form validation."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false,
+          "description": "Show a loading state in the list (e.g. while fetching async options)."
+        },
+        {
           "name": "max",
           "type": "number",
           "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Submits the selected values under this name in a form."
         },
         {
           "name": "onChange",
@@ -1434,6 +1506,30 @@
           "name": "disabled",
           "type": "boolean",
           "required": false
+        },
+        {
+          "name": "emptyText",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Message when there are no options/matches."
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false,
+          "description": "For a `<label htmlFor>` association."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false,
+          "description": "Mark invalid (red border) for form validation."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Submits the selected value under this name in a form."
         },
         {
           "name": "onChange",

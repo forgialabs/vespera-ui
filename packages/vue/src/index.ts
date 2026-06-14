@@ -2633,6 +2633,8 @@ const ComboList = defineComponent({
     activeIdx: { type: Number, default: 0 },
     isSel: { type: Function as PropType<(o: SelectOption) => boolean>, default: () => false },
     searchPlaceholder: { type: String, default: undefined },
+    loading: { type: Boolean, default: false },
+    emptyText: { type: String, default: undefined },
   },
   emits: ['update:q', 'update:activeIdx', 'pick'],
   setup(props, { slots, emit }) {
@@ -2667,25 +2669,36 @@ const ComboList = defineComponent({
         }),
       ]),
       h('div', { class: 'ui-combo-list' }, [
-        props.items.length === 0
-          ? h('div', { class: 'ui-combo-empty' }, `No matches for “${props.q}”`)
-          : null,
-        ...props.items.map((o, i) =>
-          h(
-            'div',
-            {
-              key: String(o.value),
-              class: cx('ui-combo-item', i === props.activeIdx && 'active'),
-              onMouseenter: () => emit('update:activeIdx', i),
-              onClick: () => emit('pick', o),
-            },
-            [
-              o.swatch ? swatchSpan(o.swatch) : null,
-              h('span', o.label),
-              props.isSel(o) ? svgIconClass('M20 6L9 17l-5-5', 14, 'tick') : null,
-            ],
-          ),
-        ),
+        props.loading
+          ? h('div', { class: 'ui-combo-loading' }, [
+              h('span', { class: 'ui-spinner', 'aria-hidden': 'true' }),
+              'Loading…',
+            ])
+          : props.items.length === 0
+            ? h(
+                'div',
+                { class: 'ui-combo-empty' },
+                props.emptyText ?? `No matches for “${props.q}”`,
+              )
+            : null,
+        ...(props.loading
+          ? []
+          : props.items.map((o, i) =>
+              h(
+                'div',
+                {
+                  key: String(o.value),
+                  class: cx('ui-combo-item', i === props.activeIdx && 'active'),
+                  onMouseenter: () => emit('update:activeIdx', i),
+                  onClick: () => emit('pick', o),
+                },
+                [
+                  o.swatch ? swatchSpan(o.swatch) : null,
+                  h('span', o.label),
+                  props.isSel(o) ? svgIconClass('M20 6L9 17l-5-5', 14, 'tick') : null,
+                ],
+              ),
+            )),
       ]),
       slots.footer?.(),
     ];
@@ -2701,6 +2714,10 @@ export const Select = defineComponent({
     modelValue: { type: [String, Number] as PropType<SelectValue>, default: undefined },
     placeholder: { type: String, default: 'Select…' },
     disabled: Boolean,
+    invalid: Boolean,
+    emptyText: { type: String, default: undefined },
+    id: { type: String, default: undefined },
+    name: { type: String, default: undefined },
     searchable: { type: Boolean, default: undefined },
   },
   emits: ['update:modelValue', 'change'],
@@ -2731,12 +2748,15 @@ export const Select = defineComponent({
           {
             type: 'button',
             ref: anchor,
+            id: props.id,
             disabled: props.disabled,
-            class: cx('ui-selectbtn', open.value && 'open'),
+            'aria-invalid': props.invalid || undefined,
+            class: cx('ui-selectbtn', open.value && 'open', props.invalid && 'invalid'),
             onClick: () => (open.value = !open.value),
           },
           [h('span', { class: cx('val', !sel && 'ph') }, sel ? sel.label : props.placeholder)],
         ),
+        props.name ? h('input', { type: 'hidden', name: props.name, value: cur ?? '' }) : null,
         h(
           SelPanel,
           { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
@@ -2750,10 +2770,13 @@ export const Select = defineComponent({
                     activeIdx: active.value,
                     'onUpdate:activeIdx': (v: number) => (active.value = v),
                     isSel: (o: SelectOption) => String(o.value) === String(cur),
+                    emptyText: props.emptyText,
                     onPick: choose,
                   })
                 : h('div', { class: 'ui-combo-list' }, [
-                    items.length === 0 ? h('div', { class: 'ui-combo-empty' }, 'No options') : null,
+                    items.length === 0
+                      ? h('div', { class: 'ui-combo-empty' }, props.emptyText ?? 'No options')
+                      : null,
                     ...items.map((o) =>
                       h(
                         'div',
@@ -2790,6 +2813,12 @@ export const Combobox = defineComponent({
     placeholder: { type: String, default: 'Select…' },
     searchPlaceholder: { type: String, default: undefined },
     clearable: Boolean,
+    disabled: Boolean,
+    invalid: Boolean,
+    loading: Boolean,
+    emptyText: { type: String, default: undefined },
+    id: { type: String, default: undefined },
+    name: { type: String, default: undefined },
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
@@ -2816,12 +2845,15 @@ export const Combobox = defineComponent({
           {
             type: 'button',
             ref: anchor,
-            class: cx('ui-trigger', open.value && 'open'),
+            id: props.id,
+            disabled: props.disabled,
+            'aria-invalid': props.invalid || undefined,
+            class: cx('ui-trigger', open.value && 'open', props.invalid && 'invalid'),
             onClick: () => (open.value = !open.value),
           },
           [
             h('span', { class: cx('val', !sel && 'ph') }, sel ? sel.label : props.placeholder),
-            props.clearable && sel
+            props.clearable && sel && !props.disabled
               ? h(
                   'span',
                   {
@@ -2837,6 +2869,9 @@ export const Combobox = defineComponent({
             svgIconClass(CHEV_DOWN, 16, 'chev'),
           ],
         ),
+        props.name
+          ? h('input', { type: 'hidden', name: props.name, value: props.modelValue ?? '' })
+          : null,
         h(
           SelPanel,
           { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
@@ -2850,6 +2885,8 @@ export const Combobox = defineComponent({
                 'onUpdate:activeIdx': (v: number) => (active.value = v),
                 isSel: (o: SelectOption) => o.value === props.modelValue,
                 searchPlaceholder: props.searchPlaceholder,
+                loading: props.loading,
+                emptyText: props.emptyText,
                 onPick: pick,
               }),
           },
@@ -2867,6 +2904,12 @@ export const MultiSelect = defineComponent({
     placeholder: { type: String, default: 'Select…' },
     searchPlaceholder: { type: String, default: undefined },
     max: { type: Number, default: undefined },
+    disabled: Boolean,
+    invalid: Boolean,
+    loading: Boolean,
+    emptyText: { type: String, default: undefined },
+    id: { type: String, default: undefined },
+    name: { type: String, default: undefined },
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
@@ -2893,13 +2936,21 @@ export const MultiSelect = defineComponent({
           'div',
           {
             role: 'button',
-            tabindex: 0,
+            tabindex: props.disabled ? -1 : 0,
             ref: anchor,
-            class: cx('ui-trigger', open.value && 'open'),
+            id: props.id,
+            'aria-disabled': props.disabled || undefined,
+            'aria-invalid': props.invalid || undefined,
+            class: cx(
+              'ui-trigger',
+              open.value && 'open',
+              props.invalid && 'invalid',
+              props.disabled && 'disabled',
+            ),
             style: { minHeight: 'var(--ctrl-h)' },
-            onClick: () => (open.value = !open.value),
+            onClick: () => !props.disabled && (open.value = !open.value),
             onKeydown: (e: KeyboardEvent) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (!props.disabled && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
                 open.value = !open.value;
               }
@@ -2937,6 +2988,11 @@ export const MultiSelect = defineComponent({
             svgIconClass(CHEV_DOWN, 16, 'chev'),
           ],
         ),
+        ...(props.name
+          ? value.map((v) =>
+              h('input', { key: String(v), type: 'hidden', name: props.name, value: v }),
+            )
+          : []),
         h(
           SelPanel,
           { open: open.value, anchor: anchor.value, onClose: () => (open.value = false) },
@@ -2952,6 +3008,8 @@ export const MultiSelect = defineComponent({
                   'onUpdate:activeIdx': (v: number) => (active.value = v),
                   isSel: (o: SelectOption) => has(o.value),
                   searchPlaceholder: props.searchPlaceholder,
+                  loading: props.loading,
+                  emptyText: props.emptyText,
                   onPick: toggle,
                 },
                 {

@@ -7,6 +7,10 @@
     value = $bindable(undefined),
     placeholder = 'Select…',
     disabled = false,
+    invalid = false,
+    emptyText = undefined,
+    id = undefined,
+    name = undefined,
     searchable = undefined,
     onchange,
   } = $props();
@@ -37,12 +41,17 @@
 <button
   type="button"
   bind:this={anchorEl}
+  {id}
   {disabled}
-  class="ui-selectbtn {open ? 'open' : ''}"
+  aria-invalid={invalid || undefined}
+  class="ui-selectbtn {open ? 'open' : ''} {invalid ? 'invalid' : ''}"
   onclick={() => (open = !open)}
 >
   <span class="val {sel ? '' : 'ph'}">{sel ? sel.label : placeholder}</span>
 </button>
+{#if name}
+  <input type="hidden" {name} value={cur ?? ''} />
+{/if}
 <SelPanel {open} anchor={anchorEl} onclose={() => (open = false)}>
   {#if useSearch}
     <ComboList
@@ -50,6 +59,7 @@
       {items}
       activeIdx={active}
       isSel={(o) => String(o.value) === String(cur)}
+      {emptyText}
       onq={(v) => (q = v)}
       onactive={(v) => (active = v)}
       onpick={choose}
@@ -57,7 +67,7 @@
   {:else}
     <div class="ui-combo-list">
       {#if items.length === 0}
-        <div class="ui-combo-empty">No options</div>
+        <div class="ui-combo-empty">{emptyText ?? 'No options'}</div>
       {/if}
       {#each items as o (String(o.value))}
         <div

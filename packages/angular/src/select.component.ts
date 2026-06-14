@@ -136,10 +136,14 @@ export class VspSelPanel implements OnChanges, OnDestroy {
       />
     </div>
     <div class="ui-combo-list">
-      @if (items.length === 0) {
-        <div class="ui-combo-empty">No matches for “{{ q }}”</div>
+      @if (loading) {
+        <div class="ui-combo-loading">
+          <span class="ui-spinner" aria-hidden="true"></span> Loading…
+        </div>
+      } @else if (items.length === 0) {
+        <div class="ui-combo-empty">{{ emptyText ?? 'No matches for “' + q + '”' }}</div>
       }
-      @for (o of items; track o.value; let i = $index) {
+      @for (o of loading ? [] : items; track o.value; let i = $index) {
         <div
           [class]="'ui-combo-item' + (i === activeIdx ? ' active' : '')"
           (mouseenter)="activeIdxChange.emit(i)"
@@ -179,6 +183,8 @@ export class VspComboList implements AfterViewInit {
   @Input() activeIdx = 0;
   @Input() isSel: (o: SelectOption) => boolean = () => false;
   @Input() searchPlaceholder?: string;
+  @Input() loading = false;
+  @Input() emptyText?: string;
   @Output() qChange = new EventEmitter<string>();
   @Output() activeIdxChange = new EventEmitter<number>();
   @Output() pick = new EventEmitter<SelectOption>();
@@ -217,12 +223,17 @@ export class VspComboList implements AfterViewInit {
     <button
       #anchor
       type="button"
+      [id]="id"
       [disabled]="disabled"
-      [class]="'ui-selectbtn' + (open ? ' open' : '')"
+      [attr.aria-invalid]="invalid || null"
+      [class]="'ui-selectbtn' + (open ? ' open' : '') + (invalid ? ' invalid' : '')"
       (click)="open = !open"
     >
       <span [class]="'val' + (sel ? '' : ' ph')">{{ sel ? sel.label : placeholder }}</span>
     </button>
+    @if (name) {
+      <input type="hidden" [name]="name" [value]="cur ?? ''" />
+    }
     <vsp-sel-panel [open]="open" [anchor]="anchor" (close)="open = false">
       @if (open) {
         @if (useSearch) {
@@ -231,6 +242,7 @@ export class VspComboList implements AfterViewInit {
             [items]="items"
             [activeIdx]="active"
             [isSel]="isSelFn"
+            [emptyText]="emptyText"
             (qChange)="q = $event"
             (activeIdxChange)="active = $event"
             (pick)="choose($event)"
@@ -238,7 +250,7 @@ export class VspComboList implements AfterViewInit {
         } @else {
           <div class="ui-combo-list">
             @if (items.length === 0) {
-              <div class="ui-combo-empty">No options</div>
+              <div class="ui-combo-empty">{{ emptyText ?? 'No options' }}</div>
             }
             @for (o of items; track o.value) {
               <div [class]="'ui-combo-item' + (sameVal(o) ? ' active' : '')" (click)="choose(o)">
@@ -278,6 +290,10 @@ export class VspSelect {
   @Output() valueChange = new EventEmitter<SelectValue>();
   @Input() placeholder = 'Select…';
   @Input() disabled = false;
+  @Input() invalid = false;
+  @Input() emptyText?: string;
+  @Input() id?: string;
+  @Input() name?: string;
   @Input() searchable?: boolean;
 
   open = false;
@@ -322,11 +338,14 @@ export class VspSelect {
     <button
       #anchor
       type="button"
-      [class]="'ui-trigger' + (open ? ' open' : '')"
+      [id]="id"
+      [disabled]="disabled"
+      [attr.aria-invalid]="invalid || null"
+      [class]="'ui-trigger' + (open ? ' open' : '') + (invalid ? ' invalid' : '')"
       (click)="open = !open"
     >
       <span [class]="'val' + (sel ? '' : ' ph')">{{ sel ? sel.label : placeholder }}</span>
-      @if (clearable && sel) {
+      @if (clearable && sel && !disabled) {
         <span
           role="button"
           tabindex="-1"
@@ -362,6 +381,9 @@ export class VspSelect {
         <path d="M6 9l6 6 6-6" />
       </svg>
     </button>
+    @if (name) {
+      <input type="hidden" [name]="name" [value]="value ?? ''" />
+    }
     <vsp-sel-panel [open]="open" [anchor]="anchor" (close)="open = false">
       @if (open) {
         <vsp-combo-list
@@ -370,6 +392,8 @@ export class VspSelect {
           [activeIdx]="active"
           [isSel]="isSelFn"
           [searchPlaceholder]="searchPlaceholder"
+          [loading]="loading"
+          [emptyText]="emptyText"
           (qChange)="q = $event"
           (activeIdxChange)="active = $event"
           (pick)="pick($event)"
@@ -385,6 +409,12 @@ export class VspCombobox {
   @Input() placeholder = 'Select…';
   @Input() searchPlaceholder?: string;
   @Input() clearable = false;
+  @Input() disabled = false;
+  @Input() invalid = false;
+  @Input() loading = false;
+  @Input() emptyText?: string;
+  @Input() id?: string;
+  @Input() name?: string;
 
   open = false;
   q = '';
@@ -424,10 +454,18 @@ export class VspCombobox {
     <div
       #anchor
       role="button"
-      tabindex="0"
-      [class]="'ui-trigger' + (open ? ' open' : '')"
+      [attr.tabindex]="disabled ? -1 : 0"
+      [id]="id"
+      [attr.aria-disabled]="disabled || null"
+      [attr.aria-invalid]="invalid || null"
+      [class]="
+        'ui-trigger' +
+        (open ? ' open' : '') +
+        (invalid ? ' invalid' : '') +
+        (disabled ? ' disabled' : '')
+      "
       style="min-height: var(--ctrl-h)"
-      (click)="open = !open"
+      (click)="disabled ? null : (open = !open)"
       (keydown.enter)="toggleOpen($event)"
       (keydown.space)="toggleOpen($event)"
     >
@@ -470,6 +508,11 @@ export class VspCombobox {
         <path d="M6 9l6 6 6-6" />
       </svg>
     </div>
+    @if (name) {
+      @for (v of value; track v) {
+        <input type="hidden" [name]="name" [value]="v" />
+      }
+    }
     <vsp-sel-panel [open]="open" [anchor]="anchor" (close)="open = false">
       @if (open) {
         <vsp-combo-list
@@ -478,6 +521,8 @@ export class VspCombobox {
           [activeIdx]="active"
           [isSel]="isSelFn"
           [searchPlaceholder]="searchPlaceholder"
+          [loading]="loading"
+          [emptyText]="emptyText"
           (qChange)="q = $event"
           (activeIdxChange)="active = $event"
           (pick)="toggle($event)"
@@ -503,6 +548,12 @@ export class VspMultiSelect {
   @Input() placeholder = 'Select…';
   @Input() searchPlaceholder?: string;
   @Input() max?: number;
+  @Input() disabled = false;
+  @Input() invalid = false;
+  @Input() loading = false;
+  @Input() emptyText?: string;
+  @Input() id?: string;
+  @Input() name?: string;
 
   open = false;
   q = '';
@@ -533,6 +584,7 @@ export class VspMultiSelect {
     this.set(this.value.filter((v) => v !== o.value));
   }
   toggleOpen(e: Event): void {
+    if (this.disabled) return;
     e.preventDefault();
     this.open = !this.open;
   }

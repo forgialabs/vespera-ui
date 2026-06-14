@@ -22,9 +22,18 @@ const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
 
 <Field label="Select"><Select options={fruits} value={a} onChange={setA} /></Field>
 <Field label="Combobox"><Combobox options={fruits} value={b} onChange={setB} clearable /></Field>
-<Field label="Multi-select"><MultiSelect options={fruits} value={c} onChange={setC} max={4} /></Field>`}
+<Field label="Multi-select"><MultiSelect options={fruits} value={c} onChange={setC} max={4} /></Field>
+
+// states: disabled, invalid (red border), loading (async options), emptyText
+<Combobox options={fruits} value={b} invalid />
+<Combobox options={[]} value={null} loading />
+<Select options={fruits} value={a} disabled />`}
   demo="select"
 />
+
+All three selects share the same state props — `disabled`, `invalid` (red border for
+validation), `loading` (shows a spinner while you fetch options), `emptyText`, plus `id` /
+`name` for `<label htmlFor>` and form submission.
 
 ## Toggles
 

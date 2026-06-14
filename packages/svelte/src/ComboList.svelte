@@ -5,6 +5,8 @@
     activeIdx = 0,
     isSel = () => false,
     searchPlaceholder = undefined,
+    loading = false,
+    emptyText = undefined,
     onq,
     onactive,
     onpick,
@@ -59,10 +61,12 @@
   />
 </div>
 <div class="ui-combo-list">
-  {#if items.length === 0}
-    <div class="ui-combo-empty">No matches for “{q}”</div>
+  {#if loading}
+    <div class="ui-combo-loading"><span class="ui-spinner" aria-hidden="true"></span> Loading…</div>
+  {:else if items.length === 0}
+    <div class="ui-combo-empty">{emptyText ?? `No matches for “${q}”`}</div>
   {/if}
-  {#each items as o, i (String(o.value))}
+  {#each loading ? [] : items as o, i (String(o.value))}
     <div
       class="ui-combo-item {i === activeIdx ? 'active' : ''}"
       role="option"
