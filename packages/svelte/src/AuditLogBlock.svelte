@@ -2,6 +2,8 @@
   import Block from './Block.svelte';
   import Badge from './Badge.svelte';
   import Icon from './Icon.svelte';
+  import BlockSkeleton from './BlockSkeleton.svelte';
+  import BlockEmpty from './BlockEmpty.svelte';
 
   const DEFAULT_AUDIT = [
     { who: 'Avery Quinn', action: 'updated billing settings', tag: 'Settings', time: '2 min ago', icon: 'settings' },
@@ -11,7 +13,7 @@
     { who: 'Billing', action: 'flagged failed payment · Cobalt', tag: 'Billing', time: '5 hr ago', icon: 'bell' },
   ];
 
-  let { entries = DEFAULT_AUDIT } = $props();
+  let { entries = DEFAULT_AUDIT, loading = false, empty } = $props();
 </script>
 
 <Block title="Audit log" desc="A chronological trail of every privileged action.">
@@ -24,8 +26,15 @@
       Export log
     </button>
   </div>
-  <div style="padding:14px">
-    <div style="position:relative;padding-left:8px">
+  {#if loading}
+    <BlockSkeleton />
+  {:else if entries.length === 0}
+    {#if empty}{@render empty()}{:else}
+      <BlockEmpty title="No activity" desc="Privileged actions will show here." />
+    {/if}
+  {:else}
+    <div style="padding:14px">
+      <div style="position:relative;padding-left:8px">
       {#each entries as e, i (i)}
         <div
           style="display:flex;gap:14px;position:relative;padding-bottom:{i < entries.length - 1
@@ -54,6 +63,7 @@
           </div>
         </div>
       {/each}
+      </div>
     </div>
-  </div>
+  {/if}
 </Block>

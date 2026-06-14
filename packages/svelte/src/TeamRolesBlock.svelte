@@ -5,6 +5,8 @@
   import Select from './Select.svelte';
   import DropdownMenu from './DropdownMenu.svelte';
   import Icon from './Icon.svelte';
+  import BlockSkeleton from './BlockSkeleton.svelte';
+  import BlockEmpty from './BlockEmpty.svelte';
   import { untrack } from 'svelte';
 
   const DEFAULT_MEMBERS = [
@@ -20,7 +22,7 @@
     { label: 'Remove', icon: 'x', danger: true },
   ];
 
-  let { members: initial = DEFAULT_MEMBERS } = $props();
+  let { members: initial = DEFAULT_MEMBERS, loading = false, empty } = $props();
   let members = $state(untrack(() => initial.map((m) => ({ ...m }))));
 
   function setRole(id, role) {
@@ -36,9 +38,16 @@
     <div style="flex:1"></div>
     <button type="button" class="btn btn-primary btn-sm"><Icon name="mail" size={15} />Invite</button>
   </div>
-  <div style="padding:14px;padding-top:4px;padding-bottom:4px">
-    {#each members as m (m.id)}
-      <div class="ui-row">
+  {#if loading}
+    <BlockSkeleton />
+  {:else if members.length === 0}
+    {#if empty}{@render empty()}{:else}
+      <BlockEmpty title="No members" desc="Invite teammates to collaborate here." />
+    {/if}
+  {:else}
+    <div style="padding:14px;padding-top:4px;padding-bottom:4px">
+      {#each members as m (m.id)}
+        <div class="ui-row">
         <Avatar name={m.name} hue={m.hue} size={38} />
         <div style="flex:1;min-width:0">
           <div style="font-weight:600;font-size:13.5px">{m.name}</div>
@@ -68,6 +77,7 @@
           {/snippet}
         </DropdownMenu>
       </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/if}
 </Block>

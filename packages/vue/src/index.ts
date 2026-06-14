@@ -4998,6 +4998,12 @@ const BLOCK_ICONS: Record<string, () => IconChild[]> = {
     h('path', { d: 'M13.7 21a2 2 0 0 1-3.4 0' }),
   ],
   clock: () => [h('circle', { cx: 12, cy: 12, r: 9 }), h('path', { d: 'M12 7v5l3 2' })],
+  inbox: () => [
+    h('path', { d: 'M22 12h-6l-2 3h-4l-2-3H2' }),
+    h('path', {
+      d: 'M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z',
+    }),
+  ],
   settings: () => [
     h('circle', { cx: 12, cy: 12, r: 3 }),
     h('path', {
@@ -5062,6 +5068,29 @@ const blockBarStyle = {
   borderBottom: '1px solid var(--border)',
 };
 
+/** A stack of shimmer rows shown while a block's data is loading. */
+const blockSkeleton = (rows = 4) =>
+  h(
+    'div',
+    { style: { padding: '14px', display: 'grid', gap: '16px' } },
+    Array.from({ length: rows }).map((_, i) =>
+      h('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: '12px' } }, [
+        h(Skeleton, { w: 32, h: 32, r: 9 }),
+        h(Skeleton, { w: `${30 + ((i * 13) % 35)}%`, h: 12 }),
+        h('div', { style: { flex: 1 } }),
+        h(Skeleton, { w: 68, h: 12 }),
+      ]),
+    ),
+  );
+
+/** Default empty placeholder; overridden wholesale when `emptyState` is given. */
+const blockEmpty = (title: string, desc?: string) =>
+  h('div', { class: 'ui-empty' }, [
+    blockIcon('inbox', 26),
+    h('div', { class: 'ui-empty-title' }, title),
+    desc ? h('div', { class: 'ui-empty-desc' }, desc) : null,
+  ]);
+
 export type ServiceStatus = 'operational' | 'degraded' | 'maintenance' | 'down';
 export interface Service {
   name: string;
@@ -5087,8 +5116,9 @@ export const SystemStatusBlock = defineComponent({
   name: 'VspSystemStatusBlock',
   props: {
     services: { type: Array as PropType<Service[]>, default: () => DEFAULT_SERVICES },
+    loading: { type: Boolean, default: false },
   },
-  setup(props) {
+  setup(props, { slots }) {
     return () => {
       const allOk = props.services.every((s) => s.status === 'operational');
       const accent = allOk ? 'var(--success)' : 'var(--warning)';
@@ -5114,61 +5144,65 @@ export const SystemStatusBlock = defineComponent({
             h('div', { style: { flex: 1 } }),
             h('span', { class: 'eyebrow' }, 'Updated 30s ago'),
           ]),
-          h(
-            'div',
-            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '8px' } },
-            props.services.map((s) =>
-              h('div', { key: s.name, class: 'ui-row', style: { alignItems: 'center' } }, [
-                h('div', { style: { width: '150px', flexShrink: 0 } }, [
-                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, s.name),
-                ]),
-                h(
+          props.loading
+            ? blockSkeleton()
+            : props.services.length === 0
+              ? (slots.empty?.() ?? blockEmpty('No services', 'No monitored services yet.'))
+              : h(
                   'div',
-                  {
-                    style: {
-                      flex: 1,
-                      display: 'flex',
-                      gap: '2px',
-                      alignItems: 'flex-end',
-                      height: '26px',
-                    },
-                  },
-                  Array.from({ length: 44 }).map((_, i) => {
-                    const bad =
-                      (s.status === 'degraded' && i > 38 && i < 42) ||
-                      (s.status === 'maintenance' && i === 43);
-                    return h('span', {
-                      key: i,
-                      style: {
-                        flex: 1,
-                        height: bad ? '60%' : '100%',
-                        borderRadius: '2px',
-                        background: bad
-                          ? s.status === 'degraded'
-                            ? 'var(--warning)'
-                            : 'var(--accent)'
-                          : 'color-mix(in oklab, var(--success) 70%, transparent)',
-                      },
-                    });
-                  }),
+                  { style: { padding: '14px', paddingTop: '4px', paddingBottom: '8px' } },
+                  props.services.map((s) =>
+                    h('div', { key: s.name, class: 'ui-row', style: { alignItems: 'center' } }, [
+                      h('div', { style: { width: '150px', flexShrink: 0 } }, [
+                        h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, s.name),
+                      ]),
+                      h(
+                        'div',
+                        {
+                          style: {
+                            flex: 1,
+                            display: 'flex',
+                            gap: '2px',
+                            alignItems: 'flex-end',
+                            height: '26px',
+                          },
+                        },
+                        Array.from({ length: 44 }).map((_, i) => {
+                          const bad =
+                            (s.status === 'degraded' && i > 38 && i < 42) ||
+                            (s.status === 'maintenance' && i === 43);
+                          return h('span', {
+                            key: i,
+                            style: {
+                              flex: 1,
+                              height: bad ? '60%' : '100%',
+                              borderRadius: '2px',
+                              background: bad
+                                ? s.status === 'degraded'
+                                  ? 'var(--warning)'
+                                  : 'var(--accent)'
+                                : 'color-mix(in oklab, var(--success) 70%, transparent)',
+                            },
+                          });
+                        }),
+                      ),
+                      h(
+                        'span',
+                        {
+                          class: 'mono tnum',
+                          style: {
+                            width: '56px',
+                            textAlign: 'right',
+                            fontSize: '12px',
+                            color: 'var(--text-dim)',
+                          },
+                        },
+                        `${s.uptime}%`,
+                      ),
+                      h(Badge, { tone: STATUS_TONE[s.status], dot: true }, () => s.status),
+                    ]),
+                  ),
                 ),
-                h(
-                  'span',
-                  {
-                    class: 'mono tnum',
-                    style: {
-                      width: '56px',
-                      textAlign: 'right',
-                      fontSize: '12px',
-                      color: 'var(--text-dim)',
-                    },
-                  },
-                  `${s.uptime}%`,
-                ),
-                h(Badge, { tone: STATUS_TONE[s.status], dot: true }, () => s.status),
-              ]),
-            ),
-          ),
         ],
       );
     };
@@ -5220,8 +5254,9 @@ export const AuditLogBlock = defineComponent({
   name: 'VspAuditLogBlock',
   props: {
     entries: { type: Array as PropType<AuditEntry[]>, default: () => DEFAULT_AUDIT },
+    loading: { type: Boolean, default: false },
   },
-  setup(props) {
+  setup(props, { slots }) {
     return () =>
       h(
         Block,
@@ -5236,80 +5271,84 @@ export const AuditLogBlock = defineComponent({
               'Export log',
             ]),
           ]),
-          h('div', { style: { padding: '14px' } }, [
-            h(
-              'div',
-              { style: { position: 'relative', paddingLeft: '8px' } },
-              props.entries.map((e, i) =>
-                h(
-                  'div',
-                  {
-                    key: i,
-                    style: {
-                      display: 'flex',
-                      gap: '14px',
-                      paddingBottom: i < props.entries.length - 1 ? '20px' : '0',
-                      position: 'relative',
-                    },
-                  },
-                  [
-                    i < props.entries.length - 1
-                      ? h('span', {
-                          style: {
-                            position: 'absolute',
-                            left: '15px',
-                            top: '32px',
-                            bottom: 0,
-                            width: '1.5px',
-                            background: 'var(--border)',
-                          },
-                        })
-                      : null,
-                    h(
-                      'span',
-                      {
-                        style: {
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '9px',
-                          flexShrink: 0,
-                          display: 'grid',
-                          placeItems: 'center',
-                          background: 'var(--surface-3)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-dim)',
-                          zIndex: 1,
-                        },
-                      },
-                      [blockIcon(e.icon, 16)],
-                    ),
-                    h('div', { style: { flex: 1, paddingTop: '5px' } }, [
-                      h('div', { style: { fontSize: '13.5px' } }, [
-                        h('b', { style: { fontWeight: 700 } }, e.who),
-                        ' ',
-                        h('span', { style: { color: 'var(--text-dim)' } }, e.action),
-                      ]),
+          props.loading
+            ? blockSkeleton()
+            : props.entries.length === 0
+              ? (slots.empty?.() ?? blockEmpty('No activity', 'Privileged actions will show here.'))
+              : h('div', { style: { padding: '14px' } }, [
+                  h(
+                    'div',
+                    { style: { position: 'relative', paddingLeft: '8px' } },
+                    props.entries.map((e, i) =>
                       h(
                         'div',
                         {
+                          key: i,
                           style: {
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            marginTop: '5px',
+                            gap: '14px',
+                            paddingBottom: i < props.entries.length - 1 ? '20px' : '0',
+                            position: 'relative',
                           },
                         },
                         [
-                          h(Badge, { tone: 'muted' }, () => e.tag),
-                          h('span', { class: 'eyebrow' }, e.time),
+                          i < props.entries.length - 1
+                            ? h('span', {
+                                style: {
+                                  position: 'absolute',
+                                  left: '15px',
+                                  top: '32px',
+                                  bottom: 0,
+                                  width: '1.5px',
+                                  background: 'var(--border)',
+                                },
+                              })
+                            : null,
+                          h(
+                            'span',
+                            {
+                              style: {
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '9px',
+                                flexShrink: 0,
+                                display: 'grid',
+                                placeItems: 'center',
+                                background: 'var(--surface-3)',
+                                border: '1px solid var(--border)',
+                                color: 'var(--text-dim)',
+                                zIndex: 1,
+                              },
+                            },
+                            [blockIcon(e.icon, 16)],
+                          ),
+                          h('div', { style: { flex: 1, paddingTop: '5px' } }, [
+                            h('div', { style: { fontSize: '13.5px' } }, [
+                              h('b', { style: { fontWeight: 700 } }, e.who),
+                              ' ',
+                              h('span', { style: { color: 'var(--text-dim)' } }, e.action),
+                            ]),
+                            h(
+                              'div',
+                              {
+                                style: {
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  marginTop: '5px',
+                                },
+                              },
+                              [
+                                h(Badge, { tone: 'muted' }, () => e.tag),
+                                h('span', { class: 'eyebrow' }, e.time),
+                              ],
+                            ),
+                          ]),
                         ],
                       ),
-                    ]),
-                  ],
-                ),
-              ),
-            ),
-          ]),
+                    ),
+                  ),
+                ]),
         ],
       );
   },
@@ -5389,16 +5428,22 @@ const ROW_MENU: MenuItem[] = [
   { label: 'Cancel', icon: 'x', danger: true },
 ];
 
+export type OrderColumn = 'customer' | 'item' | 'status' | 'amount';
+const ALL_ORDER_COLUMNS: OrderColumn[] = ['customer', 'item', 'status', 'amount'];
+
 /** Operational table: tab filters, bulk selection, status badges, row menu. */
 export const OrdersBlock = defineComponent({
   name: 'VspOrdersBlock',
   props: {
     orders: { type: Array as PropType<Order[]>, default: () => DEFAULT_ORDERS },
+    columns: { type: Array as PropType<OrderColumn[]>, default: () => ALL_ORDER_COLUMNS },
+    loading: { type: Boolean, default: false },
   },
-  setup(props) {
+  setup(props, { slots }) {
     const tab = ref('all');
     const sel = ref<Set<string>>(new Set());
     return () => {
+      const col = (c: OrderColumn) => props.columns.includes(c);
       const rows = props.orders.filter((o) => tab.value === 'all' || o.state === tab.value);
       const allSel = rows.length > 0 && rows.every((r) => sel.value.has(r.id));
       const toggleAll = () => {
@@ -5461,87 +5506,117 @@ export const OrdersBlock = defineComponent({
                   ]),
                 ]),
           ]),
-          h('div', { style: { overflowX: 'auto' } }, [
-            h('table', { class: 'ui-table', style: { minWidth: '720px' } }, [
-              h('thead', {}, [
-                h('tr', {}, [
-                  h('th', { style: { width: '44px' } }, [check(allSel, toggleAll)]),
-                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Order')]),
-                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Customer')]),
-                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Item')]),
-                  h('th', {}, [h('span', { class: 'eyebrow' }, 'Status')]),
-                  h('th', { style: { textAlign: 'right' } }, [
-                    h('span', { class: 'eyebrow' }, 'Amount'),
-                  ]),
-                  h('th', { style: { width: '44px' } }),
-                ]),
-              ]),
-              h(
-                'tbody',
-                {},
-                rows.map((o) =>
-                  h(
-                    'tr',
-                    {
-                      key: o.id,
-                      style: {
-                        background: sel.value.has(o.id)
-                          ? 'color-mix(in oklab, var(--accent) 7%, transparent)'
-                          : undefined,
-                      },
-                    },
-                    [
-                      h('td', {}, [check(sel.value.has(o.id), () => toggle(o.id))]),
-                      h('td', { class: 'mono', style: { fontWeight: 600 } }, o.id),
-                      h('td', {}, [
+          props.loading
+            ? blockSkeleton()
+            : rows.length === 0
+              ? (slots.empty?.() ??
+                blockEmpty(
+                  'No orders',
+                  tab.value === 'all'
+                    ? 'New orders will appear here.'
+                    : `No ${tab.value} orders right now.`,
+                ))
+              : h('div', { style: { overflowX: 'auto' } }, [
+                  h('table', { class: 'ui-table', style: { minWidth: '720px' } }, [
+                    h('thead', {}, [
+                      h('tr', {}, [
+                        h('th', { style: { width: '44px' } }, [check(allSel, toggleAll)]),
+                        h('th', {}, [h('span', { class: 'eyebrow' }, 'Order')]),
+                        col('customer')
+                          ? h('th', {}, [h('span', { class: 'eyebrow' }, 'Customer')])
+                          : null,
+                        col('item') ? h('th', {}, [h('span', { class: 'eyebrow' }, 'Item')]) : null,
+                        col('status')
+                          ? h('th', {}, [h('span', { class: 'eyebrow' }, 'Status')])
+                          : null,
+                        col('amount')
+                          ? h('th', { style: { textAlign: 'right' } }, [
+                              h('span', { class: 'eyebrow' }, 'Amount'),
+                            ])
+                          : null,
+                        h('th', { style: { width: '44px' } }),
+                      ]),
+                    ]),
+                    h(
+                      'tbody',
+                      {},
+                      rows.map((o) =>
                         h(
-                          'div',
-                          { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
+                          'tr',
+                          {
+                            key: o.id,
+                            style: {
+                              background: sel.value.has(o.id)
+                                ? 'color-mix(in oklab, var(--accent) 7%, transparent)'
+                                : undefined,
+                            },
+                          },
                           [
-                            h(Avatar, { name: o.company, hue: o.hue, size: 28 }),
-                            h('span', { style: { fontWeight: 500 } }, o.company),
+                            h('td', {}, [check(sel.value.has(o.id), () => toggle(o.id))]),
+                            h('td', { class: 'mono', style: { fontWeight: 600 } }, o.id),
+                            col('customer')
+                              ? h('td', {}, [
+                                  h(
+                                    'div',
+                                    {
+                                      style: {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                      },
+                                    },
+                                    [
+                                      h(Avatar, { name: o.company, hue: o.hue, size: 28 }),
+                                      h('span', { style: { fontWeight: 500 } }, o.company),
+                                    ],
+                                  ),
+                                ])
+                              : null,
+                            col('item')
+                              ? h('td', { style: { color: 'var(--text-dim)' } }, o.item)
+                              : null,
+                            col('status')
+                              ? h('td', {}, [
+                                  h(Badge, { tone: ORDER_TONE[o.state], dot: true }, () => o.state),
+                                ])
+                              : null,
+                            col('amount')
+                              ? h(
+                                  'td',
+                                  { class: 'tnum', style: { textAlign: 'right', fontWeight: 700 } },
+                                  `$${o.amount.toLocaleString()}`,
+                                )
+                              : null,
+                            h('td', {}, [
+                              h(
+                                DropdownMenu,
+                                { items: ROW_MENU },
+                                {
+                                  trigger: () =>
+                                    h(
+                                      'button',
+                                      {
+                                        type: 'button',
+                                        class: 'vsp-icon-btn',
+                                        style: {
+                                          width: '30px',
+                                          height: '30px',
+                                          border: 0,
+                                          background: 'transparent',
+                                        },
+                                        'aria-label': 'Row actions',
+                                      },
+                                      [blockIcon('more', 18)],
+                                    ),
+                                },
+                              ),
+                            ]),
                           ],
                         ),
-                      ]),
-                      h('td', { style: { color: 'var(--text-dim)' } }, o.item),
-                      h('td', {}, [
-                        h(Badge, { tone: ORDER_TONE[o.state], dot: true }, () => o.state),
-                      ]),
-                      h(
-                        'td',
-                        { class: 'tnum', style: { textAlign: 'right', fontWeight: 700 } },
-                        `$${o.amount.toLocaleString()}`,
                       ),
-                      h('td', {}, [
-                        h(
-                          DropdownMenu,
-                          { items: ROW_MENU },
-                          {
-                            trigger: () =>
-                              h(
-                                'button',
-                                {
-                                  type: 'button',
-                                  class: 'vsp-icon-btn',
-                                  style: {
-                                    width: '30px',
-                                    height: '30px',
-                                    border: 0,
-                                    background: 'transparent',
-                                  },
-                                  'aria-label': 'Row actions',
-                                },
-                                [blockIcon('more', 18)],
-                              ),
-                          },
-                        ),
-                      ]),
-                    ],
-                  ),
-                ),
-              ),
-            ]),
-          ]),
+                    ),
+                  ]),
+                ]),
         ],
       );
     };
@@ -5575,8 +5650,9 @@ export const TeamRolesBlock = defineComponent({
   name: 'VspTeamRolesBlock',
   props: {
     members: { type: Array as PropType<TeamMember[]>, default: () => DEFAULT_MEMBERS },
+    loading: { type: Boolean, default: false },
   },
-  setup(props) {
+  setup(props, { slots }) {
     const members = ref<TeamMember[]>(props.members.map((m) => ({ ...m })));
     return () =>
       h(
@@ -5593,53 +5669,61 @@ export const TeamRolesBlock = defineComponent({
               'Invite',
             ]),
           ]),
-          h(
-            'div',
-            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
-            members.value.map((m) =>
-              h('div', { key: m.id, class: 'ui-row' }, [
-                h(Avatar, { name: m.name, hue: m.hue, size: 38 }),
-                h('div', { style: { flex: 1, minWidth: 0 } }, [
-                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, m.name),
-                  h(
-                    'div',
-                    { class: 'mono', style: { fontSize: '11.5px', color: 'var(--text-faint)' } },
-                    m.email,
-                  ),
-                ]),
-                m.role === 'Owner'
-                  ? h(Badge, { tone: 'info' }, () => 'Owner')
-                  : h('div', { style: { width: '130px' } }, [
-                      h(Select, {
-                        modelValue: m.role,
-                        options: ['Admin', 'Editor', 'Viewer'],
-                        'onUpdate:modelValue': (v: SelectValue) => {
-                          members.value = members.value.map((y) =>
-                            y.id === m.id ? { ...y, role: String(v) } : y,
-                          );
-                        },
-                      }),
-                    ]),
-                h(
-                  DropdownMenu,
-                  { items: MEMBER_MENU },
-                  {
-                    trigger: () =>
+          props.loading
+            ? blockSkeleton()
+            : members.value.length === 0
+              ? (slots.empty?.() ??
+                blockEmpty('No members', 'Invite teammates to collaborate here.'))
+              : h(
+                  'div',
+                  { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
+                  members.value.map((m) =>
+                    h('div', { key: m.id, class: 'ui-row' }, [
+                      h(Avatar, { name: m.name, hue: m.hue, size: 38 }),
+                      h('div', { style: { flex: 1, minWidth: 0 } }, [
+                        h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, m.name),
+                        h(
+                          'div',
+                          {
+                            class: 'mono',
+                            style: { fontSize: '11.5px', color: 'var(--text-faint)' },
+                          },
+                          m.email,
+                        ),
+                      ]),
+                      m.role === 'Owner'
+                        ? h(Badge, { tone: 'info' }, () => 'Owner')
+                        : h('div', { style: { width: '130px' } }, [
+                            h(Select, {
+                              modelValue: m.role,
+                              options: ['Admin', 'Editor', 'Viewer'],
+                              'onUpdate:modelValue': (v: SelectValue) => {
+                                members.value = members.value.map((y) =>
+                                  y.id === m.id ? { ...y, role: String(v) } : y,
+                                );
+                              },
+                            }),
+                          ]),
                       h(
-                        'button',
+                        DropdownMenu,
+                        { items: MEMBER_MENU },
                         {
-                          type: 'button',
-                          class: 'vsp-icon-btn',
-                          style: { width: '32px', height: '32px' },
-                          'aria-label': 'Member actions',
+                          trigger: () =>
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                class: 'vsp-icon-btn',
+                                style: { width: '32px', height: '32px' },
+                                'aria-label': 'Member actions',
+                              },
+                              [blockIcon('more', 18)],
+                            ),
                         },
-                        [blockIcon('more', 18)],
                       ),
-                  },
+                    ]),
+                  ),
                 ),
-              ]),
-            ),
-          ),
         ],
       );
   },
@@ -5688,8 +5772,9 @@ export const ApiKeysBlock = defineComponent({
   name: 'VspApiKeysBlock',
   props: {
     keys: { type: Array as PropType<ApiKey[]>, default: () => DEFAULT_KEYS },
+    loading: { type: Boolean, default: false },
   },
-  setup(props) {
+  setup(props, { slots }) {
     const keys = ref<ApiKey[]>(props.keys.map((k) => ({ ...k })));
     const revealed = ref<Set<number>>(new Set());
     return () => {
@@ -5720,79 +5805,84 @@ export const ApiKeysBlock = defineComponent({
               [blockIcon('plus', 15), 'Create key'],
             ),
           ]),
-          h(
-            'div',
-            { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
-            keys.value.map((k) => {
-              const show = revealed.value.has(k.id);
-              return h('div', { key: k.id, class: 'ui-row' }, [
-                h('div', { style: { minWidth: '96px' } }, [
-                  h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, k.name),
-                  h('div', { class: 'eyebrow', style: { marginTop: '2px' } }, k.created),
-                ]),
-                h(
-                  'code',
-                  {
-                    class: 'mono',
-                    style: {
-                      flex: 1,
-                      fontSize: '12.5px',
-                      color: 'var(--text-dim)',
-                      background: 'var(--surface-2)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--r-sm)',
-                      padding: '7px 11px',
-                      letterSpacing: '.02em',
-                    },
-                  },
-                  show ? k.secret : k.token,
+          props.loading
+            ? blockSkeleton()
+            : keys.value.length === 0
+              ? (slots.empty?.() ??
+                blockEmpty('No API keys', 'Create a key to start making requests.'))
+              : h(
+                  'div',
+                  { style: { padding: '14px', paddingTop: '4px', paddingBottom: '4px' } },
+                  keys.value.map((k) => {
+                    const show = revealed.value.has(k.id);
+                    return h('div', { key: k.id, class: 'ui-row' }, [
+                      h('div', { style: { minWidth: '96px' } }, [
+                        h('div', { style: { fontWeight: 600, fontSize: '13.5px' } }, k.name),
+                        h('div', { class: 'eyebrow', style: { marginTop: '2px' } }, k.created),
+                      ]),
+                      h(
+                        'code',
+                        {
+                          class: 'mono',
+                          style: {
+                            flex: 1,
+                            fontSize: '12.5px',
+                            color: 'var(--text-dim)',
+                            background: 'var(--surface-2)',
+                            border: '1px solid var(--border)',
+                            borderRadius: 'var(--r-sm)',
+                            padding: '7px 11px',
+                            letterSpacing: '.02em',
+                          },
+                        },
+                        show ? k.secret : k.token,
+                      ),
+                      h(Tooltip, { label: show ? 'Hide' : 'Reveal' }, () =>
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            class: 'vsp-icon-btn',
+                            style: { width: '34px', height: '34px' },
+                            'aria-label': show ? 'Hide secret' : 'Reveal secret',
+                            onClick: () => toggleReveal(k.id),
+                          },
+                          [blockIcon('eye', 16)],
+                        ),
+                      ),
+                      h(Tooltip, { label: 'Copy' }, () =>
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            class: 'vsp-icon-btn',
+                            style: { width: '34px', height: '34px' },
+                            'aria-label': 'Copy secret',
+                            onClick: () => toast({ title: 'Copied to clipboard' }),
+                          },
+                          [blockIcon('doc', 16)],
+                        ),
+                      ),
+                      h(
+                        'span',
+                        { class: 'eyebrow', style: { width: '66px', textAlign: 'right' } },
+                        k.last,
+                      ),
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          class: 'btn btn-subtle btn-sm',
+                          onClick: () => {
+                            keys.value = keys.value.filter((y) => y.id !== k.id);
+                            toast({ tone: 'neg', title: 'Key revoked' });
+                          },
+                        },
+                        'Revoke',
+                      ),
+                    ]);
+                  }),
                 ),
-                h(Tooltip, { label: show ? 'Hide' : 'Reveal' }, () =>
-                  h(
-                    'button',
-                    {
-                      type: 'button',
-                      class: 'vsp-icon-btn',
-                      style: { width: '34px', height: '34px' },
-                      'aria-label': show ? 'Hide secret' : 'Reveal secret',
-                      onClick: () => toggleReveal(k.id),
-                    },
-                    [blockIcon('eye', 16)],
-                  ),
-                ),
-                h(Tooltip, { label: 'Copy' }, () =>
-                  h(
-                    'button',
-                    {
-                      type: 'button',
-                      class: 'vsp-icon-btn',
-                      style: { width: '34px', height: '34px' },
-                      'aria-label': 'Copy secret',
-                      onClick: () => toast({ title: 'Copied to clipboard' }),
-                    },
-                    [blockIcon('doc', 16)],
-                  ),
-                ),
-                h(
-                  'span',
-                  { class: 'eyebrow', style: { width: '66px', textAlign: 'right' } },
-                  k.last,
-                ),
-                h(
-                  'button',
-                  {
-                    type: 'button',
-                    class: 'btn btn-subtle btn-sm',
-                    onClick: () => {
-                      keys.value = keys.value.filter((y) => y.id !== k.id);
-                      toast({ tone: 'neg', title: 'Key revoked' });
-                    },
-                  },
-                  'Revoke',
-                ),
-              ]);
-            }),
-          ),
         ],
       );
     };

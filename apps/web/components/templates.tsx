@@ -22,7 +22,17 @@ import {
 } from '@vespera-ui/react';
 
 export function OrdersBlockExample() {
-  return <OrdersBlock />;
+  const [view, setView] = useState('Data');
+  return (
+    <div style={{ display: 'grid', gap: 12, width: '100%' }}>
+      <Segmented options={['Data', 'Loading', 'Empty']} value={view} onChange={setView} />
+      <OrdersBlock
+        loading={view === 'Loading'}
+        orders={view === 'Empty' ? [] : undefined}
+        columns={['customer', 'status', 'amount']}
+      />
+    </div>
+  );
 }
 export function KanbanBlockExample() {
   return <KanbanBlock />;
