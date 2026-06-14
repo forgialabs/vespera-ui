@@ -253,6 +253,9 @@ export const Checkbox = defineComponent({
     label: { type: String, default: undefined },
     sub: { type: String, default: undefined },
     disabled: Boolean,
+    indeterminate: Boolean,
+    invalid: Boolean,
+    id: { type: String, default: undefined },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -264,7 +267,18 @@ export const Checkbox = defineComponent({
         'label',
         { class: 'ui-opt', style: { opacity: props.disabled ? 0.5 : 1 }, onClick: toggle },
         [
-          h('span', { class: cx('ui-check', props.modelValue && 'on') }),
+          h('span', {
+            id: props.id,
+            role: 'checkbox',
+            'aria-checked': props.indeterminate ? 'mixed' : props.modelValue,
+            'aria-invalid': props.invalid || undefined,
+            class: cx(
+              'ui-check',
+              (props.modelValue || props.indeterminate) && 'on',
+              props.indeterminate && 'mixed',
+              props.invalid && 'invalid',
+            ),
+          }),
           h('span', null, [
             h('span', null, props.label),
             props.sub ? h('span', { class: 'ui-opt-sub' }, props.sub) : null,
@@ -355,19 +369,24 @@ export const Slider = defineComponent({
     min: { type: Number, default: 0 },
     max: { type: Number, default: 100 },
     step: { type: Number, default: 1 },
+    disabled: Boolean,
+    id: { type: String, default: undefined },
   },
   emits: ['update:modelValue'],
-  setup(props, { emit }) {
+  setup(props, { emit, attrs }) {
     return () =>
       h('input', {
         type: 'range',
         class: 'ui-slider',
+        id: props.id,
         value: props.modelValue,
         min: props.min,
         max: props.max,
         step: props.step,
+        disabled: props.disabled,
         onInput: (e: Event) =>
           emit('update:modelValue', Number((e.target as HTMLInputElement).value)),
+        ...attrs,
       });
   },
 });
@@ -3280,19 +3299,24 @@ export const TokenInput = defineComponent({
   props: {
     modelValue: { type: Array as PropType<string[]>, default: () => [] },
     placeholder: { type: String, default: 'Type and press Enter…' },
+    disabled: Boolean,
+    invalid: Boolean,
+    max: { type: Number, default: undefined },
+    id: { type: String, default: undefined },
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
     const draft = ref('');
     return () => {
       const value = props.modelValue;
+      const full = props.max != null && value.length >= props.max;
       const set = (next: string[]) => {
         emit('update:modelValue', next);
         emit('change', next);
       };
       const add = () => {
         const t = draft.value.trim();
-        if (t && !value.includes(t)) set([...value, t]);
+        if (t && !value.includes(t) && !full) set([...value, t]);
         draft.value = '';
       };
       const onKey = (e: KeyboardEvent) => {
@@ -3306,9 +3330,10 @@ export const TokenInput = defineComponent({
       return h(
         'div',
         {
-          class: 'ui-trigger',
+          class: cx('ui-trigger', props.invalid && 'invalid', props.disabled && 'disabled'),
+          'aria-invalid': props.invalid || undefined,
           style: {
-            cursor: 'text',
+            cursor: props.disabled ? 'not-allowed' : 'text',
             flexWrap: 'wrap',
             alignItems: 'center',
             gap: '6px',
@@ -3316,7 +3341,7 @@ export const TokenInput = defineComponent({
             paddingBottom: '5px',
           },
           onClick: (e: MouseEvent) =>
-            (e.currentTarget as HTMLElement).querySelector('input')?.focus(),
+            !props.disabled && (e.currentTarget as HTMLElement).querySelector('input')?.focus(),
         },
         [
           ...value.map((t) =>
@@ -3340,7 +3365,9 @@ export const TokenInput = defineComponent({
             ]),
           ),
           h('input', {
+            id: props.id,
             value: draft.value,
+            disabled: props.disabled || full,
             placeholder: value.length ? '' : props.placeholder,
             onInput: (e: Event) => (draft.value = (e.target as HTMLInputElement).value),
             onKeydown: onKey,

@@ -646,6 +646,16 @@
   opacity: 1;
   transform: none;
 }
+.ui-check.mixed::after {
+  content: '';
+  width: 9px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent-ink);
+}
+.ui-check.invalid {
+  border-color: color-mix(in oklab, var(--danger) 65%, var(--border));
+}
 
 .ui-opt {
   display: flex;
@@ -708,6 +718,10 @@
 }
 
 /* slider */
+.ui-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .ui-slider {
   -webkit-appearance: none;
   appearance: none;

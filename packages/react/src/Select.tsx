@@ -548,17 +548,27 @@ export interface TokenInputProps {
   value?: string[];
   onChange?: (value: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  /** Maximum number of tokens. */
+  max?: number;
+  id?: string;
 }
 
 export function TokenInput({
   value = [],
   onChange,
   placeholder = 'Type and press Enter…',
+  disabled,
+  invalid,
+  max,
+  id,
 }: TokenInputProps) {
   const [draft, setDraft] = useState('');
+  const full = max != null && value.length >= max;
   const add = () => {
     const t = draft.trim();
-    if (t && !value.includes(t)) onChange?.([...value, t]);
+    if (t && !value.includes(t) && !full) onChange?.([...value, t]);
     setDraft('');
   };
   const onKey = (e: ReactKeyboardEvent<HTMLInputElement>) => {
@@ -571,16 +581,17 @@ export function TokenInput({
   };
   return (
     <div
-      className="ui-trigger"
+      className={cx('ui-trigger', invalid && 'invalid', disabled && 'disabled')}
+      aria-invalid={invalid || undefined}
       style={{
-        cursor: 'text',
+        cursor: disabled ? 'not-allowed' : 'text',
         flexWrap: 'wrap',
         alignItems: 'center',
         gap: 6,
         paddingTop: 5,
         paddingBottom: 5,
       }}
-      onClick={(e) => e.currentTarget.querySelector('input')?.focus()}
+      onClick={(e) => !disabled && e.currentTarget.querySelector('input')?.focus()}
     >
       {value.map((t) => (
         <span key={t} className="ui-tag" style={{ maxWidth: '100%' }}>
@@ -597,7 +608,9 @@ export function TokenInput({
         </span>
       ))}
       <input
+        id={id}
         value={draft}
+        disabled={disabled || full}
         placeholder={value.length ? '' : placeholder}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={onKey}

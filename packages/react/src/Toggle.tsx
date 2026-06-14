@@ -8,15 +8,40 @@ export interface CheckboxProps {
   label?: ReactNode;
   sub?: ReactNode;
   disabled?: boolean;
+  /** Tri-state "partially checked" look (e.g. a select-all header). */
+  indeterminate?: boolean;
+  /** Red outline for form validation. */
+  invalid?: boolean;
+  id?: string;
 }
 
-export function Checkbox({ checked, onChange, label, sub, disabled }: CheckboxProps) {
+export function Checkbox({
+  checked,
+  onChange,
+  label,
+  sub,
+  disabled,
+  indeterminate,
+  invalid,
+  id,
+}: CheckboxProps) {
   const toggle = () => {
     if (!disabled) onChange?.(!checked);
   };
   const node = (
-    <span className={cx('ui-check', checked && 'on')}>
-      <Icon.check />
+    <span
+      id={id}
+      role="checkbox"
+      aria-checked={indeterminate ? 'mixed' : !!checked}
+      aria-invalid={invalid || undefined}
+      className={cx(
+        'ui-check',
+        (checked || indeterminate) && 'on',
+        indeterminate && 'mixed',
+        invalid && 'invalid',
+      )}
+    >
+      {!indeterminate && <Icon.check />}
     </span>
   );
   if (!label) {
@@ -149,18 +174,33 @@ export interface SliderProps {
   min?: number;
   max?: number;
   step?: number;
+  disabled?: boolean;
+  id?: string;
+  'aria-label'?: string;
 }
 
-export function Slider({ value, onChange, min = 0, max = 100, step = 1 }: SliderProps) {
+export function Slider({
+  value,
+  onChange,
+  min = 0,
+  max = 100,
+  step = 1,
+  disabled,
+  id,
+  ...rest
+}: SliderProps) {
   return (
     <input
       type="range"
       className="ui-slider"
+      id={id}
       value={value}
       min={min}
       max={max}
       step={step}
+      disabled={disabled}
       onChange={(e) => onChange?.(Number(e.target.value))}
+      {...rest}
     />
   );
 }

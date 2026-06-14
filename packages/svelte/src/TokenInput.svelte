@@ -1,8 +1,17 @@
 <script>
-  let { value = $bindable([]), placeholder = 'Type and press Enter…', onchange } = $props();
+  let {
+    value = $bindable([]),
+    placeholder = 'Type and press Enter…',
+    disabled = false,
+    invalid = false,
+    max = undefined,
+    id = undefined,
+    onchange,
+  } = $props();
 
   let draft = $state('');
   let rootEl = $state();
+  let full = $derived(max != null && value.length >= max);
 
   function set(next) {
     value = next;
@@ -10,7 +19,7 @@
   }
   function add() {
     const t = draft.trim();
-    if (t && !value.includes(t)) set([...value, t]);
+    if (t && !value.includes(t) && !full) set([...value, t]);
     draft = '';
   }
   function onKey(e) {
@@ -25,10 +34,13 @@
 
 <div
   bind:this={rootEl}
-  class="ui-trigger"
+  class="ui-trigger{invalid ? ' invalid' : ''}{disabled ? ' disabled' : ''}"
   role="presentation"
-  style="cursor:text;flex-wrap:wrap;align-items:center;gap:6px;padding-top:5px;padding-bottom:5px"
-  onclick={() => rootEl?.querySelector('input')?.focus()}
+  aria-invalid={invalid || undefined}
+  style="cursor:{disabled
+    ? 'not-allowed'
+    : 'text'};flex-wrap:wrap;align-items:center;gap:6px;padding-top:5px;padding-bottom:5px"
+  onclick={() => !disabled && rootEl?.querySelector('input')?.focus()}
 >
   {#each value as t (t)}
     <span class="ui-tag" style="max-width:100%">
@@ -48,7 +60,9 @@
     </span>
   {/each}
   <input
+    {id}
     bind:value={draft}
+    disabled={disabled || full}
     placeholder={value.length ? '' : placeholder}
     onkeydown={onKey}
     onblur={add}
