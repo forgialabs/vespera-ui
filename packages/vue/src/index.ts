@@ -30,7 +30,47 @@ export const Button = defineComponent({
   name: 'VspButton',
   props: {
     variant: { type: String as PropType<ButtonVariant>, default: 'ghost' },
-    size: { type: String as PropType<'sm'>, default: undefined },
+    size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: 'md' },
+    loading: Boolean,
+    loadingText: { type: String, default: undefined },
+    fullWidth: Boolean,
+    disabled: Boolean,
+  },
+  setup(props, { slots, attrs }) {
+    return () =>
+      h(
+        'button',
+        {
+          class: cx(
+            'btn',
+            `btn-${props.variant}`,
+            props.size === 'sm' && 'btn-sm',
+            props.size === 'lg' && 'btn-lg',
+            props.fullWidth && 'btn-block',
+          ),
+          disabled: props.disabled || props.loading,
+          'aria-busy': props.loading || undefined,
+          ...attrs,
+        },
+        [
+          props.loading
+            ? h('span', { class: 'ui-spinner', 'aria-hidden': 'true' })
+            : slots.leading?.(),
+          props.loading && props.loadingText != null ? props.loadingText : slots.default?.(),
+          props.loading ? null : slots.trailing?.(),
+        ],
+      );
+  },
+});
+
+export type IconButtonVariant = 'ghost' | 'subtle' | 'danger';
+
+export const IconButton = defineComponent({
+  name: 'VspIconButton',
+  props: {
+    label: { type: String, default: undefined },
+    size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: 'md' },
+    variant: { type: String as PropType<IconButtonVariant>, default: undefined },
     loading: Boolean,
     disabled: Boolean,
   },
@@ -39,29 +79,24 @@ export const Button = defineComponent({
       h(
         'button',
         {
-          class: cx('btn', `btn-${props.variant}`, props.size === 'sm' && 'btn-sm'),
+          class: cx(
+            'vsp-icon-btn',
+            props.size === 'sm' && 'vsp-icon-btn-sm',
+            props.size === 'lg' && 'vsp-icon-btn-lg',
+            props.variant && `vsp-icon-btn-${props.variant}`,
+          ),
+          type: 'button',
+          'aria-label': props.label,
           disabled: props.disabled || props.loading,
+          'aria-busy': props.loading || undefined,
           ...attrs,
         },
         [
           props.loading
             ? h('span', { class: 'ui-spinner', 'aria-hidden': 'true' })
-            : slots.leading?.(),
-          slots.default?.(),
-          slots.trailing?.(),
+            : slots.default?.(),
         ],
       );
-  },
-});
-
-export const IconButton = defineComponent({
-  name: 'VspIconButton',
-  props: { label: { type: String, default: undefined } },
-  setup(props, { slots, attrs }) {
-    return () =>
-      h('button', { class: 'vsp-icon-btn', type: 'button', 'aria-label': props.label, ...attrs }, [
-        slots.default?.(),
-      ]);
   },
 });
 
