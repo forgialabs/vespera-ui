@@ -1,10 +1,10 @@
 <script>
   import Anchored from './Anchored.svelte';
   import Icon from './Icon.svelte';
-  let { items = [], align = 'end', width, trigger } = $props();
+  let { items = [], align = 'end', width, open = undefined, onOpenChange, trigger } = $props();
 </script>
 
-<Anchored {align} {width} {trigger}>
+<Anchored {align} {width} {open} {onOpenChange} {trigger}>
   {#snippet children(close)}
     {#each items as it, i (i)}
       {#if it.sep}

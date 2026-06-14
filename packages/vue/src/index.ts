@@ -9,6 +9,7 @@ import {
   defineComponent,
   h,
   ref,
+  computed,
   useId,
   onMounted,
   onBeforeUnmount,
@@ -1900,6 +1901,54 @@ const DIALOG_TONE: Record<DialogTone, string> = {
   info: 'var(--accent)',
 };
 
+const FOCUSABLE_SEL =
+  'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+/** Trap Tab focus inside `nodeRef` while open; restore focus to the prior element on close. */
+function useFocusTrap(isOpen: () => boolean, nodeRef: { value: HTMLElement | null }): void {
+  let prev: HTMLElement | null = null;
+  let cleanup: (() => void) | null = null;
+  watch(isOpen, (o) => {
+    if (o) {
+      prev = document.activeElement as HTMLElement | null;
+      nextTick(() => {
+        const node = nodeRef.value;
+        if (!node) return;
+        const list = () =>
+          Array.from(node.querySelectorAll<HTMLElement>(FOCUSABLE_SEL)).filter(
+            (el) => el.offsetWidth > 0 || el.offsetHeight > 0,
+          );
+        (list()[0] ?? node).focus();
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key !== 'Tab') return;
+          const els = list();
+          if (!els.length) {
+            e.preventDefault();
+            return;
+          }
+          const first = els[0]!;
+          const last = els[els.length - 1]!;
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        };
+        node.addEventListener('keydown', onKey);
+        cleanup = () => node.removeEventListener('keydown', onKey);
+      });
+    } else {
+      cleanup?.();
+      cleanup = null;
+      prev?.focus?.();
+      prev = null;
+    }
+  });
+  onBeforeUnmount(() => cleanup?.());
+}
+
 export const Dialog = defineComponent({
   name: 'VspDialog',
   props: {
@@ -1908,14 +1957,18 @@ export const Dialog = defineComponent({
     desc: { type: String, default: undefined },
     maxWidth: { type: Number, default: 460 },
     tone: { type: String as PropType<DialogTone>, default: undefined },
+    closeOnOverlayClick: { type: Boolean, default: true },
+    closeOnEsc: { type: Boolean, default: true },
   },
   emits: ['close'],
   setup(props, { slots, emit }) {
+    const dialogRef = ref<HTMLElement | null>(null);
     const onKey = (e: KeyboardEvent) => {
-      if (props.open && e.key === 'Escape') emit('close');
+      if (props.open && props.closeOnEsc && e.key === 'Escape') emit('close');
     };
     onMounted(() => window.addEventListener('keydown', onKey));
     onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+    useFocusTrap(() => props.open, dialogRef);
     return () => {
       if (!props.open) return null;
       const target = getPortalTarget();
@@ -1927,13 +1980,15 @@ export const Dialog = defineComponent({
           {
             class: 'ui-overlay',
             onMousedown: (e: MouseEvent) => {
-              if (e.target === e.currentTarget) emit('close');
+              if (props.closeOnOverlayClick && e.target === e.currentTarget) emit('close');
             },
           },
           [
             h(
               'div',
               {
+                ref: dialogRef,
+                tabindex: -1,
                 class: 'ui-dialog',
                 style: { maxWidth: px(props.maxWidth) },
                 role: 'dialog',
@@ -1979,14 +2034,19 @@ export const Sheet = defineComponent({
     open: Boolean,
     title: { type: String, default: undefined },
     desc: { type: String, default: undefined },
+    side: { type: String as PropType<'right' | 'left' | 'top' | 'bottom'>, default: 'right' },
+    closeOnOverlayClick: { type: Boolean, default: true },
+    closeOnEsc: { type: Boolean, default: true },
   },
   emits: ['close'],
   setup(props, { slots, emit }) {
+    const sheetRef = ref<HTMLElement | null>(null);
     const onKey = (e: KeyboardEvent) => {
-      if (props.open && e.key === 'Escape') emit('close');
+      if (props.open && props.closeOnEsc && e.key === 'Escape') emit('close');
     };
     onMounted(() => window.addEventListener('keydown', onKey));
     onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
+    useFocusTrap(() => props.open, sheetRef);
     return () => {
       if (!props.open) return null;
       const target = getPortalTarget();
@@ -1996,62 +2056,83 @@ export const Sheet = defineComponent({
           'div',
           {
             class: 'ui-overlay',
+            'data-sheet-side': props.side,
             onMousedown: (e: MouseEvent) => {
-              if (e.target === e.currentTarget) emit('close');
+              if (props.closeOnOverlayClick && e.target === e.currentTarget) emit('close');
             },
           },
           [
-            h('div', { class: 'ui-sheet', role: 'dialog', 'aria-modal': 'true' }, [
-              h('div', { class: 'ui-sheet-head' }, [
-                slots.icon
-                  ? h(
-                      'span',
-                      {
-                        style: {
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: 'var(--r-sm)',
-                          display: 'grid',
-                          placeItems: 'center',
-                          background: 'color-mix(in oklab, var(--accent) 13%, transparent)',
-                          color: 'var(--accent)',
-                          flexShrink: 0,
-                        },
-                      },
-                      slots.icon(),
-                    )
-                  : null,
-                h('div', { style: { flex: 1, minWidth: 0 } }, [
-                  h(
-                    'div',
-                    { style: { fontSize: '16px', fontWeight: 700, letterSpacing: '-.01em' } },
-                    props.title,
-                  ),
-                  props.desc
+            h(
+              'div',
+              {
+                ref: sheetRef,
+                tabindex: -1,
+                class: 'ui-sheet',
+                'data-side': props.side,
+                role: 'dialog',
+                'aria-modal': 'true',
+              },
+              [
+                h('div', { class: 'ui-sheet-head' }, [
+                  slots.icon
                     ? h(
-                        'div',
+                        'span',
                         {
-                          style: { fontSize: '12.5px', color: 'var(--text-dim)', marginTop: '3px' },
+                          style: {
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: 'var(--r-sm)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            background: 'color-mix(in oklab, var(--accent) 13%, transparent)',
+                            color: 'var(--accent)',
+                            flexShrink: 0,
+                          },
                         },
-                        props.desc,
+                        slots.icon(),
                       )
                     : null,
+                  h('div', { style: { flex: 1, minWidth: 0 } }, [
+                    h(
+                      'div',
+                      { style: { fontSize: '16px', fontWeight: 700, letterSpacing: '-.01em' } },
+                      props.title,
+                    ),
+                    props.desc
+                      ? h(
+                          'div',
+                          {
+                            style: {
+                              fontSize: '12.5px',
+                              color: 'var(--text-dim)',
+                              marginTop: '3px',
+                            },
+                          },
+                          props.desc,
+                        )
+                      : null,
+                  ]),
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      class: 'vsp-icon-btn',
+                      style: {
+                        border: 0,
+                        background: 'transparent',
+                        width: '32px',
+                        height: '32px',
+                      },
+                      'aria-label': 'Close',
+                      onClick: () => emit('close'),
+                    },
+                    [svgIcon('M18 6L6 18M6 6l12 12', 16)],
+                  ),
                 ]),
-                h(
-                  'button',
-                  {
-                    type: 'button',
-                    class: 'vsp-icon-btn',
-                    style: { border: 0, background: 'transparent', width: '32px', height: '32px' },
-                    'aria-label': 'Close',
-                    onClick: () => emit('close'),
-                  },
-                  [svgIcon('M18 6L6 18M6 6l12 12', 16)],
-                ),
-              ]),
-              h('div', { class: 'ui-sheet-body vsp-scroll' }, slots.default?.()),
-              slots.footer ? h('div', { class: 'ui-sheet-foot' }, slots.footer()) : null,
-            ]),
+                h('div', { class: 'ui-sheet-body vsp-scroll' }, slots.default?.()),
+                slots.footer ? h('div', { class: 'ui-sheet-foot' }, slots.footer()) : null,
+              ],
+            ),
           ],
         ),
       ]);
@@ -2067,9 +2148,13 @@ export const Anchored = defineComponent({
     align: { type: String as PropType<AnchoredAlign>, default: 'start' },
     width: { type: Number, default: undefined },
     layerClass: { type: String, default: 'ui-menu' },
+    open: { type: Boolean, default: undefined },
   },
-  setup(props, { slots }) {
-    const open = ref(false);
+  emits: ['update:open', 'openChange'],
+  setup(props, { slots, emit }) {
+    const internalOpen = ref(false);
+    const controlled = () => props.open !== undefined;
+    const open = computed(() => (controlled() ? !!props.open : internalOpen.value));
     const rect = ref<DOMRect | null>(null);
     const triggerRef = ref<HTMLElement | null>(null);
     const layerRef = ref<HTMLElement | null>(null);
@@ -2077,12 +2162,16 @@ export const Anchored = defineComponent({
     const place = () => {
       if (triggerRef.value) rect.value = triggerRef.value.getBoundingClientRect();
     };
-    const close = () => {
-      open.value = false;
+    const setOpen = (next: boolean) => {
+      if (!controlled()) internalOpen.value = next;
+      emit('update:open', next);
+      emit('openChange', next);
     };
+    const close = () => setOpen(false);
     const toggle = () => {
-      open.value = !open.value;
-      if (open.value) nextTick(place);
+      const next = !open.value;
+      setOpen(next);
+      if (next) nextTick(place);
     };
     watch(open, (o) => {
       if (o) {
@@ -2157,12 +2246,20 @@ export const DropdownMenu = defineComponent({
     items: { type: Array as PropType<MenuItem[]>, default: () => [] },
     align: { type: String as PropType<AnchoredAlign>, default: 'end' },
     width: { type: Number, default: undefined },
+    open: { type: Boolean, default: undefined },
   },
-  setup(props, { slots }) {
+  emits: ['update:open', 'openChange'],
+  setup(props, { slots, emit }) {
     return () =>
       h(
         Anchored,
-        { align: props.align, width: props.width },
+        {
+          align: props.align,
+          width: props.width,
+          open: props.open,
+          'onUpdate:open': (v: boolean) => emit('update:open', v),
+          onOpenChange: (v: boolean) => emit('openChange', v),
+        },
         {
           trigger: () => slots.trigger?.(),
           default: ({ close }: { close: () => void }) =>
@@ -2197,12 +2294,21 @@ export const Popover = defineComponent({
   props: {
     align: { type: String as PropType<AnchoredAlign>, default: 'start' },
     width: { type: Number, default: 260 },
+    open: { type: Boolean, default: undefined },
   },
-  setup(props, { slots }) {
+  emits: ['update:open', 'openChange'],
+  setup(props, { slots, emit }) {
     return () =>
       h(
         Anchored,
-        { align: props.align, width: props.width, layerClass: 'ui-popover' },
+        {
+          align: props.align,
+          width: props.width,
+          layerClass: 'ui-popover',
+          open: props.open,
+          'onUpdate:open': (v: boolean) => emit('update:open', v),
+          onOpenChange: (v: boolean) => emit('openChange', v),
+        },
         { trigger: () => slots.trigger?.(), default: () => slots.default?.() },
       );
   },

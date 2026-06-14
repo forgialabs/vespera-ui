@@ -1,4 +1,12 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 
 export type DialogTone = 'pos' | 'neg' | 'warn' | 'info';
 const DIALOG_TONE: Record<DialogTone, string> = {
@@ -7,6 +15,42 @@ const DIALOG_TONE: Record<DialogTone, string> = {
   warn: 'var(--warning)',
   info: 'var(--accent)',
 };
+
+const FOCUSABLE_SEL =
+  'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+/** Trap Tab focus inside `node`, focus the first focusable, restore focus on cleanup. */
+function trapFocus(node: HTMLElement): () => void {
+  const prev = document.activeElement as HTMLElement | null;
+  const list = (): HTMLElement[] =>
+    Array.from(node.querySelectorAll<HTMLElement>(FOCUSABLE_SEL)).filter(
+      (el) => el.offsetWidth > 0 || el.offsetHeight > 0,
+    );
+  const id = setTimeout(() => (list()[0] ?? node).focus(), 0);
+  const onKey = (e: KeyboardEvent): void => {
+    if (e.key !== 'Tab') return;
+    const els = list();
+    if (!els.length) {
+      e.preventDefault();
+      return;
+    }
+    const first = els[0]!;
+    const last = els[els.length - 1]!;
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+  node.addEventListener('keydown', onKey);
+  return () => {
+    clearTimeout(id);
+    node.removeEventListener('keydown', onKey);
+    prev?.focus?.();
+  };
+}
 
 /**
  * A modal dialog. Renders in place — `.ui-overlay` is `position: fixed`, so as
@@ -19,7 +63,14 @@ const DIALOG_TONE: Record<DialogTone, string> = {
   selector: 'vsp-dialog',
   template: `@if (open) {
     <div class="ui-overlay" role="presentation" (mousedown)="onBackdrop($event)">
-      <div class="ui-dialog" [style.maxWidth.px]="maxWidth" role="dialog" aria-modal="true">
+      <div
+        #panel
+        class="ui-dialog"
+        [style.maxWidth.px]="maxWidth"
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
+      >
         <div class="ui-dialog-head">
           <span
             #ic
@@ -59,17 +110,25 @@ export class VspDialog {
   @Input() desc?: string;
   @Input() maxWidth = 460;
   @Input() tone?: DialogTone;
+  @Input() closeOnOverlayClick = true;
+  @Input() closeOnEsc = true;
   @Output() close = new EventEmitter<void>();
+
+  private cleanup: (() => void) | null = null;
+  @ViewChild('panel') set panelRef(el: ElementRef<HTMLElement> | undefined) {
+    this.cleanup?.();
+    this.cleanup = el ? trapFocus(el.nativeElement) : null;
+  }
 
   get color(): string {
     return this.tone ? DIALOG_TONE[this.tone] : 'var(--accent)';
   }
   @HostListener('document:keydown.escape')
   onEsc(): void {
-    if (this.open) this.close.emit();
+    if (this.open && this.closeOnEsc) this.close.emit();
   }
   onBackdrop(e: MouseEvent): void {
-    if (e.target === e.currentTarget) this.close.emit();
+    if (this.closeOnOverlayClick && e.target === e.currentTarget) this.close.emit();
   }
 }
 
@@ -77,8 +136,20 @@ export class VspDialog {
 @Component({
   selector: 'vsp-sheet',
   template: `@if (open) {
-    <div class="ui-overlay" role="presentation" (mousedown)="onBackdrop($event)">
-      <div class="ui-sheet" role="dialog" aria-modal="true">
+    <div
+      class="ui-overlay"
+      [attr.data-sheet-side]="side"
+      role="presentation"
+      (mousedown)="onBackdrop($event)"
+    >
+      <div
+        #panel
+        class="ui-sheet"
+        [attr.data-side]="side"
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
+      >
         <div class="ui-sheet-head">
           <span
             #ic
@@ -134,12 +205,22 @@ export class VspSheet {
   @Input() open = false;
   @Input() title?: string;
   @Input() desc?: string;
+  @Input() side: 'right' | 'left' | 'top' | 'bottom' = 'right';
+  @Input() closeOnOverlayClick = true;
+  @Input() closeOnEsc = true;
   @Output() close = new EventEmitter<void>();
+
+  private cleanup: (() => void) | null = null;
+  @ViewChild('panel') set panelRef(el: ElementRef<HTMLElement> | undefined) {
+    this.cleanup?.();
+    this.cleanup = el ? trapFocus(el.nativeElement) : null;
+  }
+
   @HostListener('document:keydown.escape')
   onEsc(): void {
-    if (this.open) this.close.emit();
+    if (this.open && this.closeOnEsc) this.close.emit();
   }
   onBackdrop(e: MouseEvent): void {
-    if (e.target === e.currentTarget) this.close.emit();
+    if (this.closeOnOverlayClick && e.target === e.currentTarget) this.close.emit();
   }
 }

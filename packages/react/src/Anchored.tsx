@@ -19,6 +19,10 @@ export interface AnchoredProps {
   align?: AnchoredAlign;
   width?: number;
   className?: string;
+  /** Controlled open state. Omit for uncontrolled (the default). */
+  open?: boolean;
+  /** Notified whenever the open state should change (both modes). */
+  onOpenChange?: (open: boolean) => void;
 }
 
 /** Positioning base for menus and popovers: anchors a portaled layer to a trigger. */
@@ -28,8 +32,19 @@ export function Anchored({
   align = 'start',
   width,
   className = 'ui-menu',
+  open: openProp,
+  onOpenChange,
 }: AnchoredProps) {
-  const [open, setOpen] = useState(false);
+  const controlled = openProp !== undefined;
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlled ? openProp : internalOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!controlled) setInternalOpen(next);
+      onOpenChange?.(next);
+    },
+    [controlled, onOpenChange],
+  );
   const [rect, setRect] = useState<DOMRect | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +90,7 @@ export function Anchored({
 
   return (
     <>
-      <span ref={triggerRef} onClick={() => setOpen((o) => !o)} style={{ display: 'inline-flex' }}>
+      <span ref={triggerRef} onClick={() => setOpen(!open)} style={{ display: 'inline-flex' }}>
         {trigger}
       </span>
       {target &&
@@ -104,11 +119,20 @@ export interface DropdownMenuProps {
   items: MenuItem[];
   align?: AnchoredAlign;
   width?: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function DropdownMenu({ trigger, items, align = 'end', width }: DropdownMenuProps) {
+export function DropdownMenu({
+  trigger,
+  items,
+  align = 'end',
+  width,
+  open,
+  onOpenChange,
+}: DropdownMenuProps) {
   return (
-    <Anchored trigger={trigger} align={align} width={width}>
+    <Anchored trigger={trigger} align={align} width={width} open={open} onOpenChange={onOpenChange}>
       {(close) =>
         items.map((it, i) => {
           if (it.sep) return <div key={i} className="ui-menu-sep" />;
@@ -144,11 +168,27 @@ export interface PopoverProps {
   children: ReactNode;
   align?: AnchoredAlign;
   width?: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function Popover({ trigger, children, align = 'start', width = 260 }: PopoverProps) {
+export function Popover({
+  trigger,
+  children,
+  align = 'start',
+  width = 260,
+  open,
+  onOpenChange,
+}: PopoverProps) {
   return (
-    <Anchored trigger={trigger} align={align} width={width} className="ui-popover">
+    <Anchored
+      trigger={trigger}
+      align={align}
+      width={width}
+      className="ui-popover"
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       {children}
     </Anchored>
   );

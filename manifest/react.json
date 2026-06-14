@@ -96,6 +96,18 @@
           "defaultValue": "ui-menu"
         },
         {
+          "name": "onOpenChange",
+          "type": "((open: boolean) => void)",
+          "required": false,
+          "description": "Notified whenever the open state should change (both modes)."
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false,
+          "description": "Controlled open state. Omit for uncontrolled (the default)."
+        },
+        {
           "name": "trigger",
           "type": "ReactNode",
           "required": true
@@ -785,6 +797,20 @@
       "category": "Overlays",
       "props": [
         {
+          "name": "closeOnEsc",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true",
+          "description": "Close when Escape is pressed (default true)."
+        },
+        {
+          "name": "closeOnOverlayClick",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true",
+          "description": "Close when the backdrop is clicked (default true)."
+        },
+        {
           "name": "desc",
           "type": "ReactNode",
           "required": false
@@ -890,6 +916,16 @@
           "name": "items",
           "type": "MenuItem[]",
           "required": true
+        },
+        {
+          "name": "onOpenChange",
+          "type": "((open: boolean) => void)",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false
         },
         {
           "name": "trigger",
@@ -1379,6 +1415,16 @@
           "defaultValue": "start"
         },
         {
+          "name": "onOpenChange",
+          "type": "((open: boolean) => void)",
+          "required": false
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": false
+        },
+        {
           "name": "trigger",
           "type": "ReactNode",
           "required": true
@@ -1591,6 +1637,20 @@
       "category": "Overlays",
       "props": [
         {
+          "name": "closeOnEsc",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true",
+          "description": "Close when Escape is pressed (default true)."
+        },
+        {
+          "name": "closeOnOverlayClick",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "true",
+          "description": "Close when the backdrop is clicked (default true)."
+        },
+        {
           "name": "desc",
           "type": "ReactNode",
           "required": false
@@ -1614,6 +1674,19 @@
           "name": "open",
           "type": "boolean",
           "required": true
+        },
+        {
+          "name": "side",
+          "type": "enum",
+          "values": [
+            "right",
+            "left",
+            "top",
+            "bottom"
+          ],
+          "required": false,
+          "defaultValue": "right",
+          "description": "Which edge the sheet slides in from (default 'right')."
         },
         {
           "name": "title",
