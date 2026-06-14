@@ -200,13 +200,22 @@ export function OverlayExample() {
 
 export function DataExample() {
   return (
-    <div style={{ display: 'grid', gap: 14, width: '100%', maxWidth: 420 }}>
+    <div style={{ display: 'grid', gap: 14, width: '100%', maxWidth: 520 }}>
       <Stat icon={<Icon.dollar />} label="Revenue" value="$48,200" delta="12%" deltaDir="up" />
       <Timeline
         items={[
           { title: 'Workspace created', time: '2d ago', tone: 'pos', icon: <Icon.check /> },
           { title: 'Member invited', time: '1d ago', tone: 'info', icon: <Icon.user /> },
           { title: 'Plan upgraded', time: '3h ago', tone: 'warn', icon: <Icon.bolt /> },
+        ]}
+      />
+      <Timeline
+        orientation="horizontal"
+        items={[
+          { title: 'Draft', tone: 'pos', icon: <Icon.check /> },
+          { title: 'Review', tone: 'info', icon: <Icon.user />, active: true },
+          { title: 'Approved', icon: <Icon.bolt /> },
+          { title: 'Shipped', icon: <Icon.sparkle /> },
         ]}
       />
     </div>

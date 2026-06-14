@@ -124,7 +124,7 @@ const TL_TONE: Record<TimelineTone, string> = {
 
 @Component({
   selector: 'vsp-timeline',
-  template: `<div class="ui-tl">
+  template: `<div [class]="orientation === 'horizontal' ? 'ui-tl horizontal' : 'ui-tl'">
     @for (it of items; track $index) {
       <div [class]="it.active ? 'ui-tl-item active' : 'ui-tl-item'">
         <span class="ui-tl-dot" [style]="dotStyle(it.tone)">
@@ -161,6 +161,7 @@ const TL_TONE: Record<TimelineTone, string> = {
 })
 export class VspTimeline {
   @Input() items: TimelineItem[] = [];
+  @Input() orientation: 'vertical' | 'horizontal' = 'vertical';
   dotStyle(tone?: TimelineTone): string {
     if (!tone) return '';
     const c = TL_TONE[tone];

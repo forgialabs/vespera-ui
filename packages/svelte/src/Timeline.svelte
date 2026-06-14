@@ -1,5 +1,5 @@
 <script>
-  let { items = [] } = $props();
+  let { items = [], orientation = 'vertical' } = $props();
   const TONE = {
     pos: 'var(--success)',
     neg: 'var(--danger)',
@@ -8,7 +8,7 @@
   };
 </script>
 
-<div class="ui-tl">
+<div class="ui-tl{orientation === 'horizontal' ? ' horizontal' : ''}">
   {#each items as it, i (i)}
     {@const c = it.tone ? TONE[it.tone] : undefined}
     <div class="ui-tl-item{it.active ? ' active' : ''}">

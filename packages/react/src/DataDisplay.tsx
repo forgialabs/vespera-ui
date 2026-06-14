@@ -139,11 +139,13 @@ const tlTone: Record<TimelineTone, string> = {
 
 export interface TimelineProps {
   items: TimelineItem[];
+  /** Lay the entries out left-to-right instead of top-to-bottom. */
+  orientation?: 'vertical' | 'horizontal';
 }
 
-export function Timeline({ items }: TimelineProps) {
+export function Timeline({ items, orientation = 'vertical' }: TimelineProps) {
   return (
-    <div className="ui-tl">
+    <div className={cx('ui-tl', orientation === 'horizontal' && 'horizontal')}>
       {items.map((it, i) => {
         const c = it.tone ? tlTone[it.tone] : undefined;
         return (
