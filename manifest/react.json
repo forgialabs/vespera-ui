@@ -350,13 +350,19 @@
         {
           "name": "color",
           "type": "string",
+          "required": false
+        },
+        {
+          "name": "colors",
+          "type": "string[]",
           "required": false,
-          "defaultValue": "var(--accent)"
+          "description": "Per-series colors (overrides the default palette)."
         },
         {
           "name": "data",
-          "type": "number[]",
-          "required": true
+          "type": "number[] | number[][]",
+          "required": true,
+          "description": "One series (`number[]`) or several (`number[][]`)."
         },
         {
           "name": "height",
@@ -365,9 +371,42 @@
           "defaultValue": "240"
         },
         {
+          "name": "horizontal",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "false",
+          "description": "Lay bars left-to-right instead of bottom-up."
+        },
+        {
           "name": "labels",
           "type": "string[]",
           "required": false
+        },
+        {
+          "name": "seriesLabels",
+          "type": "string[]",
+          "required": false,
+          "description": "Series names — when given (and multi-series) a legend is shown."
+        },
+        {
+          "name": "showValues",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "false",
+          "description": "Print each value on its bar."
+        },
+        {
+          "name": "stacked",
+          "type": "boolean",
+          "required": false,
+          "defaultValue": "false",
+          "description": "Stack series within each category instead of grouping side-by-side."
+        },
+        {
+          "name": "valueFormat",
+          "type": "((n: number) => string)",
+          "required": false,
+          "description": "Format values for the tooltip + value labels."
         }
       ]
     },
