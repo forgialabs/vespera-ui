@@ -45,8 +45,17 @@ export function ChartsExample() {
       </Card>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
         <Card pad>
-          <div className="eyebrow" style={{ marginBottom: 10 }}>Signups · bar</div>
-          <BarChart data={[40, 65, 52, 78, 61, 90, 72]} labels={['M', 'T', 'W', 'T', 'F', 'S', 'S']} height={170} />
+          <div className="eyebrow" style={{ marginBottom: 10 }}>Signups · grouped + tooltip</div>
+          <BarChart
+            data={[
+              [40, 65, 52, 78, 61, 90, 72],
+              [28, 41, 39, 52, 44, 60, 51],
+            ]}
+            labels={['M', 'T', 'W', 'T', 'F', 'S', 'S']}
+            seriesLabels={['New', 'Returning']}
+            valueFormat={(n) => `${n}`}
+            height={170}
+          />
         </Card>
         <Card pad>
           <div className="eyebrow" style={{ marginBottom: 10 }}>Channels · donut</div>
@@ -60,6 +69,21 @@ export function ChartsExample() {
           />
         </Card>
       </div>
+      <Card pad>
+        <div className="eyebrow" style={{ marginBottom: 10 }}>Plan mix · horizontal stacked</div>
+        <BarChart
+          data={[
+            [42, 38, 30, 22],
+            [30, 26, 33, 28],
+            [12, 18, 20, 25],
+          ]}
+          labels={['Q1', 'Q2', 'Q3', 'Q4']}
+          seriesLabels={['Free', 'Pro', 'Team']}
+          horizontal
+          stacked
+          height={180}
+        />
+      </Card>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span className="eyebrow">Sparkline</span>
         <Sparkline data={revenue} />

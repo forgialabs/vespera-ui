@@ -2089,74 +2089,212 @@ export const AreaChart = defineComponent({
   },
 });
 
+const BAR_PALETTE = [
+  'var(--accent)',
+  'var(--accent-2)',
+  'var(--success)',
+  'var(--warning)',
+  'var(--danger)',
+];
+
 export const BarChart = defineComponent({
   name: 'VspBarChart',
   props: {
-    data: { type: Array as PropType<number[]>, default: () => [] },
+    data: { type: Array as PropType<number[] | number[][]>, default: () => [] },
     labels: { type: Array as PropType<string[]>, default: undefined },
     width: { type: Number, default: 620 },
     height: { type: Number, default: 240 },
-    color: { type: String, default: 'var(--accent)' },
+    color: { type: String, default: undefined },
+    colors: { type: Array as PropType<string[]>, default: undefined },
+    seriesLabels: { type: Array as PropType<string[]>, default: undefined },
+    horizontal: Boolean,
+    stacked: Boolean,
+    valueFormat: { type: Function as PropType<(n: number) => string>, default: undefined },
+    showValues: Boolean,
   },
   setup(props) {
+    const hover = ref<number | null>(null);
     return () => {
+      const series: number[][] = Array.isArray(props.data[0])
+        ? (props.data as number[][])
+        : [props.data as number[]];
+      const nSeries = series.length;
+      const nCats = series.reduce((m, s) => Math.max(m, s.length), 0);
+      const colorAt = (s: number) =>
+        props.colors?.[s] ??
+        (s === 0 && props.color ? props.color : BAR_PALETTE[s % BAR_PALETTE.length]!);
+      const fmt = props.valueFormat ?? ((n: number) => niceNum(n));
       const w = props.width;
       const height = props.height;
-      const padL = 34;
+      const catTotal = (i: number) => series.reduce((s, arr) => s + (arr[i] ?? 0), 0);
+      const max =
+        ((props.stacked
+          ? Math.max(...Array.from({ length: nCats }, (_, i) => catTotal(i)), 0)
+          : Math.max(...series.flat(), 0)) || 1) * 1.15;
+      const padL = props.horizontal ? 60 : 34;
       const padB = 26;
       const padT = 10;
-      const innerW = Math.max(10, w - padL - 8);
-      const innerH = height - padB - padT;
-      const max = Math.max(...props.data, 0) * 1.15 || 1;
-      const bw = innerW / (props.data.length || 1);
-      const grid = [0, 0.5, 1].map((f, i) => {
-        const y = padT + innerH - f * innerH;
+      const padR = 10;
+      const valAxis = props.horizontal ? Math.max(10, w - padL - padR) : height - padB - padT;
+      const catAxis = props.horizontal ? height - padT - padB : Math.max(10, w - padL - padR);
+      const band = catAxis / nCats;
+      const ticks = [0, 0.25, 0.5, 0.75, 1];
+      const barRect = (cs: number, thick: number, vStart: number, vLen: number) =>
+        props.horizontal
+          ? {
+              x: padL + (vStart / max) * valAxis,
+              y: padT + cs,
+              width: (vLen / max) * valAxis,
+              height: thick,
+            }
+          : {
+              x: padL + cs,
+              y: padT + valAxis - ((vStart + vLen) / max) * valAxis,
+              width: thick,
+              height: (vLen / max) * valAxis,
+            };
+      const rectEl = (
+        r: { x: number; y: number; width: number; height: number },
+        fill: string,
+        active: boolean,
+      ) =>
+        h('rect', {
+          x: r.x,
+          y: r.y,
+          width: Math.max(0, r.width),
+          height: Math.max(0, r.height),
+          rx: '4',
+          fill: active ? fill : `color-mix(in oklab, ${fill} 80%, transparent)`,
+          style: { transition: 'fill .15s' },
+        });
+      const barEls: ReturnType<typeof h>[] = [];
+      for (let i = 0; i < nCats; i++) {
+        const active = hover.value === i;
+        if (props.stacked) {
+          let acc = 0;
+          series.forEach((arr, s) => {
+            const v = arr[i] ?? 0;
+            barEls.push(
+              rectEl(barRect(i * band + band * 0.18, band * 0.64, acc, v), colorAt(s), active),
+            );
+            acc += v;
+          });
+        } else {
+          const sub = (band * 0.64) / nSeries;
+          series.forEach((arr, s) => {
+            const v = arr[i] ?? 0;
+            barEls.push(
+              rectEl(
+                barRect(i * band + band * 0.18 + s * sub, sub * 0.86, 0, v),
+                colorAt(s),
+                active,
+              ),
+            );
+          });
+        }
+      }
+      const grid = ticks.map((f, i) => {
+        const p = props.horizontal ? padL + f * valAxis : padT + valAxis - f * valAxis;
         return h('g', { key: 'g' + i }, [
-          h('line', { x1: padL, x2: w - 8, y1: y, y2: y, stroke: 'var(--grid-line)' }),
+          h('line', {
+            x1: props.horizontal ? p : padL,
+            x2: props.horizontal ? p : padL + catAxis,
+            y1: props.horizontal ? padT : p,
+            y2: props.horizontal ? padT + catAxis : p,
+            stroke: 'var(--grid-line)',
+          }),
           h(
             'text',
             {
-              x: padL - 8,
-              y: y + 3.5,
-              'text-anchor': 'end',
+              x: props.horizontal ? p : padL - 8,
+              y: props.horizontal ? height - 8 : p + 3.5,
+              'text-anchor': props.horizontal ? 'middle' : 'end',
               'font-size': '10',
               fill: 'var(--text-faint)',
               'font-family': 'var(--font-mono)',
             },
-            niceNum(Math.round(max * f)),
+            fmt(Math.round(max * f)),
           ),
         ]);
       });
-      const bars = props.data.map((v, i) => {
-        const bh = (v / max) * innerH;
-        const x = padL + i * bw + bw * 0.18;
-        const bwi = bw * 0.64;
-        return h('g', { key: 'b' + i }, [
-          h('rect', {
-            x,
-            y: padT + innerH - bh,
-            width: bwi,
-            height: bh,
-            rx: '4',
-            fill: `color-mix(in oklab, ${props.color} 78%, transparent)`,
-          }),
-          props.labels?.[i] != null
-            ? h(
-                'text',
-                {
-                  x: x + bwi / 2,
-                  y: height - 8,
-                  'text-anchor': 'middle',
-                  'font-size': '10',
-                  fill: 'var(--text-faint)',
-                  'font-family': 'var(--font-mono)',
-                },
-                props.labels[i],
-              )
-            : null,
-        ]);
+      const cats = Array.from({ length: nCats }, (_, i) => {
+        const center = i * band + band / 2;
+        return h(
+          'g',
+          {
+            key: 'c' + i,
+            onMouseenter: () => (hover.value = i),
+            onMouseleave: () => (hover.value = null),
+          },
+          [
+            h('rect', {
+              x: props.horizontal ? padL : padL + i * band,
+              y: props.horizontal ? padT + i * band : padT,
+              width: props.horizontal ? valAxis : band,
+              height: props.horizontal ? band : valAxis,
+              fill: 'transparent',
+            }),
+            props.labels?.[i] != null
+              ? h(
+                  'text',
+                  {
+                    x: props.horizontal ? padL - 8 : padL + center,
+                    y: props.horizontal ? padT + center + 3.5 : height - 8,
+                    'text-anchor': props.horizontal ? 'end' : 'middle',
+                    'font-size': '10',
+                    fill: 'var(--text-faint)',
+                    'font-family': 'var(--font-mono)',
+                  },
+                  props.labels[i],
+                )
+              : null,
+          ],
+        );
       });
-      return h('svg', { width: w, height, style: { display: 'block' } }, [...grid, ...bars]);
+      const svg = h('svg', { width: w, height, style: { display: 'block' } }, [
+        ...grid,
+        ...barEls,
+        ...cats,
+      ]);
+      const tip =
+        hover.value != null
+          ? h(
+              'div',
+              {
+                class: 'ui-chart-tip',
+                style: {
+                  position: 'absolute',
+                  left: `${props.horizontal ? padL + 8 : padL + hover.value * band + band / 2}px`,
+                  top: `${props.horizontal ? padT + hover.value * band + band / 2 : padT + 4}px`,
+                  transform: 'translate(-50%, -100%)',
+                  pointerEvents: 'none',
+                },
+              },
+              [
+                props.labels?.[hover.value] != null
+                  ? h('div', { class: 'ui-chart-tip-label' }, props.labels[hover.value])
+                  : null,
+                ...series.map((arr, s) =>
+                  h('div', { key: s, class: 'ui-chart-tip-row' }, [
+                    h('i', { style: { background: colorAt(s) } }),
+                    props.seriesLabels?.[s] ? h('span', null, props.seriesLabels[s]) : null,
+                    h('b', null, fmt(arr[hover.value!] ?? 0)),
+                  ]),
+                ),
+              ],
+            )
+          : null;
+      const legend =
+        nSeries > 1 && props.seriesLabels
+          ? h(
+              'div',
+              { class: 'ui-chart-legend' },
+              props.seriesLabels.map((lb, s) =>
+                h('span', { key: s }, [h('i', { style: { background: colorAt(s) } }), lb]),
+              ),
+            )
+          : null;
+      return h('div', { style: { position: 'relative' } }, [svg, tip, legend]);
     };
   },
 });

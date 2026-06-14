@@ -272,66 +272,172 @@ export function AreaChart({
   );
 }
 
+const BAR_PALETTE = [
+  'var(--accent)',
+  'var(--accent-2)',
+  'var(--success)',
+  'var(--warning)',
+  'var(--danger)',
+];
+
 export interface BarChartProps {
-  data: number[];
+  /** One series (`number[]`) or several (`number[][]`). */
+  data: number[] | number[][];
   labels?: string[];
   height?: number;
   color?: string;
+  /** Per-series colors (overrides the default palette). */
+  colors?: string[];
+  /** Series names — when given (and multi-series) a legend is shown. */
+  seriesLabels?: string[];
+  /** Lay bars left-to-right instead of bottom-up. */
+  horizontal?: boolean;
+  /** Stack series within each category instead of grouping side-by-side. */
+  stacked?: boolean;
+  /** Format values for the tooltip + value labels. */
+  valueFormat?: (n: number) => string;
+  /** Print each value on its bar. */
+  showValues?: boolean;
 }
 
-export function BarChart({ data, labels, height = 240, color = 'var(--accent)' }: BarChartProps) {
+export function BarChart({
+  data,
+  labels,
+  height = 240,
+  color,
+  colors,
+  seriesLabels,
+  horizontal = false,
+  stacked = false,
+  valueFormat,
+  showValues = false,
+}: BarChartProps) {
+  const series: number[][] = Array.isArray(data[0]) ? (data as number[][]) : [data as number[]];
+  const nSeries = series.length;
+  const nCats = series.reduce((m, s) => Math.max(m, s.length), 0);
+  const colorAt = (s: number) =>
+    colors?.[s] ?? (s === 0 && color ? color : BAR_PALETTE[s % BAR_PALETTE.length]!);
+  const fmt = valueFormat ?? ((n: number) => niceNum(n));
   const [wrapRef, w] = useWidth(620);
   const [hover, setHover] = useState<number | null>(null);
-  const padL = 34;
+
+  const catTotal = (i: number) => series.reduce((s, arr) => s + (arr[i] ?? 0), 0);
+  const max =
+    ((stacked
+      ? Math.max(...Array.from({ length: nCats }, (_, i) => catTotal(i)), 0)
+      : Math.max(...series.flat(), 0)) || 1) * 1.15;
+
+  const padL = horizontal ? 60 : 34;
   const padB = 26;
   const padT = 10;
-  const innerW = Math.max(10, w - padL - 8);
-  const innerH = height - padB - padT;
-  const max = Math.max(...data, 0) * 1.15 || 1;
-  const bw = innerW / data.length;
+  const padR = 10;
+  const valAxis = horizontal ? Math.max(10, w - padL - padR) : height - padB - padT;
+  const catAxis = horizontal ? height - padT - padB : Math.max(10, w - padL - padR);
+  const band = catAxis / nCats;
+  const ticks = [0, 0.25, 0.5, 0.75, 1];
+
+  // pixel rect for a bar: `cs` = offset along category axis, `thick` = bar thickness,
+  // `vStart` = stacked value offset, `vLen` = value length (both in data units).
+  const barRect = (cs: number, thick: number, vStart: number, vLen: number) => {
+    if (horizontal)
+      return {
+        x: padL + (vStart / max) * valAxis,
+        y: padT + cs,
+        width: (vLen / max) * valAxis,
+        height: thick,
+      };
+    return {
+      x: padL + cs,
+      y: padT + valAxis - ((vStart + vLen) / max) * valAxis,
+      width: thick,
+      height: (vLen / max) * valAxis,
+    };
+  };
+
+  const bars: { i: number; r: ReturnType<typeof barRect>; fill: string; active: boolean }[] = [];
+  for (let i = 0; i < nCats; i++) {
+    const active = hover === i;
+    if (stacked) {
+      let acc = 0;
+      series.forEach((arr, s) => {
+        const v = arr[i] ?? 0;
+        bars.push({
+          i,
+          r: barRect(i * band + band * 0.18, band * 0.64, acc, v),
+          fill: colorAt(s),
+          active,
+        });
+        acc += v;
+      });
+    } else {
+      const sub = (band * 0.64) / nSeries;
+      series.forEach((arr, s) => {
+        const v = arr[i] ?? 0;
+        bars.push({
+          i,
+          r: barRect(i * band + band * 0.18 + s * sub, sub * 0.86, 0, v),
+          fill: colorAt(s),
+          active,
+        });
+      });
+    }
+  }
+
   return (
-    <div ref={wrapRef}>
+    <div ref={wrapRef} style={{ position: 'relative' }}>
       <svg width={w} height={height} style={{ display: 'block' }}>
-        {[0, 0.5, 1].map((f, i) => {
-          const y = padT + innerH - f * innerH;
+        {ticks.map((f, i) => {
+          const p = horizontal ? padL + f * valAxis : padT + valAxis - f * valAxis;
           return (
             <g key={i}>
-              <line x1={padL} x2={w - 8} y1={y} y2={y} stroke="var(--grid-line)" />
+              <line
+                x1={horizontal ? p : padL}
+                x2={horizontal ? p : padL + catAxis}
+                y1={horizontal ? padT : p}
+                y2={horizontal ? padT + catAxis : p}
+                stroke="var(--grid-line)"
+              />
               <text
-                x={padL - 8}
-                y={y + 3.5}
-                textAnchor="end"
+                x={horizontal ? p : padL - 8}
+                y={horizontal ? height - 8 : p + 3.5}
+                textAnchor={horizontal ? 'middle' : 'end'}
                 fontSize="10"
                 fill="var(--text-faint)"
                 fontFamily="var(--font-mono)"
               >
-                {niceNum(Math.round(max * f))}
+                {fmt(Math.round(max * f))}
               </text>
             </g>
           );
         })}
-        {data.map((v, i) => {
-          const bh = (v / max) * innerH;
-          const x = padL + i * bw + bw * 0.18;
-          const bwi = bw * 0.64;
-          const active = hover === i;
+        {bars.map((b, k) => (
+          <rect
+            key={k}
+            x={b.r.x}
+            y={b.r.y}
+            width={Math.max(0, b.r.width)}
+            height={Math.max(0, b.r.height)}
+            rx="4"
+            fill={b.active ? b.fill : `color-mix(in oklab, ${b.fill} 80%, transparent)`}
+            style={{ transition: 'fill .15s' }}
+          />
+        ))}
+        {Array.from({ length: nCats }, (_, i) => {
+          const center = i * band + band / 2;
           return (
-            <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
-              <rect x={padL + i * bw} y={padT} width={bw} height={innerH} fill="transparent" />
+            <g key={`c${i}`} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
               <rect
-                x={x}
-                y={padT + innerH - bh}
-                width={bwi}
-                height={bh}
-                rx="4"
-                fill={active ? color : `color-mix(in oklab, ${color} 78%, transparent)`}
-                style={{ transition: 'fill .15s' }}
+                x={horizontal ? padL : padL + i * band}
+                y={horizontal ? padT + i * band : padT}
+                width={horizontal ? valAxis : band}
+                height={horizontal ? band : valAxis}
+                fill="transparent"
               />
               {labels?.[i] != null && (
                 <text
-                  x={x + bwi / 2}
-                  y={height - 8}
-                  textAnchor="middle"
+                  x={horizontal ? padL - 8 : padL + center}
+                  y={horizontal ? padT + center + 3.5 : height - 8}
+                  textAnchor={horizontal ? 'end' : 'middle'}
                   fontSize="10"
                   fill="var(--text-faint)"
                   fontFamily="var(--font-mono)"
@@ -339,10 +445,60 @@ export function BarChart({ data, labels, height = 240, color = 'var(--accent)' }
                   {labels[i]}
                 </text>
               )}
+              {showValues &&
+                !stacked &&
+                nSeries === 1 &&
+                (() => {
+                  const v = series[0]![i] ?? 0;
+                  const r = barRect(i * band + band * 0.18, band * 0.64, 0, v);
+                  return (
+                    <text
+                      x={horizontal ? r.x + r.width + 4 : r.x + r.width / 2}
+                      y={horizontal ? r.y + r.height / 2 + 3.5 : r.y - 4}
+                      textAnchor={horizontal ? 'start' : 'middle'}
+                      fontSize="10"
+                      fill="var(--text-dim)"
+                      fontFamily="var(--font-mono)"
+                    >
+                      {fmt(v)}
+                    </text>
+                  );
+                })()}
             </g>
           );
         })}
       </svg>
+      {hover != null && (
+        <div
+          className="ui-chart-tip"
+          style={{
+            position: 'absolute',
+            left: horizontal ? padL + 8 : padL + hover * band + band / 2,
+            top: horizontal ? padT + hover * band + band / 2 : padT + 4,
+            transform: 'translate(-50%, -100%)',
+            pointerEvents: 'none',
+          }}
+        >
+          {labels?.[hover] != null && <div className="ui-chart-tip-label">{labels[hover]}</div>}
+          {series.map((arr, s) => (
+            <div key={s} className="ui-chart-tip-row">
+              <i style={{ background: colorAt(s) }} />
+              {seriesLabels?.[s] && <span>{seriesLabels[s]}</span>}
+              <b>{fmt(arr[hover] ?? 0)}</b>
+            </div>
+          ))}
+        </div>
+      )}
+      {nSeries > 1 && seriesLabels && (
+        <div className="ui-chart-legend">
+          {seriesLabels.map((lb, s) => (
+            <span key={s}>
+              <i style={{ background: colorAt(s) }} />
+              {lb}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
