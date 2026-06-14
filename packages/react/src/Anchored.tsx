@@ -111,6 +111,7 @@ export interface MenuItem {
   danger?: boolean;
   heading?: boolean;
   sep?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -146,6 +147,7 @@ export function DropdownMenu({
             <button
               key={i}
               type="button"
+              disabled={it.disabled}
               className={cx('ui-menu-item', it.danger && 'danger')}
               onClick={() => {
                 it.onClick?.();

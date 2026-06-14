@@ -2,12 +2,14 @@ import type { ReactNode } from 'react';
 import { Icon, type IconComponent } from '@vespera-ui/icons';
 import { cx } from './cx';
 
-export type BannerTone = 'info' | 'warn' | 'accent';
+export type BannerTone = 'info' | 'warn' | 'accent' | 'pos' | 'neg';
 
 const bannerIcon: Record<BannerTone, IconComponent> = {
   info: Icon.sparkle,
   warn: Icon.bell,
   accent: Icon.bolt,
+  pos: Icon.checkCircle,
+  neg: Icon.shield,
 };
 
 export interface BannerProps {

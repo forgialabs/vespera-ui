@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-export type TabItem = string | { value: string; label: string; count?: number };
+export type TabItem = string | { value: string; label: string; count?: number; disabled?: boolean };
 
 @Component({
   selector: 'vsp-tabs',
   template: `<div class="ui-tabs" style="align-items: center">
     @for (t of tabs; track id(t)) {
-      <button type="button" [class]="cls(t)" (click)="pick(id(t))">
+      <button type="button" [class]="cls(t)" [disabled]="dis(t)" (click)="pick(id(t))">
         {{ lbl(t) }}
         @if (cnt(t) != null) {
           <span class="badge badge-muted" style="margin-left: 7px">{{ cnt(t) }}</span>
@@ -29,6 +29,9 @@ export class VspTabs {
   }
   cnt(t: TabItem): number | undefined {
     return typeof t === 'object' ? t.count : undefined;
+  }
+  dis(t: TabItem): boolean | undefined {
+    return typeof t === 'object' ? t.disabled : undefined;
   }
   cls(t: TabItem): string {
     return 'ui-tab' + (this.value === this.id(t) ? ' on' : '');

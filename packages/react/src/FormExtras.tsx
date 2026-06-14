@@ -1,4 +1,10 @@
-import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
+import {
+  useRef,
+  useState,
+  type ClipboardEvent as ReactClipboardEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from 'react';
 import { Icon } from '@vespera-ui/icons';
 import { cx } from './cx';
 import { toast } from './Toast';
@@ -56,22 +62,47 @@ export interface OTPInputProps {
   length?: number;
   value?: string;
   onChange?: (value: string) => void;
+  /** Fired once every slot is filled. */
+  onComplete?: (value: string) => void;
+  disabled?: boolean;
+  invalid?: boolean;
 }
 
-export function OTPInput({ length = 6, value = '', onChange }: OTPInputProps) {
+export function OTPInput({
+  length = 6,
+  value = '',
+  onChange,
+  onComplete,
+  disabled,
+  invalid,
+}: OTPInputProps) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const chars = Array.from({ length }, (_, i) => value[i] ?? '');
+  const emit = (next: string[]) => {
+    const joined = next.join('');
+    onChange?.(joined);
+    if (joined.length === length) onComplete?.(joined);
+  };
   const set = (i: number, ch: string) => {
     const next = chars.slice();
     next[i] = ch.slice(-1);
-    onChange?.(next.join(''));
+    emit(next);
     if (ch && i < length - 1) refs.current[i + 1]?.focus();
+  };
+  const onPaste = (i: number, e: ReactClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData('text').replace(/\D/g, '');
+    if (!text) return;
+    e.preventDefault();
+    const next = chars.slice();
+    for (let j = 0; j < text.length && i + j < length; j++) next[i + j] = text[j]!;
+    emit(next);
+    refs.current[Math.min(i + text.length, length - 1)]?.focus();
   };
   const onKey = (i: number, e: ReactKeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !chars[i] && i > 0) refs.current[i - 1]?.focus();
   };
   return (
-    <div className="ui-otp">
+    <div className={cx('ui-otp', invalid && 'invalid')}>
       {chars.map((c, i) => (
         <input
           key={i}
@@ -81,7 +112,10 @@ export function OTPInput({ length = 6, value = '', onChange }: OTPInputProps) {
           inputMode="numeric"
           maxLength={1}
           value={c}
+          disabled={disabled}
+          aria-invalid={invalid || undefined}
           onChange={(e) => set(i, e.target.value.replace(/\D/g, ''))}
+          onPaste={(e) => onPaste(i, e)}
           onKeyDown={(e) => onKey(i, e)}
         />
       ))}

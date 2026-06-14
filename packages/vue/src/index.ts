@@ -274,7 +274,9 @@ export const Checkbox = defineComponent({
   },
 });
 
-export type NativeSelectOption = string | { value: string; label: string; sub?: string };
+export type NativeSelectOption =
+  | string
+  | { value: string; label: string; sub?: string; disabled?: boolean };
 const optValue = (o: NativeSelectOption) => (typeof o === 'string' ? o : o.value);
 const optLabel = (o: NativeSelectOption) => (typeof o === 'string' ? o : o.label);
 
@@ -284,6 +286,7 @@ export const Radio = defineComponent({
     checked: Boolean,
     label: { type: String, default: undefined },
     sub: { type: String, default: undefined },
+    disabled: Boolean,
   },
   emits: ['select'],
   setup(props, { emit }) {
@@ -292,9 +295,10 @@ export const Radio = defineComponent({
         'label',
         {
           class: 'ui-opt',
+          style: { opacity: props.disabled ? 0.5 : 1 },
           onClick: (e: Event) => {
             e.preventDefault();
-            emit('select');
+            if (!props.disabled) emit('select');
           },
         },
         [
@@ -313,18 +317,29 @@ export const RadioGroup = defineComponent({
   props: {
     modelValue: { type: String, default: undefined },
     options: { type: Array as PropType<NativeSelectOption[]>, default: () => [] },
+    disabled: Boolean,
+    orientation: { type: String as PropType<'vertical' | 'horizontal'>, default: 'vertical' },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     return () =>
       h(
         'div',
-        { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+        {
+          role: 'radiogroup',
+          style: {
+            display: 'flex',
+            flexDirection: props.orientation === 'horizontal' ? 'row' : 'column',
+            gap: props.orientation === 'horizontal' ? '18px' : '12px',
+            flexWrap: props.orientation === 'horizontal' ? 'wrap' : undefined,
+          },
+        },
         props.options.map((o) =>
           h(Radio, {
             key: optValue(o),
             label: optLabel(o),
             sub: typeof o === 'object' ? o.sub : undefined,
+            disabled: props.disabled || (typeof o === 'object' && o.disabled),
             checked: props.modelValue === optValue(o),
             onSelect: () => emit('update:modelValue', optValue(o)),
           }),
@@ -389,18 +404,33 @@ export const Progress = defineComponent({
     value: { type: Number, default: 0 },
     tone: { type: String, default: undefined },
     height: { type: Number, default: 6 },
+    max: { type: Number, default: 100 },
+    indeterminate: Boolean,
+    label: { type: String, default: undefined },
   },
   setup(props) {
-    return () =>
-      h('div', { class: 'meter', style: { height: px(props.height) } }, [
-        h('i', {
-          style: {
-            width: `${Math.min(100, props.value)}%`,
-            background: props.tone,
-            transition: 'width .3s',
-          },
-        }),
-      ]);
+    return () => {
+      const pct = Math.min(100, Math.max(0, (props.value / props.max) * 100));
+      return h(
+        'div',
+        {
+          class: cx('meter', props.indeterminate && 'indeterminate'),
+          style: { height: px(props.height) },
+          role: 'progressbar',
+          'aria-label': props.label,
+          'aria-valuemin': props.indeterminate ? undefined : 0,
+          'aria-valuemax': props.indeterminate ? undefined : props.max,
+          'aria-valuenow': props.indeterminate ? undefined : props.value,
+        },
+        [
+          h('i', {
+            style: props.indeterminate
+              ? { background: props.tone }
+              : { width: `${pct}%`, background: props.tone, transition: 'width .3s' },
+          }),
+        ],
+      );
+    };
   },
 });
 
@@ -431,7 +461,16 @@ const initialsOf = (name: string) =>
 export interface Person {
   name: string;
   hue?: number;
+  src?: string;
 }
+
+export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
+const AVATAR_STATUS: Record<AvatarStatus, string> = {
+  online: 'var(--success)',
+  offline: 'var(--text-faint)',
+  away: 'var(--warning)',
+  busy: 'var(--danger)',
+};
 
 export const Avatar = defineComponent({
   name: 'VspAvatar',
@@ -439,22 +478,58 @@ export const Avatar = defineComponent({
     name: { type: String, required: true },
     hue: { type: Number, default: 0 },
     size: { type: Number, default: 34 },
+    src: { type: String, default: undefined },
+    alt: { type: String, default: undefined },
+    status: { type: String as PropType<AvatarStatus>, default: undefined },
+    shape: { type: String as PropType<'circle' | 'square'>, default: 'circle' },
   },
   setup(props) {
-    return () =>
-      h(
-        'span',
-        {
-          class: 'vsp-avatar',
-          style: {
-            width: px(props.size),
-            height: px(props.size),
-            fontSize: px(props.size * 0.38),
-            background: `linear-gradient(140deg, oklch(0.62 0.16 ${props.hue}), oklch(0.55 0.17 ${(props.hue + 50) % 360}))`,
+    return () => {
+      const radius = props.shape === 'square' ? 'var(--r-sm)' : '50%';
+      const dot = Math.max(8, Math.round(props.size * 0.28));
+      return h('span', { style: { position: 'relative', display: 'inline-flex', flexShrink: 0 } }, [
+        h(
+          'span',
+          {
+            class: 'vsp-avatar',
+            style: {
+              width: px(props.size),
+              height: px(props.size),
+              fontSize: px(props.size * 0.38),
+              borderRadius: radius,
+              overflow: 'hidden',
+              background: props.src
+                ? 'var(--surface-3)'
+                : `linear-gradient(140deg, oklch(0.62 0.16 ${props.hue}), oklch(0.55 0.17 ${(props.hue + 50) % 360}))`,
+            },
           },
-        },
-        initialsOf(props.name),
-      );
+          props.src
+            ? [
+                h('img', {
+                  src: props.src,
+                  alt: props.alt ?? props.name,
+                  style: { width: '100%', height: '100%', objectFit: 'cover' },
+                }),
+              ]
+            : initialsOf(props.name),
+        ),
+        props.status
+          ? h('span', {
+              'aria-label': props.status,
+              style: {
+                position: 'absolute',
+                right: '0',
+                bottom: '0',
+                width: px(dot),
+                height: px(dot),
+                borderRadius: '50%',
+                background: AVATAR_STATUS[props.status],
+                border: '2px solid var(--surface-1)',
+              },
+            })
+          : null,
+      ]);
+    };
   },
 });
 
@@ -483,7 +558,7 @@ export const AvatarGroup = defineComponent({
                 zIndex: shown.length - i,
               },
             },
-            [h(Avatar, { name: p.name, hue: p.hue ?? 0, size: props.size })],
+            [h(Avatar, { name: p.name, hue: p.hue ?? 0, src: p.src, size: props.size })],
           ),
         ),
         extra > 0
@@ -557,7 +632,7 @@ const svgIcon = (d: string, size = 14) =>
     [h('path', { d })],
   );
 
-export type TabItem = string | { value: string; label: string; count?: number };
+export type TabItem = string | { value: string; label: string; count?: number; disabled?: boolean };
 
 export const Tabs = defineComponent({
   name: 'VspTabs',
@@ -573,11 +648,13 @@ export const Tabs = defineComponent({
           const id = typeof t === 'string' ? t : t.value;
           const label = typeof t === 'string' ? t : t.label;
           const count = typeof t === 'object' ? t.count : undefined;
+          const disabled = typeof t === 'object' ? t.disabled : undefined;
           return h(
             'button',
             {
               key: id,
               type: 'button',
+              disabled,
               class: cx('ui-tab', props.modelValue === id && 'on'),
               onClick: () => emit('update:modelValue', id),
             },
@@ -976,6 +1053,8 @@ const BANNER_ICON: Record<string, string> = {
   info: 'M12 3l1.6 5L19 9.6l-5 1.6L12 16l-1.6-4.8L5 9.6l5.4-1.6z',
   warn: 'M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9',
   accent: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z',
+  pos: 'M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3',
+  neg: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
 };
 const X_PATH = 'M18 6L6 18M6 6l12 12';
 const INBOX_PATH =
@@ -984,7 +1063,10 @@ const INBOX_PATH =
 export const Banner = defineComponent({
   name: 'VspBanner',
   props: {
-    tone: { type: String as PropType<'info' | 'warn' | 'accent'>, default: 'info' },
+    tone: {
+      type: String as PropType<'info' | 'warn' | 'accent' | 'pos' | 'neg'>,
+      default: 'info',
+    },
     dismissible: Boolean,
   },
   emits: ['dismiss'],
@@ -1672,15 +1754,32 @@ export const OTPInput = defineComponent({
   props: {
     length: { type: Number, default: 6 },
     modelValue: { type: String, default: '' },
+    disabled: Boolean,
+    invalid: Boolean,
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'complete'],
   setup(props, { emit }) {
     const refs: (HTMLInputElement | null)[] = [];
+    const chars = () => Array.from({ length: props.length }, (_, k) => props.modelValue[k] ?? '');
+    const emitNext = (next: string[]) => {
+      const joined = next.join('');
+      emit('update:modelValue', joined);
+      if (joined.length === props.length) emit('complete', joined);
+    };
     const set = (i: number, ch: string) => {
-      const chars = Array.from({ length: props.length }, (_, k) => props.modelValue[k] ?? '');
-      chars[i] = ch.slice(-1);
-      emit('update:modelValue', chars.join(''));
+      const next = chars();
+      next[i] = ch.slice(-1);
+      emitNext(next);
       if (ch && i < props.length - 1) refs[i + 1]?.focus();
+    };
+    const onPaste = (i: number, e: ClipboardEvent) => {
+      const text = (e.clipboardData?.getData('text') ?? '').replace(/\D/g, '');
+      if (!text) return;
+      e.preventDefault();
+      const next = chars();
+      for (let j = 0; j < text.length && i + j < props.length; j++) next[i + j] = text[j]!;
+      emitNext(next);
+      refs[Math.min(i + text.length, props.length - 1)]?.focus();
     };
     const onKey = (i: number, e: KeyboardEvent) => {
       if (e.key === 'Backspace' && !props.modelValue[i] && i > 0) refs[i - 1]?.focus();
@@ -1688,7 +1787,7 @@ export const OTPInput = defineComponent({
     return () =>
       h(
         'div',
-        { class: 'ui-otp' },
+        { class: cx('ui-otp', props.invalid && 'invalid') },
         Array.from({ length: props.length }, (_, i) =>
           h('input', {
             key: i,
@@ -1698,7 +1797,10 @@ export const OTPInput = defineComponent({
             inputmode: 'numeric',
             maxlength: 1,
             value: props.modelValue[i] ?? '',
+            disabled: props.disabled,
+            'aria-invalid': props.invalid || undefined,
             onInput: (e: Event) => set(i, (e.target as HTMLInputElement).value.replace(/\D/g, '')),
+            onPaste: (e: ClipboardEvent) => onPaste(i, e),
             onKeydown: (e: KeyboardEvent) => onKey(i, e),
           }),
         ),
