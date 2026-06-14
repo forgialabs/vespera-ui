@@ -4,6 +4,7 @@ import { Callout } from '@/components/Callout';
 import { Swatch, SwatchGrid } from '@/components/Swatch';
 import { Card, CardGrid } from '@/components/DocCard';
 import { ReactApi } from '@/components/ReactApi';
+import { Install } from '@/components/Install';
 import { MdxLink } from '@/components/MdxLink';
 
 // MDX element + custom-component overrides. Prose styling lives in global.css
@@ -18,6 +19,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     Card,
     CardGrid,
     ReactApi,
+    Install,
     ...components,
   };
 }

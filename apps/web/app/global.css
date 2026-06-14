@@ -148,6 +148,97 @@ body {
   padding: 0;
 }
 
+/* ---------------- Install block (package-manager tabs) ---------------- */
+.vsp-inst {
+  margin: 1.25rem 0 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface-1);
+}
+.vsp-inst-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.vsp-inst-tabs button {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.vsp-inst-tabs button[data-on='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+  font-weight: 600;
+}
+.vsp-inst-cmd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg);
+}
+.vsp-inst-cmd code {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  background: none;
+  border: 0;
+  padding: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.vsp-inst-import {
+  position: relative;
+  border-top: 1px solid var(--border);
+}
+.vsp-inst-import pre {
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background: var(--surface-1);
+}
+.vsp-inst-import code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.vsp-inst-copy {
+  flex: none;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+.vsp-inst-copy:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+.vsp-inst-import .vsp-inst-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 /* ---------------- responsive ---------------- */
 @media (max-width: 1023px) {
   .vsp-docs-aside {
@@ -191,6 +282,49 @@ body {
   background: var(--surface-2);
   color: var(--text);
   font-weight: 600;
+}
+
+/* collapsible folder groups */
+.vsp-nav-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-weight: 500;
+  border-radius: var(--r-sm);
+  transition: color 0.12s ease;
+}
+.vsp-nav-group:hover {
+  color: var(--text-dim);
+}
+.vsp-nav-group[data-active='true'] {
+  color: var(--accent);
+}
+.vsp-nav-chevron {
+  flex: none;
+  display: inline-flex;
+  opacity: 0.55;
+}
+.vsp-nav-group[data-active='true'] .vsp-nav-chevron {
+  opacity: 0.9;
+}
+.vsp-nav-children {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 8px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
 }
 
 /* ---------------- shiki syntax highlighting ---------------- */

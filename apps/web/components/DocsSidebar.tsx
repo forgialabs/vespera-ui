@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 
 export type SidebarNode =
   | { type: 'page'; name: string; url: string }
@@ -20,17 +20,57 @@ const groupLabel: CSSProperties = {
 
 const norm = (s: string) => s.replace(/\/+$/, '') || '/';
 
+/** Does this folder (recursively) contain the currently-active page? */
+function containsActive(node: SidebarNode, pathname: string): boolean {
+  if (node.type !== 'folder') return false;
+  const here = norm(pathname);
+  const walk = (n: SidebarNode): boolean =>
+    n.type === 'page' ? norm(n.url) === here : n.type === 'folder' ? n.children.some(walk) : false;
+  return node.children.some(walk);
+}
+
+/** A collapsible group. Auto-opens (and keeps open) the section you're in. */
+function Folder({ node, pathname, onNav }: { node: SidebarNode & { type: 'folder' }; pathname: string; onNav?: () => void }) {
+  const active = containsActive(node, pathname);
+  const [open, setOpen] = useState(active);
+  const show = open || active;
+  return (
+    <div>
+      <button
+        type="button"
+        className="vsp-nav-group"
+        aria-expanded={show}
+        data-active={active}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span>{node.name}</span>
+        <span className="vsp-nav-chevron" data-open={show} aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 24 24">
+            <path
+              d={show ? 'M6 9l6 6 6-6' : 'M9 6l6 6-6 6'}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </button>
+      {show ? (
+        <div className="vsp-nav-children">
+          {node.children.map((c, i) => (
+            <Node key={i} node={c} pathname={pathname} onNav={onNav} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function Node({ node, pathname, onNav }: { node: SidebarNode; pathname: string; onNav?: () => void }) {
   if (node.type === 'separator') return <div style={groupLabel}>{node.name}</div>;
-  if (node.type === 'folder')
-    return (
-      <div>
-        <div style={groupLabel}>{node.name}</div>
-        {node.children.map((c, i) => (
-          <Node key={i} node={c} pathname={pathname} onNav={onNav} />
-        ))}
-      </div>
-    );
+  if (node.type === 'folder') return <Folder node={node} pathname={pathname} onNav={onNav} />;
   // usePathname() strips basePath but (with trailingSlash) keeps a trailing
   // slash, while node.url has none — normalize both before comparing.
   const active = norm(pathname) === norm(node.url);
