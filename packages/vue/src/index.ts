@@ -2423,7 +2423,33 @@ export interface MenuItem {
   danger?: boolean;
   heading?: boolean;
   sep?: boolean;
+  disabled?: boolean;
+  /** Render as a checkable item — shows a tick and keeps the menu open on select. */
+  type?: 'checkbox' | 'radio';
+  checked?: boolean;
   onClick?: () => void;
+}
+
+function menuKeydown(e: KeyboardEvent): void {
+  const k = e.key;
+  if (k !== 'ArrowDown' && k !== 'ArrowUp' && k !== 'Home' && k !== 'End') return;
+  e.preventDefault();
+  const parent = (e.currentTarget as HTMLElement).parentElement;
+  if (!parent) return;
+  const items = Array.from(
+    parent.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]:not([disabled])'),
+  );
+  const i = items.indexOf(e.currentTarget as HTMLButtonElement);
+  const n = items.length;
+  const next =
+    k === 'Home'
+      ? items[0]
+      : k === 'End'
+        ? items[n - 1]
+        : k === 'ArrowDown'
+          ? items[(i + 1) % n]
+          : items[(i - 1 + n) % n];
+  next?.focus();
 }
 
 export const DropdownMenu = defineComponent({
@@ -2452,19 +2478,35 @@ export const DropdownMenu = defineComponent({
             props.items.map((it, i) => {
               if (it.sep) return h('div', { key: i, class: 'ui-menu-sep' });
               if (it.heading) return h('div', { key: i, class: 'ui-menu-label' }, it.label);
+              const role =
+                it.type === 'checkbox'
+                  ? 'menuitemcheckbox'
+                  : it.type === 'radio'
+                    ? 'menuitemradio'
+                    : 'menuitem';
               return h(
                 'button',
                 {
                   key: i,
                   type: 'button',
+                  role,
+                  disabled: it.disabled,
+                  'aria-checked': it.type ? !!it.checked : undefined,
                   class: cx('ui-menu-item', it.danger && 'danger'),
                   onClick: () => {
                     it.onClick?.();
-                    close();
+                    if (!it.type) close();
                   },
+                  onKeydown: menuKeydown,
                 },
                 [
-                  it.icon ? blockIcon(it.icon, 15) : null,
+                  it.type
+                    ? h('span', { class: 'ui-menu-check' }, [
+                        it.checked ? svgIcon('M20 6L9 17l-5-5', 16) : null,
+                      ])
+                    : it.icon
+                      ? blockIcon(it.icon, 15)
+                      : null,
                   it.label,
                   it.kbd ? h('kbd', { class: 'ui-kbd' }, it.kbd) : null,
                 ],

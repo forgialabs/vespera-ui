@@ -1159,8 +1159,21 @@
   transition: background 0.12s;
 }
 .ui-menu-item:hover,
-.ui-menu-item.active {
+.ui-menu-item.active,
+.ui-menu-item:focus-visible {
   background: var(--hover);
+  outline: none;
+}
+.ui-menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ui-menu-check {
+  width: 16px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
 }
 .ui-menu-item svg {
   width: 16px;

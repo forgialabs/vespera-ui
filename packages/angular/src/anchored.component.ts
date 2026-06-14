@@ -88,6 +88,10 @@ export interface MenuItem {
   danger?: boolean;
   heading?: boolean;
   sep?: boolean;
+  disabled?: boolean;
+  /** Render as a checkable item — shows a tick and keeps the menu open on select. */
+  type?: 'checkbox' | 'radio';
+  checked?: boolean;
   onClick?: () => void;
 }
 
@@ -109,8 +113,22 @@ export interface MenuItem {
       } @else if (it.heading) {
         <div class="ui-menu-label">{{ it.label }}</div>
       } @else {
-        <button type="button" [class]="itemCls(it)" (click)="it.onClick?.(); a.close()">
-          @if (it.icon) {
+        <button
+          type="button"
+          [class]="itemCls(it)"
+          [attr.role]="role(it)"
+          [disabled]="it.disabled"
+          [attr.aria-checked]="it.type ? !!it.checked : null"
+          (click)="select(it, a)"
+          (keydown)="onKey($event)"
+        >
+          @if (it.type) {
+            <span class="ui-menu-check">
+              @if (it.checked) {
+                <vsp-icon name="check" [size]="16" />
+              }
+            </span>
+          } @else if (it.icon) {
             <vsp-icon [name]="it.icon" [size]="15" />
           }
           {{ it.label }}
@@ -128,6 +146,38 @@ export class VspDropdownMenu {
   @Input() width?: number;
   @Input() open?: boolean;
   @Output() openChange = new EventEmitter<boolean>();
+  role(it: MenuItem): string {
+    return it.type === 'checkbox'
+      ? 'menuitemcheckbox'
+      : it.type === 'radio'
+        ? 'menuitemradio'
+        : 'menuitem';
+  }
+  select(it: MenuItem, a: VspAnchored): void {
+    it.onClick?.();
+    if (!it.type) a.close();
+  }
+  onKey(e: KeyboardEvent): void {
+    const k = e.key;
+    if (k !== 'ArrowDown' && k !== 'ArrowUp' && k !== 'Home' && k !== 'End') return;
+    e.preventDefault();
+    const parent = (e.currentTarget as HTMLElement).parentElement;
+    if (!parent) return;
+    const els = Array.from(
+      parent.querySelectorAll<HTMLButtonElement>('[role^="menuitem"]:not([disabled])'),
+    );
+    const i = els.indexOf(e.currentTarget as HTMLButtonElement);
+    const n = els.length;
+    const next =
+      k === 'Home'
+        ? els[0]
+        : k === 'End'
+          ? els[n - 1]
+          : k === 'ArrowDown'
+            ? els[(i + 1) % n]
+            : els[(i - 1 + n) % n];
+    next?.focus();
+  }
   itemCls(it: MenuItem): string {
     return 'ui-menu-item' + (it.danger ? ' danger' : '');
   }
