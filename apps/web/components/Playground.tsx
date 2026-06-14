@@ -176,6 +176,14 @@ export function Playground() {
                   items={[
                     { heading: true, label: 'Account' },
                     { label: 'Profile', icon: <Icon.user />, onClick: () => toast('Profile') },
+                    {
+                      label: 'Invite',
+                      icon: <Icon.users />,
+                      items: [
+                        { label: 'Email', icon: <Icon.mail />, onClick: () => toast('Invite by email') },
+                        { label: 'Copy link', icon: <Icon.bolt />, onClick: () => toast('Link copied') },
+                      ],
+                    },
                     { label: 'Settings', icon: <Icon.settings />, kbd: '⌘,' },
                     { sep: true },
                     { label: 'Log out', icon: <Icon.logout />, danger: true },
