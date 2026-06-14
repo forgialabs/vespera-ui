@@ -1,20 +1,50 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
+const AVATAR_STATUS: Record<AvatarStatus, string> = {
+  online: 'var(--success)',
+  offline: 'var(--text-faint)',
+  away: 'var(--warning)',
+  busy: 'var(--danger)',
+};
+
 @Component({
   selector: 'vsp-avatar',
-  template: `<span
-    class="vsp-avatar"
-    [style.width.px]="size"
-    [style.height.px]="size"
-    [style.fontSize.px]="size * 0.38"
-    [style.background]="bg"
-    >{{ initials }}</span
-  >`,
+  template: `<span style="position: relative; display: inline-flex; flex-shrink: 0">
+    <span
+      class="vsp-avatar"
+      [style.width.px]="size"
+      [style.height.px]="size"
+      [style.fontSize.px]="size * 0.38"
+      [style.borderRadius]="radius"
+      [style.background]="bg"
+      style="overflow: hidden"
+    >
+      @if (src) {
+        <img [src]="src" [alt]="alt ?? name" style="width: 100%; height: 100%; object-fit: cover" />
+      } @else {
+        {{ initials }}
+      }
+    </span>
+    @if (status) {
+      <span
+        [attr.aria-label]="status"
+        [style.width.px]="dot"
+        [style.height.px]="dot"
+        [style.background]="statusColor"
+        style="position: absolute; right: 0; bottom: 0; border-radius: 50%; border: 2px solid var(--surface-1)"
+      ></span>
+    }
+  </span>`,
 })
 export class VspAvatar {
   @Input() name = '';
   @Input() hue = 0;
   @Input() size = 34;
+  @Input() src?: string;
+  @Input() alt?: string;
+  @Input() status?: AvatarStatus;
+  @Input() shape: 'circle' | 'square' = 'circle';
   get initials(): string {
     return this.name
       .split(' ')
@@ -23,14 +53,26 @@ export class VspAvatar {
       .join('')
       .toUpperCase();
   }
+  get radius(): string {
+    return this.shape === 'square' ? 'var(--r-sm)' : '50%';
+  }
+  get dot(): number {
+    return Math.max(8, Math.round(this.size * 0.28));
+  }
+  get statusColor(): string {
+    return this.status ? AVATAR_STATUS[this.status] : '';
+  }
   get bg(): string {
-    return `linear-gradient(140deg, oklch(0.62 0.16 ${this.hue}), oklch(0.55 0.17 ${(this.hue + 50) % 360}))`;
+    return this.src
+      ? 'var(--surface-3)'
+      : `linear-gradient(140deg, oklch(0.62 0.16 ${this.hue}), oklch(0.55 0.17 ${(this.hue + 50) % 360}))`;
   }
 }
 
 export interface Person {
   name: string;
   hue?: number;
+  src?: string;
 }
 
 @Component({
@@ -43,7 +85,7 @@ export interface Person {
         [style.zIndex]="shown.length - $index"
         style="border: 2px solid var(--surface-1); border-radius: 50%; position: relative"
       >
-        <vsp-avatar [name]="p.name" [hue]="p.hue ?? 0" [size]="size" />
+        <vsp-avatar [name]="p.name" [hue]="p.hue ?? 0" [src]="p.src" [size]="size" />
       </span>
     }
     @if (extra > 0) {

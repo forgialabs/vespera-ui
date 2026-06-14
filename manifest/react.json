@@ -191,11 +191,17 @@
       "category": "Data display",
       "props": [
         {
+          "name": "alt",
+          "type": "string",
+          "required": false,
+          "description": "Alt text for the image (defaults to `name`)."
+        },
+        {
           "name": "hue",
           "type": "number",
           "required": false,
           "defaultValue": "0",
-          "description": "Hue (0–360) for the generated gradient."
+          "description": "Hue (0–360) for the generated gradient (used when there's no `src`)."
         },
         {
           "name": "name",
@@ -203,10 +209,38 @@
           "required": true
         },
         {
+          "name": "shape",
+          "type": "enum",
+          "values": [
+            "circle",
+            "square"
+          ],
+          "required": false,
+          "defaultValue": "circle"
+        },
+        {
           "name": "size",
           "type": "number",
           "required": false,
           "defaultValue": "34"
+        },
+        {
+          "name": "src",
+          "type": "string",
+          "required": false,
+          "description": "Image URL — falls back to initials if omitted."
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "values": [
+            "online",
+            "offline",
+            "away",
+            "busy"
+          ],
+          "required": false,
+          "description": "Presence indicator dot."
         }
       ]
     },
@@ -286,7 +320,9 @@
           "type": "enum",
           "values": [
             "info",
+            "pos",
             "warn",
+            "neg",
             "accent"
           ],
           "required": false,
@@ -1361,6 +1397,16 @@
       "category": "Forms & inputs",
       "props": [
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false
+        },
+        {
           "name": "length",
           "type": "number",
           "required": false,
@@ -1370,6 +1416,12 @@
           "name": "onChange",
           "type": "((value: string) => void)",
           "required": false
+        },
+        {
+          "name": "onComplete",
+          "type": "((value: string) => void)",
+          "required": false,
+          "description": "Fired once every slot is filled."
         },
         {
           "name": "value",
@@ -1448,6 +1500,25 @@
           "defaultValue": "6"
         },
         {
+          "name": "indeterminate",
+          "type": "boolean",
+          "required": false,
+          "description": "Unknown-duration loading — animates continuously, ignores `value`."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": false,
+          "description": "Accessible label for the progress bar."
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "defaultValue": "100",
+          "description": "Upper bound for `value` (default 100)."
+        },
+        {
           "name": "tone",
           "type": "string",
           "required": false,
@@ -1467,6 +1538,11 @@
       "props": [
         {
           "name": "checked",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "disabled",
           "type": "boolean",
           "required": false
         },
@@ -1492,6 +1568,12 @@
       "category": "Forms & inputs",
       "props": [
         {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Disable the whole group."
+        },
+        {
           "name": "onChange",
           "type": "(value: string) => void",
           "required": true
@@ -1500,6 +1582,17 @@
           "name": "options",
           "type": "RadioOption[]",
           "required": true
+        },
+        {
+          "name": "orientation",
+          "type": "enum",
+          "values": [
+            "horizontal",
+            "vertical"
+          ],
+          "required": false,
+          "defaultValue": "vertical",
+          "description": "Stack horizontally instead of vertically."
         },
         {
           "name": "style",

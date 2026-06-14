@@ -23,16 +23,31 @@ export class VspIconButton {
 
 @Component({
   selector: 'vsp-progress',
-  template: `<div class="meter" [style.height.px]="height">
-    <i [style.width.%]="clamped" [style.background]="tone" style="transition: width 0.3s"></i>
+  template: `<div
+    [class]="indeterminate ? 'meter indeterminate' : 'meter'"
+    [style.height.px]="height"
+    role="progressbar"
+    [attr.aria-label]="label"
+    [attr.aria-valuemin]="indeterminate ? null : 0"
+    [attr.aria-valuemax]="indeterminate ? null : max"
+    [attr.aria-valuenow]="indeterminate ? null : value"
+  >
+    @if (indeterminate) {
+      <i [style.background]="tone"></i>
+    } @else {
+      <i [style.width.%]="pct" [style.background]="tone" style="transition: width 0.3s"></i>
+    }
   </div>`,
 })
 export class VspProgress {
   @Input() value = 0;
   @Input() tone?: string;
   @Input() height = 6;
-  get clamped(): number {
-    return Math.min(100, this.value);
+  @Input() max = 100;
+  @Input() indeterminate = false;
+  @Input() label?: string;
+  get pct(): number {
+    return Math.min(100, Math.max(0, (this.value / this.max) * 100));
   }
 }
 

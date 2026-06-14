@@ -6,12 +6,40 @@ export interface ProgressProps {
   /** Bar color (defaults to the accent). */
   tone?: string;
   height?: number;
+  /** Upper bound for `value` (default 100). */
+  max?: number;
+  /** Unknown-duration loading — animates continuously, ignores `value`. */
+  indeterminate?: boolean;
+  /** Accessible label for the progress bar. */
+  label?: string;
 }
 
-export function Progress({ value = 0, tone, height = 6 }: ProgressProps) {
+export function Progress({
+  value = 0,
+  tone,
+  height = 6,
+  max = 100,
+  indeterminate,
+  label,
+}: ProgressProps) {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className="meter" style={{ height }}>
-      <i style={{ width: `${Math.min(100, value)}%`, background: tone, transition: 'width .3s' }} />
+    <div
+      className={cx('meter', indeterminate && 'indeterminate')}
+      style={{ height }}
+      role="progressbar"
+      aria-label={label}
+      aria-valuemin={indeterminate ? undefined : 0}
+      aria-valuemax={indeterminate ? undefined : max}
+      aria-valuenow={indeterminate ? undefined : value}
+    >
+      <i
+        style={
+          indeterminate
+            ? { background: tone }
+            : { width: `${pct}%`, background: tone, transition: 'width .3s' }
+        }
+      />
     </div>
   );
 }

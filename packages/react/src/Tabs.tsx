@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { cx } from './cx';
 
-export type TabItem = string | { value: string; label: ReactNode; count?: number };
+export type TabItem =
+  | string
+  | { value: string; label: ReactNode; count?: number; disabled?: boolean };
 
 export interface TabsProps {
   tabs: TabItem[];
@@ -17,10 +19,12 @@ export function Tabs({ tabs, value, onChange, right }: TabsProps) {
         const id = typeof t === 'string' ? t : t.value;
         const label = typeof t === 'string' ? t : t.label;
         const count = typeof t === 'object' ? t.count : undefined;
+        const disabled = typeof t === 'object' ? t.disabled : undefined;
         return (
           <button
             key={id}
             type="button"
+            disabled={disabled}
             className={cx('ui-tab', value === id && 'on')}
             onClick={() => onChange(id)}
           >

@@ -49,15 +49,17 @@ export interface RadioProps {
   onChange?: () => void;
   label?: ReactNode;
   sub?: ReactNode;
+  disabled?: boolean;
 }
 
-export function Radio({ checked, onChange, label, sub }: RadioProps) {
+export function Radio({ checked, onChange, label, sub, disabled }: RadioProps) {
   return (
     <label
       className="ui-opt"
+      style={{ opacity: disabled ? 0.5 : 1 }}
       onClick={(e) => {
         e.preventDefault();
-        onChange?.();
+        if (!disabled) onChange?.();
       }}
     >
       <span className={cx('ui-radio-dot', checked && 'on')} />
@@ -73,6 +75,7 @@ export interface RadioOption {
   value: string;
   label: ReactNode;
   sub?: ReactNode;
+  disabled?: boolean;
 }
 
 export interface RadioGroupProps {
@@ -80,16 +83,37 @@ export interface RadioGroupProps {
   onChange: (value: string) => void;
   options: RadioOption[];
   style?: CSSProperties;
+  /** Disable the whole group. */
+  disabled?: boolean;
+  /** Stack horizontally instead of vertically. */
+  orientation?: 'vertical' | 'horizontal';
 }
 
-export function RadioGroup({ value, onChange, options, style }: RadioGroupProps) {
+export function RadioGroup({
+  value,
+  onChange,
+  options,
+  style,
+  disabled,
+  orientation = 'vertical',
+}: RadioGroupProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, ...style }}>
+    <div
+      role="radiogroup"
+      style={{
+        display: 'flex',
+        flexDirection: orientation === 'horizontal' ? 'row' : 'column',
+        gap: orientation === 'horizontal' ? 18 : 12,
+        flexWrap: orientation === 'horizontal' ? 'wrap' : undefined,
+        ...style,
+      }}
+    >
       {options.map((o) => (
         <Radio
           key={o.value}
           label={o.label}
           sub={o.sub}
+          disabled={disabled || o.disabled}
           checked={value === o.value}
           onChange={() => onChange(o.value)}
         />

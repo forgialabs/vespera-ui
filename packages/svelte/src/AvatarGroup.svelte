@@ -13,7 +13,7 @@
         : 0}px;border:2px solid var(--surface-1);border-radius:50%;position:relative;z-index:{shown.length -
         i}"
     >
-      <Avatar name={p.name} hue={p.hue ?? 0} {size} />
+      <Avatar name={p.name} hue={p.hue ?? 0} src={p.src} {size} />
     </span>
   {/each}
   {#if extra > 0}

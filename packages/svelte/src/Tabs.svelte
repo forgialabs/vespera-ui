@@ -3,12 +3,14 @@
   const id = (t) => (typeof t === 'string' ? t : t.value);
   const lbl = (t) => (typeof t === 'string' ? t : t.label);
   const cnt = (t) => (typeof t === 'object' ? t.count : undefined);
+  const dis = (t) => (typeof t === 'object' ? t.disabled : undefined);
 </script>
 
 <div class="ui-tabs" style="align-items:center">
   {#each tabs as t (id(t))}
     <button
       type="button"
+      disabled={dis(t)}
       class="ui-tab{value === id(t) ? ' on' : ''}"
       onclick={() => (value = id(t))}
     >
