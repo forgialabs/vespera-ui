@@ -1,5 +1,11 @@
 import { Component, Input } from '@angular/core';
 
+function niceNum(n: number): string {
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(n % 1e3 === 0 ? 0 : 1) + 'k';
+  return String(n);
+}
+
 type Pt = [number, number];
 function smoothPath(pts: Pt[]): string {
   if (pts.length < 2) return '';
@@ -77,7 +83,20 @@ export interface DonutDatum {
       [style.height.px]="size"
       style="position: relative; flex-shrink: 0"
     >
-      @if (centerLabel != null) {
+      @if (hover != null) {
+        <div
+          style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center"
+        >
+          <div>
+            <div style="font-size: 19px; font-weight: 800; letter-spacing: -0.02em">
+              {{ fmt(data[hover].value) }}
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 2px">
+              {{ data[hover].label }}
+            </div>
+          </div>
+        </div>
+      } @else if (centerLabel != null) {
         <div
           style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center"
         >
@@ -97,7 +116,7 @@ export interface DonutDatum {
           stroke="var(--surface-3)"
           [attr.stroke-width]="thickness"
         />
-        @for (s of segs; track $index) {
+        @for (s of segs; track $index; let i = $index) {
           <circle
             [attr.cx]="c"
             [attr.cy]="c"
@@ -108,13 +127,22 @@ export interface DonutDatum {
             [attr.stroke-dasharray]="s.dash"
             [attr.stroke-dashoffset]="s.offset"
             stroke-linecap="round"
+            [attr.opacity]="hover === null || hover === i ? 1 : 0.3"
+            style="transition: opacity 0.15s; cursor: pointer"
+            (mouseenter)="hover = i"
+            (mouseleave)="hover = null"
           />
         }
       </svg>
     </div>
     <div style="display: flex; flex-direction: column; gap: 9px; flex: 1">
-      @for (d of data; track $index) {
-        <div style="display: flex; align-items: center; gap: 9px; font-size: 12.5px">
+      @for (d of data; track $index; let i = $index) {
+        <div
+          style="display: flex; align-items: center; gap: 9px; font-size: 12.5px; cursor: pointer; transition: opacity 0.15s"
+          [style.opacity]="hover === null || hover === i ? 1 : 0.45"
+          (mouseenter)="hover = i"
+          (mouseleave)="hover = null"
+        >
           <i
             [style.background]="d.color"
             style="width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0"
@@ -131,6 +159,11 @@ export class VspDonut {
   @Input() size = 168;
   @Input() thickness = 22;
   @Input() centerLabel?: string;
+  @Input() valueFormat?: (n: number) => string;
+  hover: number | null = null;
+  fmt(n: number): string {
+    return this.valueFormat ? this.valueFormat(n) : niceNum(n);
+  }
   get total(): number {
     return this.data.reduce((s, d) => s + d.value, 0) || 1;
   }

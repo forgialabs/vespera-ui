@@ -1415,10 +1415,13 @@ export const Donut = defineComponent({
     size: { type: Number, default: 168 },
     thickness: { type: Number, default: 22 },
     centerLabel: { type: String, default: undefined },
+    valueFormat: { type: Function as PropType<(n: number) => string>, default: undefined },
   },
   setup(props, { slots }) {
+    const hover = ref<number | null>(null);
     return () => {
       const total = props.data.reduce((s, d) => s + d.value, 0) || 1;
+      const fmt = props.valueFormat ?? ((n: number) => niceNum(n));
       const r = (props.size - props.thickness) / 2;
       const c = props.size / 2;
       const circ = 2 * Math.PI * r;
@@ -1436,11 +1439,30 @@ export const Donut = defineComponent({
           'stroke-dasharray': `${len - 2.5} ${circ - len + 2.5}`,
           'stroke-dashoffset': -acc,
           'stroke-linecap': 'round',
+          opacity: hover.value == null || hover.value === i ? 1 : 0.3,
+          style: { transition: 'opacity .15s', cursor: 'pointer' },
+          onMouseenter: () => (hover.value = i),
+          onMouseleave: () => (hover.value = null),
         });
         acc += len;
         return seg;
       });
-      const center = slots.center?.() ?? props.centerLabel;
+      const hv = hover.value;
+      const center =
+        hv != null
+          ? h('div', null, [
+              h(
+                'div',
+                { style: { fontSize: '19px', fontWeight: 800, letterSpacing: '-0.02em' } },
+                fmt(props.data[hv]!.value),
+              ),
+              h(
+                'div',
+                { style: { fontSize: '11px', color: 'var(--text-dim)', marginTop: '2px' } },
+                props.data[hv]!.label,
+              ),
+            ])
+          : (slots.center?.() ?? props.centerLabel);
       return h('div', { style: { display: 'flex', alignItems: 'center', gap: '22px' } }, [
         h(
           'div',
@@ -1497,7 +1519,17 @@ export const Donut = defineComponent({
               'div',
               {
                 key: i,
-                style: { display: 'flex', alignItems: 'center', gap: '9px', fontSize: '12.5px' },
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '9px',
+                  fontSize: '12.5px',
+                  cursor: 'pointer',
+                  opacity: hover.value == null || hover.value === i ? 1 : 0.45,
+                  transition: 'opacity .15s',
+                },
+                onMouseenter: () => (hover.value = i),
+                onMouseleave: () => (hover.value = null),
               },
               [
                 h('i', {
