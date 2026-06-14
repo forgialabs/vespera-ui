@@ -395,3 +395,39 @@
     0 0 0 2px var(--surface-2),
     0 0 8px var(--accent);
 }
+.vsp-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.vsp-icon-btn-sm {
+  width: 32px;
+  height: 32px;
+}
+.vsp-icon-btn-sm svg {
+  width: 15px;
+  height: 15px;
+}
+.vsp-icon-btn-lg {
+  width: 44px;
+  height: 44px;
+}
+.vsp-icon-btn-lg svg {
+  width: 21px;
+  height: 21px;
+}
+.vsp-icon-btn-ghost,
+.vsp-icon-btn-subtle {
+  border-color: transparent;
+  background: transparent;
+}
+.vsp-icon-btn-subtle {
+  color: var(--text-faint);
+}
+.vsp-icon-btn-danger {
+  color: var(--danger);
+}
+.vsp-icon-btn-danger:hover {
+  color: var(--danger);
+  background: color-mix(in oklab, var(--danger) 12%, transparent);
+  border-color: color-mix(in oklab, var(--danger) 30%, var(--border));
+}

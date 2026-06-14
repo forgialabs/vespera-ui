@@ -11,14 +11,40 @@ export class VspSpinner {
   }
 }
 
+export type IconButtonVariant = 'ghost' | 'subtle' | 'danger';
+
 @Component({
   selector: 'vsp-icon-button',
-  template: `<button type="button" class="vsp-icon-btn" [attr.aria-label]="label">
-    <ng-content />
+  template: `<button
+    type="button"
+    [class]="cls"
+    [attr.aria-label]="label"
+    [disabled]="disabled || loading"
+    [attr.aria-busy]="loading || null"
+  >
+    @if (loading) {
+      <span class="ui-spinner" aria-hidden="true"></span>
+    } @else {
+      <ng-content />
+    }
   </button>`,
 })
 export class VspIconButton {
   @Input() label?: string;
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
+  @Input() variant?: IconButtonVariant;
+  @Input() loading = false;
+  @Input() disabled = false;
+  get cls(): string {
+    return [
+      'vsp-icon-btn',
+      this.size === 'sm' ? 'vsp-icon-btn-sm' : '',
+      this.size === 'lg' ? 'vsp-icon-btn-lg' : '',
+      this.variant ? `vsp-icon-btn-${this.variant}` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
 }
 
 @Component({

@@ -405,6 +405,12 @@
       "category": "Actions",
       "props": [
         {
+          "name": "fullWidth",
+          "type": "boolean",
+          "required": false,
+          "description": "Stretch to the full width of the container."
+        },
+        {
           "name": "leadingIcon",
           "type": "ReactNode",
           "required": false
@@ -415,12 +421,21 @@
           "required": false
         },
         {
+          "name": "loadingText",
+          "type": "ReactNode",
+          "required": false,
+          "description": "Label shown while `loading` (keeps the button's width stable)."
+        },
+        {
           "name": "size",
           "type": "enum",
           "values": [
-            "sm"
+            "sm",
+            "md",
+            "lg"
           ],
-          "required": false
+          "required": false,
+          "defaultValue": "md"
         },
         {
           "name": "trailingIcon",
@@ -1138,6 +1153,32 @@
           "type": "string",
           "required": true,
           "description": "Accessible label (also the tooltip)."
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "required": false,
+          "defaultValue": "md"
+        },
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "ghost",
+            "subtle",
+            "danger"
+          ],
+          "required": false
         }
       ]
     },
