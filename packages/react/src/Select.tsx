@@ -108,6 +108,8 @@ interface ComboListProps {
   isSel: (o: SelectOption) => boolean;
   searchPlaceholder?: string;
   footer?: ReactNode;
+  loading?: boolean;
+  emptyText?: ReactNode;
 }
 
 function ComboList({
@@ -120,6 +122,8 @@ function ComboList({
   isSel,
   searchPlaceholder,
   footer,
+  loading,
+  emptyText,
 }: ComboListProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -157,29 +161,37 @@ function ComboList({
         />
       </div>
       <div className="ui-combo-list">
-        {items.length === 0 && <div className="ui-combo-empty">No matches for “{q}”</div>}
-        {items.map((o, i) => (
-          <div
-            key={String(o.value)}
-            className={cx('ui-combo-item', i === activeIdx && 'active')}
-            onMouseEnter={() => setActiveIdx(i)}
-            onClick={() => onPick(o)}
-          >
-            {o.swatch && (
-              <span
-                style={{
-                  width: 9,
-                  height: 9,
-                  borderRadius: 3,
-                  background: o.swatch,
-                  flexShrink: 0,
-                }}
-              />
-            )}
-            <span>{o.label}</span>
-            {isSel(o) && <Icon.check className="tick" />}
+        {loading ? (
+          <div className="ui-combo-loading">
+            <span className="ui-spinner" aria-hidden="true" />
+            Loading…
           </div>
-        ))}
+        ) : items.length === 0 ? (
+          <div className="ui-combo-empty">{emptyText ?? `No matches for “${q}”`}</div>
+        ) : null}
+        {!loading &&
+          items.map((o, i) => (
+            <div
+              key={String(o.value)}
+              className={cx('ui-combo-item', i === activeIdx && 'active')}
+              onMouseEnter={() => setActiveIdx(i)}
+              onClick={() => onPick(o)}
+            >
+              {o.swatch && (
+                <span
+                  style={{
+                    width: 9,
+                    height: 9,
+                    borderRadius: 3,
+                    background: o.swatch,
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              <span>{o.label}</span>
+              {isSel(o) && <Icon.check className="tick" />}
+            </div>
+          ))}
       </div>
       {footer}
     </>
@@ -197,6 +209,14 @@ export interface SelectProps {
   className?: string;
   style?: CSSProperties;
   disabled?: boolean;
+  /** Mark invalid (red border) for form validation. */
+  invalid?: boolean;
+  /** Message when there are no options/matches. */
+  emptyText?: ReactNode;
+  /** For a `<label htmlFor>` association. */
+  id?: string;
+  /** Submits the selected value under this name in a form. */
+  name?: string;
   /** Force the search box on/off (defaults to on at ≥8 options). */
   searchable?: boolean;
 }
@@ -210,6 +230,10 @@ export function Select({
   className,
   style,
   disabled,
+  invalid,
+  emptyText,
+  id,
+  name,
   searchable,
 }: SelectProps) {
   const opts = options.map(normalizeOption);
@@ -239,13 +263,16 @@ export function Select({
       <button
         type="button"
         ref={anchor}
+        id={id}
         disabled={disabled}
-        className={cx('ui-selectbtn', open && 'open', className)}
+        aria-invalid={invalid || undefined}
+        className={cx('ui-selectbtn', open && 'open', invalid && 'invalid', className)}
         style={style}
         onClick={() => setOpen((o) => !o)}
       >
         <span className={cx('val', !sel && 'ph')}>{sel ? sel.label : placeholder}</span>
       </button>
+      {name ? <input type="hidden" name={name} value={cur ?? ''} /> : null}
       <SelPanel open={open} anchorRef={anchor} onClose={() => setOpen(false)}>
         {useSearch ? (
           <ComboList
@@ -256,11 +283,12 @@ export function Select({
             setActiveIdx={setActive}
             onPick={choose}
             isSel={(o) => String(o.value) === String(cur)}
+            emptyText={emptyText}
           />
         ) : (
           <div className="ui-combo-list">
             {items.length === 0 ? (
-              <div className="ui-combo-empty">No options</div>
+              <div className="ui-combo-empty">{emptyText ?? 'No options'}</div>
             ) : (
               items.map((o) => (
                 <div
@@ -300,6 +328,18 @@ export interface ComboboxProps {
   placeholder?: string;
   searchPlaceholder?: string;
   clearable?: boolean;
+  /** Disable the control. */
+  disabled?: boolean;
+  /** Mark invalid (red border) for form validation. */
+  invalid?: boolean;
+  /** Show a loading state in the list (e.g. while fetching async options). */
+  loading?: boolean;
+  /** Message when there are no options/matches. */
+  emptyText?: ReactNode;
+  /** For a `<label htmlFor>` association. */
+  id?: string;
+  /** Submits the selected value under this name in a form. */
+  name?: string;
 }
 
 export function Combobox({
@@ -309,6 +349,12 @@ export function Combobox({
   placeholder = 'Select…',
   searchPlaceholder,
   clearable,
+  disabled,
+  invalid,
+  loading,
+  emptyText,
+  id,
+  name,
 }: ComboboxProps) {
   const opts = options.map(normalizeOption);
   const [open, setOpen] = useState(false);
@@ -329,11 +375,14 @@ export function Combobox({
       <button
         type="button"
         ref={anchor}
-        className={cx('ui-trigger', open && 'open')}
+        id={id}
+        disabled={disabled}
+        aria-invalid={invalid || undefined}
+        className={cx('ui-trigger', open && 'open', invalid && 'invalid')}
         onClick={() => setOpen((o) => !o)}
       >
         <span className={cx('val', !sel && 'ph')}>{sel ? sel.label : placeholder}</span>
-        {clearable && sel && (
+        {clearable && sel && !disabled && (
           <span
             onClick={(e) => {
               e.stopPropagation();
@@ -346,6 +395,7 @@ export function Combobox({
         )}
         <Icon.chevDown className="chev" />
       </button>
+      {name ? <input type="hidden" name={name} value={value ?? ''} /> : null}
       <SelPanel open={open} anchorRef={anchor} onClose={() => setOpen(false)}>
         <ComboList
           q={q}
@@ -356,6 +406,8 @@ export function Combobox({
           onPick={pick}
           isSel={(o) => o.value === value}
           searchPlaceholder={searchPlaceholder}
+          loading={loading}
+          emptyText={emptyText}
         />
       </SelPanel>
     </>
@@ -371,6 +423,18 @@ export interface MultiSelectProps {
   placeholder?: string;
   searchPlaceholder?: string;
   max?: number;
+  /** Disable the control. */
+  disabled?: boolean;
+  /** Mark invalid (red border) for form validation. */
+  invalid?: boolean;
+  /** Show a loading state in the list (e.g. while fetching async options). */
+  loading?: boolean;
+  /** Message when there are no options/matches. */
+  emptyText?: ReactNode;
+  /** For a `<label htmlFor>` association. */
+  id?: string;
+  /** Submits the selected values under this name in a form. */
+  name?: string;
 }
 
 export function MultiSelect({
@@ -380,6 +444,12 @@ export function MultiSelect({
   placeholder = 'Select…',
   searchPlaceholder,
   max,
+  disabled,
+  invalid,
+  loading,
+  emptyText,
+  id,
+  name,
 }: MultiSelectProps) {
   const opts = options.map(normalizeOption);
   const [open, setOpen] = useState(false);
@@ -399,12 +469,15 @@ export function MultiSelect({
     <>
       <div
         role="button"
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         ref={anchor}
-        className={cx('ui-trigger', open && 'open')}
-        onClick={() => setOpen((o) => !o)}
+        id={id}
+        aria-disabled={disabled || undefined}
+        aria-invalid={invalid || undefined}
+        className={cx('ui-trigger', open && 'open', invalid && 'invalid', disabled && 'disabled')}
+        onClick={() => !disabled && setOpen((o) => !o)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
             setOpen((o) => !o);
           }
@@ -431,6 +504,9 @@ export function MultiSelect({
         )}
         <Icon.chevDown className="chev" />
       </div>
+      {name
+        ? value.map((v) => <input key={String(v)} type="hidden" name={name} value={v} />)
+        : null}
       <SelPanel open={open} anchorRef={anchor} onClose={() => setOpen(false)}>
         <ComboList
           q={q}
@@ -441,6 +517,8 @@ export function MultiSelect({
           onPick={toggle}
           isSel={(o) => has(o.value)}
           searchPlaceholder={searchPlaceholder}
+          loading={loading}
+          emptyText={emptyText}
           footer={
             <div className="ui-combo-foot">
               <span className="mono" style={{ fontSize: 11, color: 'var(--text-faint)' }}>

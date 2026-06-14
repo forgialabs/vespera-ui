@@ -8,6 +8,12 @@
     placeholder = 'Select…',
     searchPlaceholder = undefined,
     max = undefined,
+    disabled = false,
+    invalid = false,
+    loading = false,
+    emptyText = undefined,
+    id = undefined,
+    name = undefined,
     onchange,
   } = $props();
 
@@ -35,13 +41,16 @@
 
 <div
   role="button"
-  tabindex="0"
+  tabindex={disabled ? -1 : 0}
   bind:this={anchorEl}
-  class="ui-trigger {open ? 'open' : ''}"
+  {id}
+  aria-disabled={disabled || undefined}
+  aria-invalid={invalid || undefined}
+  class="ui-trigger {open ? 'open' : ''} {invalid ? 'invalid' : ''} {disabled ? 'disabled' : ''}"
   style="min-height:var(--ctrl-h)"
-  onclick={() => (open = !open)}
+  onclick={() => !disabled && (open = !open)}
   onkeydown={(e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       open = !open;
     }
@@ -86,6 +95,11 @@
     stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg
   >
 </div>
+{#if name}
+  {#each value as v (String(v))}
+    <input type="hidden" {name} value={v} />
+  {/each}
+{/if}
 <SelPanel {open} anchor={anchorEl} onclose={() => (open = false)}>
   <ComboList
     {q}
@@ -93,6 +107,8 @@
     activeIdx={active}
     isSel={(o) => has(o.value)}
     {searchPlaceholder}
+    {loading}
+    {emptyText}
     onq={(v) => (q = v)}
     onactive={(v) => (active = v)}
     onpick={toggle}

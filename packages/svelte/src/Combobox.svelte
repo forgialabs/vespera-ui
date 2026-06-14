@@ -8,6 +8,12 @@
     placeholder = 'Select…',
     searchPlaceholder = undefined,
     clearable = false,
+    disabled = false,
+    invalid = false,
+    loading = false,
+    emptyText = undefined,
+    id = undefined,
+    name = undefined,
     onchange,
   } = $props();
 
@@ -36,11 +42,14 @@
 <button
   type="button"
   bind:this={anchorEl}
-  class="ui-trigger {open ? 'open' : ''}"
+  {id}
+  {disabled}
+  aria-invalid={invalid || undefined}
+  class="ui-trigger {open ? 'open' : ''} {invalid ? 'invalid' : ''}"
   onclick={() => (open = !open)}
 >
   <span class="val {sel ? '' : 'ph'}">{sel ? sel.label : placeholder}</span>
-  {#if clearable && sel}
+  {#if clearable && sel && !disabled}
     <span
       role="button"
       tabindex="-1"
@@ -75,6 +84,9 @@
     stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg
   >
 </button>
+{#if name}
+  <input type="hidden" {name} value={value ?? ''} />
+{/if}
 <SelPanel {open} anchor={anchorEl} onclose={() => (open = false)}>
   <ComboList
     {q}
@@ -82,6 +94,8 @@
     activeIdx={active}
     isSel={(o) => o.value === value}
     {searchPlaceholder}
+    {loading}
+    {emptyText}
     onq={(v) => (q = v)}
     onactive={(v) => (active = v)}
     onpick={pick}

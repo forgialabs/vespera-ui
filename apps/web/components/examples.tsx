@@ -102,6 +102,15 @@ export function SelectExample() {
       <Field label="Multi-select">
         <MultiSelect options={FRUITS} value={c} onChange={setC} max={4} />
       </Field>
+      <Field label="Invalid" error="Please pick a fruit">
+        <Combobox options={FRUITS} value={null} invalid placeholder="Required…" />
+      </Field>
+      <Field label="Loading (async options)">
+        <Combobox options={[]} value={null} loading placeholder="Fetching…" />
+      </Field>
+      <Field label="Disabled">
+        <Select options={FRUITS} value={a} disabled />
+      </Field>
     </div>
   );
 }

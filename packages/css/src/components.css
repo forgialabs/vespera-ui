@@ -311,6 +311,15 @@
   border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent);
 }
+.ui-trigger.invalid {
+  border-color: color-mix(in oklab, var(--danger) 60%, var(--border));
+}
+.ui-trigger:disabled,
+.ui-trigger.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .ui-trigger .ph {
   color: var(--text-faint);
 }
@@ -407,6 +416,15 @@
   color: var(--text-faint);
   font-size: 13px;
 }
+.ui-combo-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 12px;
+  color: var(--text-faint);
+  font-size: 13px;
+}
 .ui-combo-foot {
   display: flex;
   align-items: center;
@@ -446,6 +464,9 @@
 .ui-selectbtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.ui-selectbtn.invalid {
+  border-color: color-mix(in oklab, var(--danger) 60%, var(--border));
 }
 .ui-selectbtn .val {
   flex: 1;
