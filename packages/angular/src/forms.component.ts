@@ -90,10 +90,13 @@ export class VspRadioGroup {
   template: `<input
     type="range"
     class="ui-slider"
+    [id]="id"
     [value]="value"
     [min]="min"
     [max]="max"
     [step]="step"
+    [disabled]="disabled"
+    [attr.aria-label]="ariaLabel"
     (input)="onInput($event)"
   />`,
 })
@@ -103,6 +106,9 @@ export class VspSlider {
   @Input() min = 0;
   @Input() max = 100;
   @Input() step = 1;
+  @Input() disabled = false;
+  @Input() id?: string;
+  @Input('aria-label') ariaLabel?: string;
   onInput(e: Event): void {
     this.value = Number((e.target as HTMLInputElement).value);
     this.valueChange.emit(this.value);

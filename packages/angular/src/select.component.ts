@@ -597,8 +597,10 @@ export class VspMultiSelect {
   template: `
     <div
       #root
-      class="ui-trigger"
-      style="cursor: text; flex-wrap: wrap; align-items: center; gap: 6px; padding-top: 5px; padding-bottom: 5px"
+      [class]="'ui-trigger' + (invalid ? ' invalid' : '') + (disabled ? ' disabled' : '')"
+      [attr.aria-invalid]="invalid || null"
+      [style.cursor]="disabled ? 'not-allowed' : 'text'"
+      style="flex-wrap: wrap; align-items: center; gap: 6px; padding-top: 5px; padding-bottom: 5px"
       (click)="focusInput()"
     >
       @for (t of value; track t) {
@@ -623,7 +625,9 @@ export class VspMultiSelect {
         </span>
       }
       <input
+        [id]="id"
         [value]="draft"
+        [disabled]="disabled || full"
         [placeholder]="value.length ? '' : placeholder"
         (input)="draft = $any($event.target).value"
         (keydown)="onKey($event)"
@@ -637,24 +641,31 @@ export class VspTokenInput {
   @Input() value: string[] = [];
   @Output() valueChange = new EventEmitter<string[]>();
   @Input() placeholder = 'Type and press Enter…';
+  @Input() disabled = false;
+  @Input() invalid = false;
+  @Input() max?: number;
+  @Input() id?: string;
   @ViewChild('root') root?: ElementRef<HTMLElement>;
 
   draft = '';
 
+  get full(): boolean {
+    return this.max != null && this.value.length >= this.max;
+  }
   set(next: string[]): void {
     this.value = next;
     this.valueChange.emit(next);
   }
   add(): void {
     const t = this.draft.trim();
-    if (t && !this.value.includes(t)) this.set([...this.value, t]);
+    if (t && !this.value.includes(t) && !this.full) this.set([...this.value, t]);
     this.draft = '';
   }
   remove(t: string): void {
     this.set(this.value.filter((v) => v !== t));
   }
   focusInput(): void {
-    this.root?.nativeElement.querySelector('input')?.focus();
+    if (!this.disabled) this.root?.nativeElement.querySelector('input')?.focus();
   }
   onKey(e: KeyboardEvent): void {
     if (e.key === 'Enter' || e.key === ',') {

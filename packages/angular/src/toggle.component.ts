@@ -37,7 +37,13 @@ export class VspSwitch {
       (change)="toggle()"
       style="position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0"
     />
-    <span [class]="checkCls"></span>
+    <span
+      [id]="id"
+      role="checkbox"
+      [attr.aria-checked]="indeterminate ? 'mixed' : checked"
+      [attr.aria-invalid]="invalid || null"
+      [class]="checkCls"
+    ></span>
     <span>
       <span>{{ label }}</span>
       @if (sub) {
@@ -52,8 +58,16 @@ export class VspCheckbox {
   @Input() label?: string;
   @Input() sub?: string;
   @Input() disabled = false;
+  @Input() indeterminate = false;
+  @Input() invalid = false;
+  @Input() id?: string;
   get checkCls(): string {
-    return this.checked ? 'ui-check on' : 'ui-check';
+    return (
+      'ui-check' +
+      (this.checked || this.indeterminate ? ' on' : '') +
+      (this.indeterminate ? ' mixed' : '') +
+      (this.invalid ? ' invalid' : '')
+    );
   }
   toggle(): void {
     this.checked = !this.checked;

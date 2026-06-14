@@ -544,6 +544,23 @@
           "required": false
         },
         {
+          "name": "id",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "indeterminate",
+          "type": "boolean",
+          "required": false,
+          "description": "Tri-state \"partially checked\" look (e.g. a select-all header)."
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false,
+          "description": "Red outline for form validation."
+        },
+        {
           "name": "label",
           "type": "ReactNode",
           "required": false
@@ -1845,6 +1862,21 @@
       "category": "Forms & inputs",
       "props": [
         {
+          "name": "aria-label",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false
+        },
+        {
           "name": "max",
           "type": "number",
           "required": false,
@@ -2150,6 +2182,27 @@
       "name": "TokenInput",
       "category": "Forms & inputs",
       "props": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "required": false,
+          "description": "Maximum number of tokens."
+        },
         {
           "name": "onChange",
           "type": "((value: string[]) => void)",
