@@ -172,9 +172,19 @@ export function SheetExample() {
 
 export function DateRangeExample() {
   const [range, setRange] = useState<DateRange>({ start: null, end: null });
+  const at = (offset: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    return d;
+  };
+  const presets = [
+    { label: 'Last 7 days', range: { start: at(-6), end: at(0) } },
+    { label: 'Last 30 days', range: { start: at(-29), end: at(0) } },
+    { label: 'Next 14 days', range: { start: at(0), end: at(13) } },
+  ];
   return (
-    <div style={{ width: 300 }}>
-      <DateRangePicker value={range} onChange={setRange} />
+    <div style={{ width: 360 }}>
+      <DateRangePicker value={range} onChange={setRange} presets={presets} maxNights={30} />
     </div>
   );
 }

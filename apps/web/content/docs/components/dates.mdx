@@ -12,19 +12,48 @@ Each of these pops a calendar, so they run in an isolated frame to keep it insid
 
 ## Date picker
 
+Constrain what's selectable with `min` / `max` and a flexible `disabled` matcher — a
+`Date`, a list, `{ from, to }`, `{ before }` / `{ after }`, `{ dayOfWeek }`, or your own
+`(date) => boolean`. Pass `multiple` to collect a list of dates instead of one.
+
 <Preview
   code={`import { DatePicker, Field } from '@vespera-ui/react';
 
-<Field label="Date"><DatePicker value={d} onChange={setD} /></Field>`}
+// no past dates, no weekends
+<DatePicker
+  value={d}
+  onChange={setD}
+  disabled={[{ before: today }, { dayOfWeek: [0, 6] }]}
+/>
+
+// pick several dates
+<DatePicker multiple values={days} onValuesChange={setDays} />`}
   demo="datepicker"
 />
 
+<Callout title="The disabled matcher">
+  `disabled` accepts one matcher or an array (any match blocks the day): `new Date(...)`,
+  `[d1, d2]`, `{ from, to }`, `{ before }`, `{ after }`, `{ dayOfWeek: [0, 6] }`, or
+  `(date) => boolean` for anything else (e.g. holidays from an API).
+</Callout>
+
 ## Date range
+
+Range picking supports the same `min` / `max` / `disabled`, plus `minNights` / `maxNights`
+to bound the length and a `presets` rail of named shortcuts.
 
 <Preview
   code={`import { DateRangePicker } from '@vespera-ui/react';
 
-<DateRangePicker value={range} onChange={setRange} />`}
+<DateRangePicker
+  value={range}
+  onChange={setRange}
+  maxNights={30}
+  presets={[
+    { label: 'Last 7 days', range: { start: at(-6), end: at(0) } },
+    { label: 'Last 30 days', range: { start: at(-29), end: at(0) } },
+  ]}
+/>`}
   demo="daterange"
 />
 

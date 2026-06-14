@@ -6,11 +6,21 @@
     isSelected = () => false,
     isInRange = undefined,
     isRangeEnd = undefined,
+    isDisabled = undefined,
+    min = undefined,
+    max = undefined,
     onpick,
   } = $props();
 
   let today = stripTime(new Date());
   let days = $derived(monthGrid(view.y, view.m));
+  let minD = $derived(min ? stripTime(min) : null);
+  let maxD = $derived(max ? stripTime(max) : null);
+  let prevDisabled = $derived(!!minD && new Date(view.y, view.m, 1) <= minD);
+  let nextDisabled = $derived(!!maxD && new Date(view.y, view.m + 1, 0) >= maxD);
+
+  const dayDisabled = (dt) =>
+    !!isDisabled?.(dt) || (!!minD && stripTime(dt) < minD) || (!!maxD && stripTime(dt) > maxD);
 
   function nav(delta) {
     let m = view.m + delta;
@@ -38,6 +48,7 @@
       range && !sel && 'inrange',
       rEdge === 'start' && 'rstart',
       rEdge === 'end' && 'rend',
+      dayDisabled(dt) && 'disabled',
     ]
       .filter(Boolean)
       .join(' ');
@@ -46,7 +57,13 @@
 
 <div class="ui-cal">
   <div class="ui-cal-head">
-    <button type="button" class="ui-cal-nav" aria-label="Previous month" onclick={() => nav(-1)}>
+    <button
+      type="button"
+      class="ui-cal-nav"
+      aria-label="Previous month"
+      disabled={prevDisabled}
+      onclick={() => nav(-1)}
+    >
       <svg
         viewBox="0 0 24 24"
         width="16"
@@ -59,7 +76,13 @@
       >
     </button>
     <span class="ttl">{MONTHS[view.m]} {view.y}</span>
-    <button type="button" class="ui-cal-nav" aria-label="Next month" onclick={() => nav(1)}>
+    <button
+      type="button"
+      class="ui-cal-nav"
+      aria-label="Next month"
+      disabled={nextDisabled}
+      onclick={() => nav(1)}
+    >
       <svg
         viewBox="0 0 24 24"
         width="16"
@@ -77,7 +100,12 @@
       <div class="ui-cal-dow">{d}</div>
     {/each}
     {#each days as { dt, muted }, i (i)}
-      <button type="button" class={dayClass(dt, muted)} onclick={() => onpick?.(stripTime(dt))}>
+      <button
+        type="button"
+        class={dayClass(dt, muted)}
+        disabled={dayDisabled(dt)}
+        onclick={() => onpick?.(stripTime(dt))}
+      >
         {dt.getDate()}
       </button>
     {/each}
