@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { VspBadge, type BadgeTone } from './badge.component';
 import { VspIcon } from './icon.component';
 import { VspBlockSkeleton, VspBlockEmpty } from './block-state.component';
@@ -67,8 +67,8 @@ const DEFAULT_SERVICES: Service[] = [
     @if (loading) {
       <vsp-block-skeleton />
     } @else if (services.length === 0) {
-      <ng-content select="[slot=empty]" />
-      @if (!emptySlot) {
+      <div #emptyWrap style="display: contents"><ng-content select="[slot=empty]" /></div>
+      @if (!emptyWrap.children.length) {
         <vsp-block-empty title="No services" desc="No monitored services yet." />
       }
     } @else {
@@ -102,7 +102,6 @@ const DEFAULT_SERVICES: Service[] = [
 export class VspSystemStatusBlock {
   @Input() services: Service[] = DEFAULT_SERVICES;
   @Input() loading = false;
-  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   bars = Array.from({ length: 44 }, (_, i) => i);
 
   get allOk(): boolean {
@@ -186,8 +185,8 @@ const DEFAULT_AUDIT: AuditEntry[] = [
     @if (loading) {
       <vsp-block-skeleton />
     } @else if (entries.length === 0) {
-      <ng-content select="[slot=empty]" />
-      @if (!emptySlot) {
+      <div #emptyWrap style="display: contents"><ng-content select="[slot=empty]" /></div>
+      @if (!emptyWrap.children.length) {
         <vsp-block-empty title="No activity" desc="Privileged actions will show here." />
       }
     } @else {
@@ -228,5 +227,4 @@ const DEFAULT_AUDIT: AuditEntry[] = [
 export class VspAuditLogBlock {
   @Input() entries: AuditEntry[] = DEFAULT_AUDIT;
   @Input() loading = false;
-  @ContentChild('blockEmpty') emptySlot?: ElementRef;
 }

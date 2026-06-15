@@ -1,5 +1,5 @@
-// Registry of live demos rendered inside isolated iframes (see embed/[demo].astro
-// and Preview.astro). Isolating each interactive demo in its own document gives it
+// Registry of live demos rendered inside isolated iframes (see app/embed/[demo]/page.tsx
+// and Preview.tsx). Isolating each interactive demo in its own document gives it
 // a single `.vsp-root`, so overlays (dropdowns, dialogs, tooltips, the kanban drag
 // ghost, …) portal correctly and stay *inside their frame* instead of escaping to
 // the first `.vsp-root` on the page. `minH` reserves vertical room so opened
