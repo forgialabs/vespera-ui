@@ -47,6 +47,7 @@ export function Anchored({
     [controlled, onOpenChange],
   );
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [layerSize, setLayerSize] = useState<{ w: number; h: number } | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +58,19 @@ export function Anchored({
   useLayoutEffect(() => {
     if (open) place();
   }, [open, place]);
+
+  // Measure the layer so it can be flipped/clamped to stay inside the viewport.
+  useLayoutEffect(() => {
+    if (!open) {
+      setLayerSize(null);
+      return;
+    }
+    if (!layerRef.current) return;
+    const r = layerRef.current.getBoundingClientRect();
+    const w = Math.round(r.width);
+    const h = Math.round(r.height);
+    setLayerSize((prev) => (prev && prev.w === w && prev.h === h ? prev : { w, h }));
+  }, [open, rect]);
 
   useEffect(() => {
     if (!open) return;
@@ -80,11 +94,33 @@ export function Anchored({
     };
   }, [open, place]);
 
+  const MARGIN = 8;
   let style: CSSProperties = {};
   if (rect) {
-    style = { position: 'fixed', top: rect.bottom + 6, minWidth: width ?? rect.width, zIndex: 320 };
-    if (align === 'end') style.right = window.innerWidth - rect.right;
-    else style.left = rect.left;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const lw = layerSize?.w ?? width ?? rect.width;
+    const lh = layerSize?.h ?? 0;
+    // Prefer opening below the trigger; flip above when there's no room below.
+    let top = rect.bottom + 6;
+    if (lh && top + lh > vh - MARGIN && rect.top - 6 - lh >= MARGIN) {
+      top = rect.top - 6 - lh;
+    }
+    // Align to the trigger's start/end edge, then clamp into the viewport.
+    let left = align === 'end' ? rect.right - lw : rect.left;
+    left = Math.max(MARGIN, Math.min(left, vw - MARGIN - lw));
+    if (lh) top = Math.max(MARGIN, Math.min(top, vh - MARGIN - lh));
+    style = {
+      position: 'fixed',
+      top,
+      left,
+      minWidth: width ?? rect.width,
+      maxHeight: `calc(100vh - ${MARGIN * 2}px)`,
+      overflowY: 'auto',
+      zIndex: 320,
+      // Hide for the first paint until measured, so it never flashes off-screen.
+      visibility: layerSize ? undefined : 'hidden',
+    };
   }
 
   const target = open && rect ? getPortalTarget() : null;

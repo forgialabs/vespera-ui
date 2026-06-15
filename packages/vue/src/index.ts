@@ -2769,11 +2769,17 @@ export const Anchored = defineComponent({
     const controlled = () => props.open !== undefined;
     const open = computed(() => (controlled() ? !!props.open : internalOpen.value));
     const rect = ref<DOMRect | null>(null);
+    const layerSize = ref<{ w: number; h: number } | null>(null);
     const triggerRef = ref<HTMLElement | null>(null);
     const layerRef = ref<HTMLElement | null>(null);
     let cleanup: (() => void) | null = null;
     const place = () => {
       if (triggerRef.value) rect.value = triggerRef.value.getBoundingClientRect();
+    };
+    const measure = () => {
+      if (!layerRef.value) return;
+      const r = layerRef.value.getBoundingClientRect();
+      layerSize.value = { w: Math.round(r.width), h: Math.round(r.height) };
     };
     const setOpen = (next: boolean) => {
       if (!controlled()) internalOpen.value = next;
@@ -2789,6 +2795,7 @@ export const Anchored = defineComponent({
     watch(open, (o) => {
       if (o) {
         place();
+        nextTick(measure);
         const onDoc = (e: MouseEvent) => {
           const t = e.target as Node;
           if (!layerRef.value?.contains(t) && !triggerRef.value?.contains(t)) close();
@@ -2807,6 +2814,7 @@ export const Anchored = defineComponent({
       } else {
         cleanup?.();
         cleanup = null;
+        layerSize.value = null;
       }
     });
     onBeforeUnmount(() => cleanup?.());
@@ -2814,12 +2822,24 @@ export const Anchored = defineComponent({
       const r = rect.value;
       const style: Record<string, string | number> = {};
       if (r) {
+        const MARGIN = 8;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const lw = layerSize.value?.w ?? props.width ?? r.width;
+        const lh = layerSize.value?.h ?? 0;
+        let top = r.bottom + 6;
+        if (lh && top + lh > vh - MARGIN && r.top - 6 - lh >= MARGIN) top = r.top - 6 - lh;
+        let left = props.align === 'end' ? r.right - lw : r.left;
+        left = Math.max(MARGIN, Math.min(left, vw - MARGIN - lw));
+        if (lh) top = Math.max(MARGIN, Math.min(top, vh - MARGIN - lh));
         style.position = 'fixed';
-        style.top = `${r.bottom + 6}px`;
+        style.top = `${top}px`;
+        style.left = `${left}px`;
         style.minWidth = `${props.width ?? r.width}px`;
+        style.maxHeight = `calc(100vh - ${MARGIN * 2}px)`;
+        style.overflowY = 'auto';
         style.zIndex = 320;
-        if (props.align === 'end') style.right = `${window.innerWidth - r.right}px`;
-        else style.left = `${r.left}px`;
+        if (!layerSize.value) style.visibility = 'hidden';
       }
       const target = open.value && r ? getPortalTarget() : null;
       return [
