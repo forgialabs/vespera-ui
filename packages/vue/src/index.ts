@@ -1070,9 +1070,9 @@ export const InputAffix = defineComponent({
         props.leadingIcon ? blockIcon(props.leadingIcon, 16) : slots.leading?.(),
         props.prefix ? h('span', { class: 'unit' }, props.prefix) : null,
         h('input', {
+          ...attrs,
           value: props.modelValue,
           onInput: (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value),
-          ...attrs,
         }),
         props.unit ? h('span', { class: 'unit' }, props.unit) : null,
       ]);

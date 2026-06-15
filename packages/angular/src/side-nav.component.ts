@@ -176,6 +176,16 @@ export class VspNavGroup {
       [attr.placeholder]="placeholder"
       [attr.type]="type"
       [disabled]="disabled"
+      [attr.name]="name"
+      [attr.id]="inputId"
+      [attr.inputmode]="inputmode"
+      [attr.autocomplete]="autocomplete"
+      [attr.min]="min"
+      [attr.max]="max"
+      [attr.step]="step"
+      [attr.readonly]="readonly ? '' : null"
+      [attr.required]="required ? '' : null"
+      [attr.aria-label]="ariaLabel"
       (input)="onInput($event)"
     />
     @if (unit) {
@@ -193,6 +203,17 @@ export class VspInputAffix {
   @Input() placeholder?: string;
   @Input() type = 'text';
   @Input() disabled = false;
+  /** Common pass-through input attributes (React spreads the full set). */
+  @Input() name?: string;
+  @Input() inputId?: string;
+  @Input() inputmode?: string;
+  @Input() autocomplete?: string;
+  @Input() min?: string | number;
+  @Input() max?: string | number;
+  @Input() step?: string | number;
+  @Input() readonly = false;
+  @Input() required = false;
+  @Input() ariaLabel?: string;
   onInput(e: Event): void {
     this.value = (e.target as HTMLInputElement).value;
     this.valueChange.emit(this.value);
