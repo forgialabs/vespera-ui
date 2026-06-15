@@ -25,13 +25,9 @@ UI is inside a `.vsp-root`. Try them in the [live playground](/demo).
 function TwoFactorRow() {
   const [on, setOn] = useState(true);
   return (
-    <div className="ui-setrow">
-      <div className="ui-setrow-main">
-        <div className="ui-setrow-title">Two-factor auth</div>
-        <div className="ui-setrow-desc">Require a code at sign-in.</div>
-      </div>
+    <SettingRow title="Two-factor auth" desc="Require a code at sign-in." last>
       <Switch checked={on} onChange={setOn} aria-label="Two-factor auth" />
-    </div>
+    </SettingRow>
   );
 }
 ```

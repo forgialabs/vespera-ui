@@ -11,7 +11,13 @@ import {
   OverlayExample,
   DatePickerExample,
 } from './examples';
-import { CommandExample, SheetExample, DateRangeExample, EventCalendarExample } from './examples-more';
+import {
+  CommandExample,
+  SheetExample,
+  DateRangeExample,
+  EventCalendarExample,
+  SideNavExample,
+} from './examples-more';
 import {
   OrdersBlockExample,
   KanbanBlockExample,
@@ -39,6 +45,7 @@ export const DEMOS: Record<string, Demo> = {
   sheet: { Comp: SheetExample, minH: 320 },
   daterange: { Comp: DateRangeExample, minH: 460 },
   eventcalendar: { Comp: EventCalendarExample, minH: 580 },
+  sidenav: { Comp: SideNavExample, minH: 360 },
   // Blocks & templates.
   orders: { Comp: OrdersBlockExample, minH: 540 },
   kanban: { Comp: KanbanBlockExample, minH: 520 },

@@ -8,7 +8,7 @@ import { NavExample } from '@/components/examples-more';
 
 ## Installation
 
-<Install imports="Breadcrumb, Pagination, Tabs" />
+<Install imports="Breadcrumb, Pagination, Tabs, VerticalTabs, NavItem, NavGroup" />
 
 ## Tabs
 
@@ -38,5 +38,34 @@ import { NavExample } from '@/components/examples-more';
 >
   <NavExample />
 </Preview>
+
+## Sidebar &amp; settings rail
+
+`NavItem`, `NavGroup`, and `VerticalTabs` build app sidebars and settings panels;
+`SettingRow` lays out a labelled row with a trailing control. `NavItem` renders as
+a link when given `href`, otherwise a button.
+
+<Preview
+  code={`import { NavItem, NavGroup, VerticalTabs, SettingRow, Switch } from '@vespera-ui/react';
+import { Icon } from '@vespera-ui/icons';
+
+// Sidebar
+<NavItem icon={<Icon.grid />} label="Overview" active onClick={...} />
+<NavItem icon={<Icon.chart />} label="Analytics" badge="3" onClick={...} />
+<NavGroup icon={<Icon.layers />} label="Workspace" defaultOpen>
+  <NavItem label="Members" sub onClick={...} />
+  <NavItem label="Billing" sub onClick={...} />
+</NavGroup>
+
+// Settings rail
+<VerticalTabs value={section} onChange={setSection} tabs={[
+  { value: 'general', label: 'General', icon: <Icon.settings /> },
+  { value: 'notifications', label: 'Notifications', icon: <Icon.bell />, badge: '2' },
+]} />
+<SettingRow title="Email notifications" desc="Product news and tips." last>
+  <Switch checked={emails} onChange={setEmails} />
+</SettingRow>`}
+  demo="sidenav"
+/>
 
 Full props: [Navigation API](/docs/reference/navigation).

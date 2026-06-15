@@ -24,11 +24,16 @@ import {
   Popover,
   Progress,
   Sheet,
+  NavGroup,
+  NavItem,
+  SettingRow,
   Sparkline,
   Spinner,
   Stepper,
+  Switch,
   ToastHost,
   Tree,
+  VerticalTabs,
   useCmdK,
   type DateRange,
 } from '@vespera-ui/react';
@@ -58,7 +63,7 @@ export function ChartsExample() {
           />
         </Card>
         <Card pad>
-          <div className="eyebrow" style={{ marginBottom: 10 }}>Channels · donut</div>
+          <div className="eyebrow" style={{ marginBottom: 10 }}>Channels · donut + center</div>
           <Donut
             data={[
               { label: 'Organic', value: 48, color: 'var(--accent)' },
@@ -66,9 +71,21 @@ export function ChartsExample() {
               { label: 'Direct', value: 22, color: 'var(--success)' },
             ]}
             size={132}
+            centerLabel="Traffic"
+            valueFormat={(n) => `${n}%`}
           />
         </Card>
       </div>
+      <Card pad>
+        <div className="eyebrow" style={{ marginBottom: 10 }}>Revenue · single series + showValues</div>
+        <BarChart
+          data={[18, 32, 27, 44, 39, 51]}
+          labels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+          valueFormat={(n) => `$${n}k`}
+          showValues
+          height={170}
+        />
+      </Card>
       <Card pad>
         <div className="eyebrow" style={{ marginBottom: 10 }}>Plan mix · horizontal stacked</div>
         <BarChart
@@ -228,6 +245,73 @@ export function NavExample() {
     <div style={{ display: 'grid', gap: 16, width: '100%' }}>
       <Breadcrumb items={['Home', 'Projects', 'Vespera']} />
       <Pagination page={page} pages={8} onPage={setPage} />
+    </div>
+  );
+}
+
+export function SideNavExample() {
+  const [section, setSection] = useState('general');
+  const [active, setActive] = useState('overview');
+  const [emails, setEmails] = useState(true);
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr', gap: 18, width: '100%' }}>
+      {/* App sidebar: NavGroup + NavItem */}
+      <Card pad>
+        <div className="eyebrow" style={{ marginBottom: 10 }}>Sidebar</div>
+        <div className="ui-nav">
+          <NavItem
+            icon={<Icon.grid />}
+            label="Overview"
+            active={active === 'overview'}
+            onClick={() => setActive('overview')}
+          />
+          <NavItem
+            icon={<Icon.chart />}
+            label="Analytics"
+            badge="3"
+            active={active === 'analytics'}
+            onClick={() => setActive('analytics')}
+          />
+          <NavGroup icon={<Icon.layers />} label="Workspace" defaultOpen>
+            <NavItem
+              label="Members"
+              sub
+              active={active === 'members'}
+              onClick={() => setActive('members')}
+            />
+            <NavItem
+              label="Billing"
+              sub
+              active={active === 'billing'}
+              onClick={() => setActive('billing')}
+            />
+          </NavGroup>
+          <NavItem icon={<Icon.settings />} label="Settings" disabled />
+        </div>
+      </Card>
+
+      {/* Settings panel: VerticalTabs + SettingRow */}
+      <Card pad>
+        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 18 }}>
+          <VerticalTabs
+            value={section}
+            onChange={setSection}
+            tabs={[
+              { value: 'general', label: 'General', icon: <Icon.settings /> },
+              { value: 'notifications', label: 'Notifications', icon: <Icon.bell />, badge: '2' },
+              { value: 'security', label: 'Security', icon: <Icon.shield /> },
+            ]}
+          />
+          <div>
+            <SettingRow title="Workspace name" desc="Shown across the app.">
+              <span style={{ fontWeight: 600, fontSize: 13.5 }}>Acme Inc</span>
+            </SettingRow>
+            <SettingRow title="Email notifications" desc="Product news and tips." last>
+              <Switch checked={emails} onChange={setEmails} />
+            </SettingRow>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }
