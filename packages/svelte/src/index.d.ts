@@ -35,6 +35,13 @@ export const Field: Component<{
   children?: unknown;
 }>;
 export const Input: Component<{ value?: string; invalid?: boolean }>;
+export const InputAffix: Component<{
+  value?: string;
+  leadingIcon?: string;
+  prefix?: string;
+  unit?: string;
+  wrapClass?: string;
+}>;
 export const Textarea: Component<{ value?: string }>;
 
 export type SelectOption = string | { value: string; label: string; sub?: string };
@@ -70,6 +77,22 @@ export const Tabs: Component<{ value?: string; tabs?: TabItem[]; right?: unknown
 export const Breadcrumb: Component<{ items?: string[] }>;
 export const Pagination: Component<{ page?: number; pages?: number }>;
 export const Stepper: Component<{ steps?: string[]; current?: number }>;
+export type VerticalTabItem =
+  | string
+  | { value: string; label: string; icon?: string; badge?: string | number };
+export const VerticalTabs: Component<{ value?: string; tabs?: VerticalTabItem[] }>;
+export const NavItem: Component<{
+  icon?: string;
+  label?: string;
+  active?: boolean;
+  badge?: string | number;
+  sub?: boolean;
+  href?: string;
+  disabled?: boolean;
+  onclick?: (e: MouseEvent) => void;
+}>;
+export const NavGroup: Component<{ icon?: string; label?: string; defaultOpen?: boolean }>;
+export const SettingRow: Component<{ title?: string; desc?: string; last?: boolean }>;
 export const CircularProgress: Component<{
   value?: number;
   size?: number;

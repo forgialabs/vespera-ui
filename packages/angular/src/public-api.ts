@@ -26,6 +26,7 @@ export * from './file-dropzone.component';
 export * from './date-picker.component';
 export * from './event-calendar.component';
 export * from './icon.component';
+export * from './side-nav.component';
 export * from './block-state.component';
 export * from './blocks.component';
 export * from './blocks2.component';
