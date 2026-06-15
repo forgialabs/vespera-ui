@@ -335,6 +335,7 @@ export function AdminConsole() {
   const [cmdOpen, setCmdOpen] = useState(false);
   const [customize, setCustomize] = useState(false);
   const [del, setDel] = useState(false);
+  const [drawer, setDrawer] = useState(false);
   useCmdK(setCmdOpen);
 
   const themeState: ThemeState = { theme, setTheme, accent, setAccent, density, setDensity, corners, setCorners };
@@ -352,7 +353,10 @@ export function AdminConsole() {
         label={v.label}
         badge={v.badge}
         active={v.id === active}
-        onClick={() => setActive(v.id)}
+        onClick={() => {
+          setActive(v.id);
+          setDrawer(false);
+        }}
       />
     ));
 
@@ -362,6 +366,7 @@ export function AdminConsole() {
       data-theme={theme}
       data-density={density}
       data-corners={corners}
+      data-drawer={drawer ? 'open' : undefined}
       style={{ '--accent': accent, '--bg-accent': accent, minHeight: '100dvh' } as CSSProperties}
     >
       <div className="vsp-bg" aria-hidden="true">
@@ -369,6 +374,12 @@ export function AdminConsole() {
         <b />
         <b />
       </div>
+      <button
+        type="button"
+        className="vsp-side-scrim"
+        aria-label="Close menu"
+        onClick={() => setDrawer(false)}
+      />
 
       {/* Sidebar */}
       <aside
@@ -477,6 +488,14 @@ export function AdminConsole() {
             backdropFilter: 'blur(12px)',
           }}
         >
+          <button
+            type="button"
+            className="vsp-icon-btn vsp-drawer-btn"
+            aria-label="Open menu"
+            onClick={() => setDrawer(true)}
+          >
+            <Icon.more style={{ width: 18, height: 18 }} />
+          </button>
           <h1 style={{ margin: 0, fontSize: 17, fontWeight: 700, letterSpacing: '-.01em' }}>{view.label}</h1>
           <div style={{ flex: 1 }} />
           <button

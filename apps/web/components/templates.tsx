@@ -173,13 +173,7 @@ export function DashboardTemplate() {
       </div>
 
       {/* Charts */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
-          gap: 14,
-        }}
-      >
+      <div className="vsp-dash-charts">
         <Card pad>
           <CardHead
             title="Revenue"

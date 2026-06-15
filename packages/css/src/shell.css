@@ -69,6 +69,58 @@
   border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
 
+/* ---------- mobile drawer ---------- */
+/* The hamburger and scrim only matter on small screens; hidden by default. */
+.vsp-drawer-btn {
+  display: none;
+}
+.vsp-side-scrim {
+  display: none;
+}
+@media (max-width: 860px) {
+  .vsp-app,
+  .vsp-root[data-sidebar='float'] .vsp-app {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 0;
+  }
+  /* Sidebar slides in from the left as an off-canvas drawer. */
+  .vsp-side,
+  .vsp-root[data-sidebar='float'] .vsp-side,
+  .vsp-root[data-sidebar='rail'] .vsp-side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(248px, 84vw);
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    border-radius: 0;
+    box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.4));
+  }
+  .vsp-root[data-drawer='open'] .vsp-side {
+    transform: translateX(0);
+  }
+  .vsp-side-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    border: 0;
+    padding: 0;
+    background: color-mix(in oklab, #000 50%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .vsp-root[data-drawer='open'] .vsp-side-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .vsp-drawer-btn {
+    display: inline-flex;
+  }
+}
+
 .vsp-brand {
   display: flex;
   align-items: center;
