@@ -12,6 +12,7 @@
   let internalOpen = $state(false);
   let isOpen = $derived(open !== undefined ? open : internalOpen);
   let rect = $state(null);
+  let layerSize = $state(null);
   let triggerEl = $state();
   let layerEl = $state();
   const place = () => {
@@ -45,10 +46,29 @@
       window.removeEventListener('resize', place);
     };
   });
+  // Measure the layer so it can be flipped/clamped to stay inside the viewport.
+  $effect(() => {
+    if (isOpen && layerEl && rect) {
+      const r = layerEl.getBoundingClientRect();
+      layerSize = { w: Math.round(r.width), h: Math.round(r.height) };
+    } else if (!isOpen) {
+      layerSize = null;
+    }
+  });
   let style = $derived.by(() => {
     if (!rect) return '';
-    let s = `position:fixed;top:${rect.bottom + 6}px;min-width:${width ?? rect.width}px;z-index:320;`;
-    s += align === 'end' ? `right:${window.innerWidth - rect.right}px` : `left:${rect.left}px`;
+    const MARGIN = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const lw = layerSize?.w ?? width ?? rect.width;
+    const lh = layerSize?.h ?? 0;
+    let top = rect.bottom + 6;
+    if (lh && top + lh > vh - MARGIN && rect.top - 6 - lh >= MARGIN) top = rect.top - 6 - lh;
+    let left = align === 'end' ? rect.right - lw : rect.left;
+    left = Math.max(MARGIN, Math.min(left, vw - MARGIN - lw));
+    if (lh) top = Math.max(MARGIN, Math.min(top, vh - MARGIN - lh));
+    let s = `position:fixed;top:${top}px;left:${left}px;min-width:${width ?? rect.width}px;max-height:calc(100vh - ${MARGIN * 2}px);overflow-y:auto;z-index:320;`;
+    if (!layerSize) s += 'visibility:hidden;';
     return s;
   });
 </script>

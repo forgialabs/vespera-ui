@@ -61,6 +61,7 @@ export class VspAnchored {
   @ViewChild('layer') layer?: ElementRef<HTMLElement>;
   internalOpen = false;
   rect: DOMRect | null = null;
+  layerSize: { w: number; h: number } | null = null;
 
   get isOpen(): boolean {
     return this.openInput !== undefined ? this.openInput : this.internalOpen;
@@ -72,19 +73,43 @@ export class VspAnchored {
   toggle(): void {
     const next = !this.isOpen;
     this.setOpen(next);
-    if (next) requestAnimationFrame(() => this.place());
+    if (next) {
+      requestAnimationFrame(() => {
+        this.place();
+        requestAnimationFrame(() => this.measure());
+      });
+    } else {
+      this.layerSize = null;
+    }
   }
   close(): void {
     this.setOpen(false);
+    this.layerSize = null;
   }
   place(): void {
     if (this.trig) this.rect = this.trig.nativeElement.getBoundingClientRect();
   }
+  private measure(): void {
+    if (this.layer) {
+      const r = this.layer.nativeElement.getBoundingClientRect();
+      this.layerSize = { w: Math.round(r.width), h: Math.round(r.height) };
+    }
+  }
   get layerStyle(): string {
     const r = this.rect;
     if (!r) return '';
-    let s = `position:fixed;top:${r.bottom + 6}px;min-width:${this.width ?? r.width}px;z-index:320;`;
-    s += this.align === 'end' ? `right:${window.innerWidth - r.right}px` : `left:${r.left}px`;
+    const MARGIN = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const lw = this.layerSize?.w ?? this.width ?? r.width;
+    const lh = this.layerSize?.h ?? 0;
+    let top = r.bottom + 6;
+    if (lh && top + lh > vh - MARGIN && r.top - 6 - lh >= MARGIN) top = r.top - 6 - lh;
+    let left = this.align === 'end' ? r.right - lw : r.left;
+    left = Math.max(MARGIN, Math.min(left, vw - MARGIN - lw));
+    if (lh) top = Math.max(MARGIN, Math.min(top, vh - MARGIN - lh));
+    let s = `position:fixed;top:${top}px;left:${left}px;min-width:${this.width ?? r.width}px;max-height:calc(100vh - ${MARGIN * 2}px);overflow-y:auto;z-index:320;`;
+    if (!this.layerSize) s += 'visibility:hidden;';
     return s;
   }
   @HostListener('document:mousedown', ['$event'])
