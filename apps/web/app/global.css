@@ -311,6 +311,18 @@ body {
   }
 }
 
+/* dashboard charts: wide chart + side panel, stacked on small screens */
+.vsp-dash-charts {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 14px;
+}
+@media (max-width: 760px) {
+  .vsp-dash-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* collapsible folder groups */
 .vsp-nav-group {
   display: flex;
