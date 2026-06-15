@@ -913,6 +913,172 @@ export const Stepper = defineComponent({
   },
 });
 
+/* ---------------- SideNav family ---------------- */
+
+export const SettingRow = defineComponent({
+  name: 'VspSettingRow',
+  props: {
+    title: { type: String, default: undefined },
+    desc: { type: String, default: undefined },
+    last: { type: Boolean, default: false },
+  },
+  setup(props, { slots }) {
+    return () =>
+      h('div', { class: cx('ui-setrow', props.last && 'last') }, [
+        h('div', { class: 'ui-setrow-main' }, [
+          h('div', { class: 'ui-setrow-title' }, props.title ?? slots.title?.()),
+          props.desc ? h('div', { class: 'ui-setrow-desc' }, props.desc) : null,
+        ]),
+        slots.default?.(),
+      ]);
+  },
+});
+
+export type VerticalTabItem =
+  | string
+  | { value: string; label: string; icon?: string; badge?: string | number };
+
+export const VerticalTabs = defineComponent({
+  name: 'VspVerticalTabs',
+  props: {
+    tabs: { type: Array as PropType<VerticalTabItem[]>, default: () => [] },
+    modelValue: { type: String, default: undefined },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    return () =>
+      h(
+        'div',
+        { class: 'ui-vtabs' },
+        props.tabs.map((t) => {
+          const id = typeof t === 'string' ? t : t.value;
+          const label = typeof t === 'string' ? t : t.label;
+          const icon = typeof t === 'object' ? t.icon : undefined;
+          const badge = typeof t === 'object' ? t.badge : undefined;
+          return h(
+            'button',
+            {
+              key: id,
+              type: 'button',
+              class: cx('ui-vtab', props.modelValue === id && 'on'),
+              onClick: () => emit('update:modelValue', id),
+            },
+            [
+              icon ? blockIcon(icon, 16) : null,
+              label,
+              badge != null ? h('span', { class: 'ui-nav-badge' }, String(badge)) : null,
+            ],
+          );
+        }),
+      );
+  },
+});
+
+export const NavItem = defineComponent({
+  name: 'VspNavItem',
+  props: {
+    icon: { type: String, default: undefined },
+    label: { type: String, default: undefined },
+    active: { type: Boolean, default: false },
+    badge: { type: [String, Number], default: undefined },
+    sub: { type: Boolean, default: false },
+    href: { type: String, default: undefined },
+    disabled: { type: Boolean, default: false },
+  },
+  emits: ['click'],
+  setup(props, { emit, slots }) {
+    return () => {
+      const className = cx('ui-nav-item', props.active && 'on', props.disabled && 'disabled');
+      const inner = [
+        props.icon ? blockIcon(props.icon, 16) : slots.icon?.(),
+        h('span', { style: { flex: props.sub ? 'none' : 1 } }, props.label ?? slots.default?.()),
+        props.badge != null ? h('span', { class: 'ui-nav-badge' }, String(props.badge)) : null,
+      ];
+      if (props.href && !props.disabled) {
+        return h(
+          'a',
+          {
+            href: props.href,
+            class: className,
+            'aria-current': props.active ? 'page' : undefined,
+            onClick: () => emit('click'),
+          },
+          inner,
+        );
+      }
+      return h(
+        'button',
+        {
+          type: 'button',
+          disabled: props.disabled,
+          class: className,
+          onClick: () => emit('click'),
+        },
+        inner,
+      );
+    };
+  },
+});
+
+export const NavGroup = defineComponent({
+  name: 'VspNavGroup',
+  props: {
+    icon: { type: String, default: undefined },
+    label: { type: String, default: undefined },
+    defaultOpen: { type: Boolean, default: false },
+  },
+  setup(props, { slots }) {
+    const open = ref(props.defaultOpen);
+    return () =>
+      h('div', { class: cx('ui-nav-group', open.value && 'open') }, [
+        h(
+          'button',
+          {
+            type: 'button',
+            class: cx('ui-nav-item', open.value && 'open'),
+            onClick: () => (open.value = !open.value),
+          },
+          [
+            props.icon ? blockIcon(props.icon, 16) : null,
+            h('span', {}, props.label),
+            svgIconClass(ICON_PATHS.chevR, 16, 'ui-nav-chev'),
+          ],
+        ),
+        h('div', { class: 'ui-nav-sub' }, [
+          h('div', {}, [
+            h('div', { class: 'ui-nav', style: { paddingTop: '2px' } }, slots.default?.()),
+          ]),
+        ]),
+      ]);
+  },
+});
+
+export const InputAffix = defineComponent({
+  name: 'VspInputAffix',
+  inheritAttrs: false,
+  props: {
+    modelValue: { type: String, default: '' },
+    leadingIcon: { type: String, default: undefined },
+    prefix: { type: String, default: undefined },
+    unit: { type: String, default: undefined },
+    wrapClass: { type: String, default: undefined },
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit, attrs, slots }) {
+    return () =>
+      h('div', { class: cx('ui-affix', props.wrapClass) }, [
+        props.leadingIcon ? blockIcon(props.leadingIcon, 16) : slots.leading?.(),
+        props.prefix ? h('span', { class: 'unit' }, props.prefix) : null,
+        h('input', {
+          value: props.modelValue,
+          onInput: (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value),
+          ...attrs,
+        }),
+        props.unit ? h('span', { class: 'unit' }, props.unit) : null,
+      ]);
+  },
+});
+
 export const CircularProgress = defineComponent({
   name: 'VspCircularProgress',
   props: {
