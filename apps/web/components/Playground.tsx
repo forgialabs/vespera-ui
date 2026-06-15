@@ -53,6 +53,8 @@ export function Playground() {
   const [tokens, setTokens] = useState<string[]>(['design', 'frontend']);
   const [tab, setTab] = useState('overview');
   const [dialog, setDialog] = useState(false);
+  const [pinned, setPinned] = useState(true);
+  const [sort, setSort] = useState('recent');
 
   return (
     <div
@@ -185,6 +187,26 @@ export function Playground() {
                       ],
                     },
                     { label: 'Settings', icon: <Icon.settings />, kbd: '⌘,' },
+                    { sep: true },
+                    {
+                      type: 'checkbox',
+                      label: 'Pinned',
+                      checked: pinned,
+                      onClick: () => setPinned((p) => !p),
+                    },
+                    { heading: true, label: 'Sort by' },
+                    {
+                      type: 'radio',
+                      label: 'Most recent',
+                      checked: sort === 'recent',
+                      onClick: () => setSort('recent'),
+                    },
+                    {
+                      type: 'radio',
+                      label: 'Alphabetical',
+                      checked: sort === 'alpha',
+                      onClick: () => setSort('alpha'),
+                    },
                     { sep: true },
                     { label: 'Log out', icon: <Icon.logout />, danger: true },
                   ]}
