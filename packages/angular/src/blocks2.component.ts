@@ -1,4 +1,4 @@
-import { Component, ContentChild, ElementRef, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { VspBlock } from './blocks.component';
 import { VspBadge, type BadgeTone } from './badge.component';
 import { VspAvatar } from './media.component';
@@ -129,8 +129,8 @@ const ROW_MENU: MenuItem[] = [
     @if (loading) {
       <vsp-block-skeleton />
     } @else if (rows.length === 0) {
-      <ng-content select="[slot=empty]" />
-      @if (!emptySlot) {
+      <div #emptyWrap style="display: contents"><ng-content select="[slot=empty]" /></div>
+      @if (!emptyWrap.children.length) {
         <vsp-block-empty
           title="No orders"
           [desc]="
@@ -233,7 +233,6 @@ export class VspOrdersBlock {
   @Input() orders: Order[] = DEFAULT_ORDERS;
   @Input() columns: OrderColumn[] = ALL_ORDER_COLUMNS;
   @Input() loading = false;
-  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   tab = 'all';
   sel = new Set<string>();
   rowMenu = ROW_MENU;
@@ -326,8 +325,8 @@ const MEMBER_MENU: MenuItem[] = [
     @if (loading) {
       <vsp-block-skeleton />
     } @else if (members.length === 0) {
-      <ng-content select="[slot=empty]" />
-      @if (!emptySlot) {
+      <div #emptyWrap style="display: contents"><ng-content select="[slot=empty]" /></div>
+      @if (!emptyWrap.children.length) {
         <vsp-block-empty title="No members" desc="Invite teammates to collaborate here." />
       }
     } @else {
@@ -372,7 +371,6 @@ const MEMBER_MENU: MenuItem[] = [
 export class VspTeamRolesBlock {
   @Input() members: TeamMember[] = DEFAULT_MEMBERS.map((m) => ({ ...m }));
   @Input() loading = false;
-  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   memberMenu = MEMBER_MENU;
   roleOptions = ['Admin', 'Editor', 'Viewer'];
 
@@ -440,8 +438,8 @@ const DEFAULT_KEYS: ApiKey[] = [
     @if (loading) {
       <vsp-block-skeleton />
     } @else if (keys.length === 0) {
-      <ng-content select="[slot=empty]" />
-      @if (!emptySlot) {
+      <div #emptyWrap style="display: contents"><ng-content select="[slot=empty]" /></div>
+      @if (!emptyWrap.children.length) {
         <vsp-block-empty title="No API keys" desc="Create a key to start making requests." />
       }
     } @else {
@@ -492,7 +490,6 @@ const DEFAULT_KEYS: ApiKey[] = [
 export class VspApiKeysBlock {
   @Input() keys: ApiKey[] = DEFAULT_KEYS.map((k) => ({ ...k }));
   @Input() loading = false;
-  @ContentChild('blockEmpty') emptySlot?: ElementRef;
   revealed = new Set<number>();
 
   toggleReveal(id: number): void {

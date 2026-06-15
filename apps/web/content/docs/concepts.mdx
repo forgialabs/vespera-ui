@@ -15,7 +15,7 @@ Because the look lives in CSS, the _same_ design works in any framework, or in p
 ```text
 @vespera-ui/css      the design: tokens + classes. The single source of truth.
 @vespera-ui/icons    framework-neutral SVG icons.
-@vespera-ui/react    thin, typed wrappers over the CSS classes.  (Vue / Svelte / … later)
+@vespera-ui/react    thin, typed wrappers over the CSS classes.  (also: /vue, /svelte, /angular)
 ```
 
 A framework package never re-implements the look — it just renders the right class names.
@@ -74,5 +74,5 @@ Use `color-mix(in oklab, var(--accent) N%, …)` for derived shades.
 ## Built for AI
 
 Every component's API is published as a machine-readable
-[`manifest/react.json`](https://github.com/forgialabs/docs/blob/main/manifest/react.json),
+[`manifest/react.json`](https://github.com/forgialabs/vespera-ui/blob/main/manifest/react.json),
 and the repo ships skills so coding agents can author and theme Vespera correctly.
