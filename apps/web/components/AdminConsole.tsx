@@ -1,5 +1,5 @@
 'use client';
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Icon } from '@vespera-ui/icons';
 import {
@@ -336,7 +336,21 @@ export function AdminConsole() {
   const [customize, setCustomize] = useState(false);
   const [del, setDel] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
   useCmdK(setCmdOpen);
+
+  // Drawer: close on Escape, and restore focus to the trigger when it closes.
+  useEffect(() => {
+    if (!drawer) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDrawer(false);
+        hamburgerRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [drawer]);
 
   const themeState: ThemeState = { theme, setTheme, accent, setAccent, density, setDensity, corners, setCorners };
   const view = VIEWS.find((v) => v.id === active) ?? VIEWS[0]!;
@@ -383,6 +397,7 @@ export function AdminConsole() {
 
       {/* Sidebar */}
       <aside
+        id="vsp-admin-side"
         className="vsp-side"
         style={{ display: 'flex', flexDirection: 'column', padding: '16px 12px', gap: 2, position: 'relative', zIndex: 1 }}
       >
@@ -489,12 +504,15 @@ export function AdminConsole() {
           }}
         >
           <button
+            ref={hamburgerRef}
             type="button"
             className="vsp-icon-btn vsp-drawer-btn"
             aria-label="Open menu"
+            aria-expanded={drawer}
+            aria-controls="vsp-admin-side"
             onClick={() => setDrawer(true)}
           >
-            <Icon.more style={{ width: 18, height: 18 }} />
+            <Icon.menu style={{ width: 18, height: 18 }} />
           </button>
           <h1 style={{ margin: 0, fontSize: 17, fontWeight: 700, letterSpacing: '-.01em' }}>{view.label}</h1>
           <div style={{ flex: 1 }} />

@@ -84,7 +84,16 @@
     padding: 0;
     gap: 0;
   }
-  /* Sidebar slides in from the left as an off-canvas drawer. */
+  /* Reset float-mode insets/borders so the drawer fills the viewport edge. */
+  .vsp-root[data-sidebar='float'] .vsp-main {
+    height: 100vh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* Sidebar slides in from the left as an off-canvas drawer. When closed it is
+     visibility:hidden so it leaves the tab order / a11y tree; the hide is
+     delayed until the slide-out finishes. */
   .vsp-side,
   .vsp-root[data-sidebar='float'] .vsp-side,
   .vsp-root[data-sidebar='rail'] .vsp-side {
@@ -94,11 +103,19 @@
     height: 100vh;
     z-index: 200;
     transform: translateX(-100%);
+    border: 0;
+    border-right: 1px solid var(--border);
     border-radius: 0;
     box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.4));
+    visibility: hidden;
+    transition:
+      transform 0.28s cubic-bezier(0.4, 0.6, 0.3, 1),
+      visibility 0s linear 0.28s;
   }
   .vsp-root[data-drawer='open'] .vsp-side {
     transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.28s cubic-bezier(0.4, 0.6, 0.3, 1);
   }
   .vsp-side-scrim {
     display: block;

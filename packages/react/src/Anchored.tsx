@@ -66,9 +66,10 @@ export function Anchored({
       return;
     }
     if (!layerRef.current) return;
-    const r = layerRef.current.getBoundingClientRect();
-    const w = Math.round(r.width);
-    const h = Math.round(r.height);
+    // offsetWidth/Height = untransformed layout box, so the open animation
+    // (scale 0.98) doesn't skew the measurement.
+    const w = layerRef.current.offsetWidth;
+    const h = layerRef.current.offsetHeight;
     setLayerSize((prev) => (prev && prev.w === w && prev.h === h ? prev : { w, h }));
   }, [open, rect]);
 

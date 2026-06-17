@@ -91,8 +91,9 @@ export class VspAnchored {
   }
   private measure(): void {
     if (this.layer) {
-      const r = this.layer.nativeElement.getBoundingClientRect();
-      this.layerSize = { w: Math.round(r.width), h: Math.round(r.height) };
+      // offsetWidth/Height = untransformed layout box (open animation safe).
+      const el = this.layer.nativeElement;
+      this.layerSize = { w: el.offsetWidth, h: el.offsetHeight };
     }
   }
   get layerStyle(): string {
