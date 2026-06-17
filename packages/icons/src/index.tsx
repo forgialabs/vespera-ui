@@ -92,6 +92,13 @@ export const Icon = {
       <circle cx="19" cy="12" r="1.4" />
     </>,
   ),
+  menu: make(
+    <>
+      <path d="M3 6h18" />
+      <path d="M3 12h18" />
+      <path d="M3 18h18" />
+    </>,
+  ),
   filter: make(<path d="M3 5h18l-7 8v6l-4-2v-4z" />),
   download: make(
     <>

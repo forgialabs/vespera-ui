@@ -2778,8 +2778,8 @@ export const Anchored = defineComponent({
     };
     const measure = () => {
       if (!layerRef.value) return;
-      const r = layerRef.value.getBoundingClientRect();
-      layerSize.value = { w: Math.round(r.width), h: Math.round(r.height) };
+      // offsetWidth/Height = untransformed layout box (open animation safe).
+      layerSize.value = { w: layerRef.value.offsetWidth, h: layerRef.value.offsetHeight };
     };
     const setOpen = (next: boolean) => {
       if (!controlled()) internalOpen.value = next;

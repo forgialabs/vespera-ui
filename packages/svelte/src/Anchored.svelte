@@ -49,8 +49,8 @@
   // Measure the layer so it can be flipped/clamped to stay inside the viewport.
   $effect(() => {
     if (isOpen && layerEl && rect) {
-      const r = layerEl.getBoundingClientRect();
-      layerSize = { w: Math.round(r.width), h: Math.round(r.height) };
+      // offsetWidth/Height = untransformed layout box (open animation safe).
+      layerSize = { w: layerEl.offsetWidth, h: layerEl.offsetHeight };
     } else if (!isOpen) {
       layerSize = null;
     }
