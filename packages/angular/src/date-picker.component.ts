@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
 import { VspSelPanel } from './select.component';
 
 const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -163,6 +171,7 @@ export interface RangePreset {
   </div>`,
 })
 export class VspCalendar {
+  private readonly cdr = inject(ChangeDetectorRef);
   @Input() view: MonthView = { m: 0, y: 0 };
   @Output() viewChange = new EventEmitter<MonthView>();
   @Input() isSelected: (d: Date) => boolean = () => false;
@@ -209,7 +218,13 @@ export class VspCalendar {
       m = 0;
       y++;
     }
-    this.viewChange.emit({ m, y });
+    // Drive our own `view` rather than waiting for the parent to push it back via
+    // `[view]`. In a zoneless app that @Output() round-trip doesn't refresh the open
+    // calendar, so the month label/grid would appear frozen. Self-updating + markForCheck
+    // keeps the calendar correct under both zoned and zoneless change detection.
+    this.view = { m, y };
+    this.viewChange.emit(this.view);
+    this.cdr.markForCheck();
   }
 
   dayClass(dt: Date, muted?: boolean): string {
@@ -319,15 +334,23 @@ export class VspDatePicker implements OnChanges {
   open = false;
   view: MonthView;
   fmt = fmtDate;
+  private syncedTime?: number;
 
   constructor() {
     const base = this.value ?? new Date();
     this.view = { m: base.getMonth(), y: base.getFullYear() };
   }
 
-  ngOnChanges(c: SimpleChanges): void {
+  ngOnChanges(): void {
     const v = this.multiple ? this.values[this.values.length - 1] : this.value;
-    if ((c['value'] || c['values'] || c['open']) && v) {
+    if (!v) return;
+    // Re-center the calendar on the selected date only when that date's value actually
+    // changes — not on every new `[value]`/`[values]` object reference. A parent that
+    // binds a freshly-built `Date` each change-detection pass would otherwise reset the
+    // month every cycle and clobber the user's month navigation.
+    const t = v.getTime();
+    if (t !== this.syncedTime) {
+      this.syncedTime = t;
       this.view = { m: v.getMonth(), y: v.getFullYear() };
     }
   }
