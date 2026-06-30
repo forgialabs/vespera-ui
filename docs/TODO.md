@@ -10,7 +10,10 @@ contributors can see what's planned and in flight).
       GitHub Actions CI, Apache-2.0 governance, AGENTS.md)
 - [x] **Phase 1** — `@vespera-ui/css` (tokens / base / shell / components, `.ag-` → `.vsp-`,
       live demo)
-- [x] **Docs site** — Astro + Starlight + GitHub Pages deploy
+- [x] **Docs site** — Next.js + Fumadocs (`apps/web`), static-exported to GitHub Pages.
+      _(Originally built on Astro + Starlight; migrated and Starlight retired — `dacc71f`.
+      Older "done" entries below that mention Astro/`@astrojs/react`/Starlight describe that
+      now-retired build.)_
 - [x] **Phase 2a** — `@vespera-ui/icons` (typed icon set, replaces `window.Icon`)
 - [x] **Phase 2b** — `@vespera-ui/react` primitives (27 components) + Storybook workbench
 

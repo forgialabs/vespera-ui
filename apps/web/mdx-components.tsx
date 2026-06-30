@@ -1,5 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
 import { Preview } from '@/components/Preview';
+import { FrameworkPreview } from '@/components/FrameworkPreview';
 import { Callout } from '@/components/Callout';
 import { Swatch, SwatchGrid } from '@/components/Swatch';
 import { Card, CardGrid } from '@/components/DocCard';
@@ -13,6 +14,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     a: MdxLink,
     Preview,
+    FrameworkPreview,
     Callout,
     Swatch,
     SwatchGrid,

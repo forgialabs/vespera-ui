@@ -19,7 +19,7 @@ Kreatif. The full plan lives in [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 | `packages/icons`                   | `@vespera-ui/icons` — framework-neutral SVG icons.                                                         |
 | `packages/react`                   | `@vespera-ui/react` — React components (flagship).                                                         |
 | `prototype/`                       | The original design build (HTML + in-browser Babel JSX). Design source of truth — do not ship from here.   |
-| `apps/docs`                        | Docs site (Astro + Starlight) → GitHub Pages.                                                              |
+| `apps/web`                         | Docs site (Next.js + Fumadocs) → GitHub Pages (static export).                                             |
 | `manifest/react.json`              | Machine-readable component API (props, types, defaults). Regenerate: `pnpm manifest`.                      |
 | `.claude/skills/`                  | AI skills: `vespera-component` (authoring), `vespera-theming` (theming).                                   |
 | `docs/ROADMAP.md` · `docs/TODO.md` | Phased plan + decisions · granular progress tracker.                                                       |
@@ -40,7 +40,9 @@ Kreatif. The full plan lives in [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 ## Workflow
 
 - Package manager: **pnpm** (workspaces). Lint/format: **ESLint + Prettier**. Versioning:
-  **Changesets**. Component workbench (later): **Storybook**. Docs (later): **Astro + Starlight**.
+  **Changesets**. Component workbench: **Storybook**. Docs: **Next.js + Fumadocs** (`apps/web`,
+  static-exported to GitHub Pages). _(The original Astro + Starlight docs build was retired —
+  see `dacc71f`.)_
 - Before committing: `pnpm lint && pnpm typecheck && pnpm build` should pass.
 - User-facing package changes need a changeset (`pnpm changeset`).
 - Commits are signed off (DCO): `git commit -s`.

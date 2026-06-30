@@ -148,6 +148,39 @@ body {
   padding: 0;
 }
 
+/* Framework selector bar for <FrameworkPreview> (reuses .vsp-pv frame/code styles). */
+.vsp-fw-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.vsp-fw-bar button {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.vsp-fw-bar button[data-on='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.vsp-fw-bar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.vsp-fw-empty {
+  padding: 28px 24px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
 /* ---------------- Install block (package-manager tabs) ---------------- */
 .vsp-inst {
   margin: 1.25rem 0 1.75rem;

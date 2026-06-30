@@ -6,5 +6,8 @@ next-env.d.ts
 # fumadocs generated source
 /.source/
 
+# built framework Storybooks copied in by scripts/build-embeds.mjs
+/public/sb/
+
 # misc
 *.tsbuildinfo

@@ -25,4 +25,21 @@ import { Icon } from '@vespera-ui/icons';
   demo="button"
 />
 
+### Across frameworks
+
+The same Button rendered live from each framework's own Storybook. Switch tabs to see
+the real component per framework; disabled tabs aren't available yet.
+
+<FrameworkPreview
+  component="Primitives/Button"
+  story="Variants"
+  code={`import { Button } from '@vespera-ui/react';
+
+<Button variant="primary">Primary</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="subtle">Subtle</Button>
+<Button variant="danger">Danger</Button>`}
+/>
+
 Full props: [Actions API](/docs/reference/actions).
