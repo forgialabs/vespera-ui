@@ -215,11 +215,23 @@
       "angular": null,
       "svelte": null,
       "vue": null
+    },
+    "Sidebar": {
+      "react": "primitives-nav--sidebar",
+      "angular": null,
+      "svelte": null,
+      "vue": null
     }
   },
   "Overlays": {
     "Dialog": {
       "react": "overlays--dialog-example",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Sheet": {
+      "react": "overlays--sheet-example",
       "angular": null,
       "svelte": null,
       "vue": null

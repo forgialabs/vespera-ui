@@ -45,7 +45,9 @@ import { NavExample } from '@/components/examples-more';
 `SettingRow` lays out a labelled row with a trailing control. `NavItem` renders as
 a link when given `href`, otherwise a button.
 
-<Preview
+<FrameworkPreview
+  component="Primitives/Nav"
+  story="Sidebar"
   code={`import { NavItem, NavGroup, VerticalTabs, SettingRow, Switch } from '@vespera-ui/react';
 import { Icon } from '@vespera-ui/icons';
 
@@ -65,7 +67,6 @@ import { Icon } from '@vespera-ui/icons';
 <SettingRow title="Email notifications" desc="Product news and tips." last>
   <Switch checked={emails} onChange={setEmails} />
 </SettingRow>`}
-  demo="sidenav"
 />
 
 Full props: [Navigation API](/docs/reference/navigation).

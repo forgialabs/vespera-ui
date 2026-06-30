@@ -16,7 +16,7 @@ Constrain what's selectable with `min` / `max` and a flexible `disabled` matcher
 `Date`, a list, `{ from, to }`, `{ before }` / `{ after }`, `{ dayOfWeek }`, or your own
 `(date) => boolean`. Pass `multiple` to collect a list of dates instead of one.
 
-<Preview
+<FrameworkPreview
   code={`import { DatePicker, Field } from '@vespera-ui/react';
 
 // no past dates, no weekends
@@ -28,7 +28,8 @@ Constrain what's selectable with `min` / `max` and a flexible `disabled` matcher
 
 // pick several dates
 <DatePicker multiple values={days} onValuesChange={setDays} />`}
-  demo="datepicker"
+  component="Date/DatePicker"
+  story="Single Date"
 />
 
 <Callout title="The disabled matcher">
@@ -42,7 +43,9 @@ Constrain what's selectable with `min` / `max` and a flexible `disabled` matcher
 Range picking supports the same `min` / `max` / `disabled`, plus `minNights` / `maxNights`
 to bound the length and a `presets` rail of named shortcuts.
 
-<Preview
+<FrameworkPreview
+  component="Date/DatePicker"
+  story="Range"
   code={`import { DateRangePicker } from '@vespera-ui/react';
 
 <DateRangePicker
@@ -54,7 +57,6 @@ to bound the length and a `presets` rail of named shortcuts.
     { label: 'Last 30 days', range: { start: at(-29), end: at(0) } },
   ]}
 />`}
-  demo="daterange"
 />
 
 ## Event calendar
@@ -62,11 +64,12 @@ to bound the length and a `presets` rail of named shortcuts.
 Month, week and agenda views in one component. Drag across days in the month grid to add an
 event across a range; click an empty week slot to add one at that hour.
 
-<Preview
+<FrameworkPreview
+  component="Date/EventCalendar"
+  story="Default"
   code={`import { EventCalendar } from '@vespera-ui/react';
 
 <EventCalendar onChange={(events) => console.log(events)} />`}
-  demo="eventcalendar"
 />
 
 Full props: [Date & time API](/docs/reference/dates).

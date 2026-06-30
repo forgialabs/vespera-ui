@@ -13,8 +13,9 @@ source.
 
 ## Dialog, menu & toast
 
-<Preview
-  demo="overlay"
+<FrameworkPreview
+  component="Overlays"
+  story="Dialog"
   code={`import { Button, Dialog, DropdownMenu, ToastHost, toast } from '@vespera-ui/react';
 
 <Button variant="primary" onClick={() => setOpen(true)}>Open dialog</Button>
@@ -33,8 +34,9 @@ source.
 edge via `side`. `Popover` / `DropdownMenu` can be driven with controlled
 `open` + `onOpenChange`.
 
-<Preview
-  demo="sheet"
+<FrameworkPreview
+  component="Overlays"
+  story="Sheet"
   code={`import { Button, Sheet, Popover } from '@vespera-ui/react';
 
 <Popover trigger={<Button>Popover</Button>}>…anything…</Popover>
@@ -47,8 +49,9 @@ edge via `side`. `Popover` / `DropdownMenu` can be driven with controlled
 
 ## Command palette
 
-<Preview
-  demo="command"
+<FrameworkPreview
+  component="Overlays"
+  story="Command palette"
   code={`import { CommandPalette, useCmdK } from '@vespera-ui/react';
 
 useCmdK(setOpen); // ⌘K / Ctrl+K
