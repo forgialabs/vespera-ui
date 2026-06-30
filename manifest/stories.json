@@ -1,0 +1,5 @@
+{
+  "Primitives/Button": {
+    "Variants": { "react": "primitives-button--variants", "angular": null, "svelte": null, "vue": null }
+  }
+}
