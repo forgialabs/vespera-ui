@@ -2,13 +2,13 @@
   "Feedback/Alert": {
     "Default": {
       "react": "feedback-alert--default",
-      "angular": null,
+      "angular": "feedback-alert--default",
       "svelte": null,
       "vue": null
     },
     "Tones": {
       "react": "feedback-alert--tones",
-      "angular": null,
+      "angular": "feedback-alert--tones",
       "svelte": null,
       "vue": null
     }
@@ -16,13 +16,13 @@
   "Primitives/Badge": {
     "Default": {
       "react": "primitives-badge--default",
-      "angular": null,
+      "angular": "primitives-badge--default",
       "svelte": null,
       "vue": null
     },
     "Tones": {
       "react": "primitives-badge--tones",
-      "angular": null,
+      "angular": "primitives-badge--tones",
       "svelte": null,
       "vue": null
     }
@@ -74,7 +74,7 @@
     },
     "Variants": {
       "react": "primitives-button--variants",
-      "angular": null,
+      "angular": "primitives-button--variants",
       "svelte": null,
       "vue": null
     },

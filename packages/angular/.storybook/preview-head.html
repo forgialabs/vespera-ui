@@ -1,0 +1,26 @@
+<!-- Injected into Storybook's iframe.html <head>. Transparent canvas so the docs frame's
+     themed background shows through, plus the vsp:frame-h height protocol used by the docs
+     FrameworkPreview to auto-size the iframe (framework-agnostic; mirrors React's decorator). -->
+<style>
+  html,
+  body,
+  .sb-show-main {
+    background: transparent !important;
+  }
+</style>
+<script>
+  (function () {
+    if (window.parent === window) return;
+    function report() {
+      var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+      window.parent.postMessage({ vsp: 'frame-h', h: h }, '*');
+    }
+    window.addEventListener('load', report);
+    if (window.ResizeObserver) new ResizeObserver(report).observe(document.documentElement);
+    var n = 0;
+    var t = setInterval(function () {
+      report();
+      if (++n > 20) clearInterval(t);
+    }, 300);
+  })();
+</script>

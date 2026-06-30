@@ -5,3 +5,5 @@ prototype
 CHANGELOG.md
 apps/web
 manifest
+**/.angular
+**/storybook-static

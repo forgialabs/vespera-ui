@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.lib.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/storybook",
+    "types": []
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "full",
+    "strictTemplates": true
+  },
+  "include": ["../src/**/*.stories.ts", "./preview.ts"],
+  "exclude": []
+}
