@@ -32,6 +32,10 @@ jobs:
       # `@vespera-ui/react` / `@vespera-ui/css` packages.
       - name: Build packages
         run: pnpm build
+      # Build each enabled framework's Storybook into apps/web/public/sb/<fw>/ and
+      # regenerate manifest/stories.json, so the docs' FrameworkPreview iframes resolve.
+      - name: Build framework Storybooks + manifest
+        run: pnpm build:embeds
       # Static-export the Next.js + Fumadocs docs site (apps/web).
       - name: Build docs site
         run: pnpm --filter @vespera-ui/web run build:web

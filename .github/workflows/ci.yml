@@ -36,3 +36,9 @@ jobs:
 
       - name: Type-check
         run: pnpm typecheck
+
+      - name: Test (docs app)
+        run: pnpm --filter @vespera-ui/web test
+
+      - name: Test (scripts)
+        run: node --test scripts/lib/*.test.mjs
