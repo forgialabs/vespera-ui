@@ -8,7 +8,7 @@
 > - **Name / hosting:** product **Vespera** · GitHub: **start personal** (`williams-gunawan/vespera-ui`) → **transfer to studio org `forgialabs/vespera-ui` later** · npm scope **`@vespera-ui`** (independent of GitHub) · © **The Vespera Authors** → re-attribute to **PT Sentra Digital Kreatif** when formalized. _(all handles verified free)_.
 > - **v0.1 scope:** framework-agnostic CSS package **+** React package.
 > - **License:** Apache-2.0 (open-core friendly — patent grant + clean contribution terms) + DCO.
-> - **Tooling:** pnpm workspaces · TypeScript · Changesets · **ESLint + Prettier** (lint+format) · **Storybook** (component workbench) · **Astro + Starlight** (public docs).
+> - **Tooling:** pnpm workspaces · TypeScript · Changesets · **ESLint + Prettier** (lint+format) · **Storybook** (component workbench) · ~~**Astro + Starlight**~~ → **Next.js + Fumadocs** (public docs — see note below).
 > - **Styling:** plain CSS (token-driven) is the source of truth; **optional `@vespera-ui/tailwind` preset** (shadcn-style token→Tailwind mapping); possible future copy-in CLI.
 > - **Next step:** scaffold Phase 0.
 
@@ -74,7 +74,7 @@ forgialabs/vespera-ui/          # GitHub: forgialabs (studio org) · repo: vespe
 │   ├── tailwind/               # (optional) @vespera-ui/tailwind — shadcn-style token→Tailwind preset
 │   └── headless/               # (later) framework-neutral logic for interactive components
 ├── apps/
-│   └── docs/                   # the showcase becomes the docs + landing site (Astro + Starlight)
+│   └── web/                    # the showcase becomes the docs + landing site (Next.js + Fumadocs; was Astro + Starlight)
 ├── skills/                     # AI skills (component authoring, theming)
 ├── manifest/                   # generated component manifest (JSON) for AI/tooling
 ├── AGENTS.md                   # repo-root agent rules (port from prototype/AGENTS.md, rebranded)
@@ -131,7 +131,7 @@ Port the `.jsx`, killing prototype-only conventions:
 - Resolve gotchas (see §7): portal target, themed `Select`, sticky tables, Kanban pointer logic.
 - Order: primitives → overlays → select → datepicker → extras → charts → blocks/forms.
 - Each component: source + types + test + **Storybook story** (every state/variant).
-- **Set up Storybook** (component workbench) with the React + Vite builder; wire `.vsp-root` theming + a11y + interaction addons. This is the dev/test surface for components and contributors — distinct from the public Starlight docs site (Phase 4).
+- **Set up Storybook** (component workbench) with the React + Vite builder; wire `.vsp-root` theming + a11y + interaction addons. This is the dev/test surface for components and contributors — distinct from the public docs site (Phase 4, Next.js + Fumadocs).
 - **Exit:** `@vespera-ui/react` installs cleanly in a fresh Vite app; all components render themed; Storybook runs with stories for each.
 
 ### Phase 2.5 — `@vespera-ui/tailwind` (optional, shadcn-style)
@@ -147,9 +147,15 @@ Port the `.jsx`, killing prototype-only conventions:
 - Root **`AGENTS.md`/`CLAUDE.md`**.
 - **Exit:** an agent given only the repo can add a correct new component + theme it.
 
-### Phase 4 — Docs site (`apps/docs`, Astro + Starlight)
+### Phase 4 — Docs site (`apps/web`, Next.js + Fumadocs)
 
-- Promote the showcase into a real docs site; Starlight gives nav/search/theming; render live React examples as islands.
+> **Superseded:** originally planned (and briefly built) as **Astro + Starlight**. The shipped
+> docs site is **Next.js + Fumadocs** at `apps/web`, static-exported to GitHub Pages; the
+> Starlight build was retired (`dacc71f`). Rationale: tighter live-React-island integration
+> (the demos import `@vespera-ui/react` directly) and MDX authoring via Fumadocs. Decision #5
+> below is updated accordingly.
+
+- Promote the showcase into a real docs site; Fumadocs gives nav/search/theming; render live React examples as islands (isolated per-demo iframes, see `apps/web/components/Preview.tsx`).
 - Port the `SC_INDEX` ⌘K search (custom island or Starlight search).
 - Deploy (GitHub Pages / Vercel).
 - **Exit:** public docs with live examples + per-component API.
@@ -220,7 +226,7 @@ Each authored with `skill-creator`; validated with evals.
 | 2   | License             | **Apache-2.0 + DCO**                                                                                                                                                                             | Patent grant + clean contribution terms for open-core.                                                                                                                         |
 | 3   | v0.1 scope          | **CSS + React**                                                                                                                                                                                  | Flagship + "works everywhere" from day one.                                                                                                                                    |
 | 4   | Lint/format         | **ESLint + Prettier**                                                                                                                                                                            | The industry standard; lowest friction for OSS contributors. (Biome considered but less conventional for a first OSS project.)                                                 |
-| 5   | Public docs         | **Astro + Starlight**                                                                                                                                                                            | Docs-first; batteries-included (search/nav/theming); React islands for live demos; minimal JS shipped.                                                                         |
+| 5   | Public docs         | ~~**Astro + Starlight**~~ → **Next.js + Fumadocs** (`apps/web`, static export)                                                                                                                   | Originally Astro + Starlight; migrated to Next.js + Fumadocs for first-class live-React islands (demos import `@vespera-ui/react` directly) + MDX authoring. Starlight retired (`dacc71f`).      |
 | 5b  | Component workbench | **Storybook**                                                                                                                                                                                    | Industry standard for design systems — isolate components, document every state, visual + a11y testing. Distinct from the public docs site.                                    |
 | 6   | Styling             | **Plain CSS (source of truth) + optional `@vespera-ui/tailwind` preset**                                                                                                                         | Keeps zero-build multi-framework portability + runtime theming; Tailwind preset is shadcn-style convenience, additive.                                                         |
 | 7   | Tokens package      | **Yes** (`@vespera-ui/tokens`)                                                                                                                                                                   | Single token source feeding CSS, Tailwind preset, and AI manifest.                                                                                                             |
