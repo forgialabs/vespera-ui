@@ -28,6 +28,7 @@
     "format:check": "prettier --check .",
     "manifest": "node scripts/build-manifest.mjs",
     "stories-manifest": "node scripts/build-stories-manifest.mjs",
+    "build:embeds": "node scripts/build-embeds.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release": "pnpm build && changeset publish"

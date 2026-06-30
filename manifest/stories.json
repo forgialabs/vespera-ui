@@ -1,5 +1,298 @@
 {
+  "Feedback/Alert": {
+    "Default": {
+      "react": "feedback-alert--default",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Tones": {
+      "react": "feedback-alert--tones",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Primitives/Badge": {
+    "Default": {
+      "react": "primitives-badge--default",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Tones": {
+      "react": "primitives-badge--tones",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Blocks": {
+    "Orders": {
+      "react": "blocks--orders",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Operations Board": {
+      "react": "blocks--operations-board",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Api Keys": {
+      "react": "blocks--api-keys",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Audit Log": {
+      "react": "blocks--audit-log",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "System Status": {
+      "react": "blocks--system-status",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Team Roles": {
+      "react": "blocks--team-roles",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
   "Primitives/Button": {
-    "Variants": { "react": "primitives-button--variants", "angular": null, "svelte": null, "vue": null }
+    "Primary": {
+      "react": "primitives-button--primary",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Variants": {
+      "react": "primitives-button--variants",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "With Icon": {
+      "react": "primitives-button--with-icon",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Loading": {
+      "react": "primitives-button--loading",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Icon Only": {
+      "react": "primitives-button--icon-only",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Charts": {
+    "Sparklines": {
+      "react": "charts--sparklines",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Area": {
+      "react": "charts--area",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Bars": {
+      "react": "charts--bars",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Donut Chart": {
+      "react": "charts--donut-chart",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Stat": {
+      "react": "charts--stat",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Data display": {
+    "Stats": {
+      "react": "data-display--stats",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Timelines": {
+      "react": "data-display--timelines",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Descriptions": {
+      "react": "data-display--descriptions",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Circular": {
+      "react": "data-display--circular",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Date/DatePicker": {
+    "Single Date": {
+      "react": "date-datepicker--single-date",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Range": {
+      "react": "date-datepicker--range",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Date/EventCalendar": {
+    "Default": {
+      "react": "date-eventcalendar--default",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Empty": {
+      "react": "date-eventcalendar--empty",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Forms/Field": {
+    "Basic": {
+      "react": "forms-field--basic",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "With Error": {
+      "react": "forms-field--with-error",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Primitives/Nav": {
+    "Breadcrumbs": {
+      "react": "primitives-nav--breadcrumbs",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Paginate": {
+      "react": "primitives-nav--paginate",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Steps": {
+      "react": "primitives-nav--steps",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Overlays": {
+    "Dialog": {
+      "react": "overlays--dialog-example",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Dropdown": {
+      "react": "overlays--dropdown",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Toasts": {
+      "react": "overlays--toasts",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Command palette": {
+      "react": "overlays--command",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Forms/Select": {
+    "Select (auto-search ≥8)": {
+      "react": "forms-select--themed-select",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Combobox": {
+      "react": "forms-select--combobox-example",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "MultiSelect": {
+      "react": "forms-select--multi-select-example",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "TokenInput": {
+      "react": "forms-select--token-input-example",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
+  },
+  "Primitives/Toggle": {
+    "Checkboxes": {
+      "react": "primitives-toggle--checkboxes",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Radios": {
+      "react": "primitives-toggle--radios",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Switches": {
+      "react": "primitives-toggle--switches",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    },
+    "Sliders": {
+      "react": "primitives-toggle--sliders",
+      "angular": null,
+      "svelte": null,
+      "vue": null
+    }
   }
 }
