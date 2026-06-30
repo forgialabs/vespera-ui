@@ -21,7 +21,9 @@ const ACCENTS: Record<string, string | undefined> = {
 
 const preview: Preview = {
   parameters: {
-    layout: 'centered',
+    // Full-bleed so the .vsp-root decorator paints the themed background edge-to-edge
+    // (the docs embed each story in an iframe; a centered box would leave white gutters).
+    layout: 'fullscreen',
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
   },
   globalTypes: {
@@ -47,7 +49,16 @@ const preview: Preview = {
       }, []);
 
       const accentColor = ACCENTS[context.globals.accent ?? 'default'];
-      const style: CSSProperties = { padding: 28, minWidth: 320 };
+      const style: CSSProperties = {
+        minHeight: '100vh',
+        boxSizing: 'border-box',
+        padding: 28,
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+      };
       if (accentColor) (style as Record<string, string>)['--accent'] = accentColor;
       return (
         <div

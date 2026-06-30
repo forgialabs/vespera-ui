@@ -1,0 +1,10 @@
+<!-- Injected into Storybook's iframe.html <head>. Make the canvas transparent so the
+     embedding docs frame's themed background (var(--bg)) shows through instead of
+     Storybook's default white. -->
+<style>
+  html,
+  body,
+  .sb-show-main {
+    background: transparent !important;
+  }
+</style>
