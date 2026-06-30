@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Icon } from '@vespera-ui/icons';
 import { Button } from './Button';
 import { Dialog } from './Dialog';
+import { Sheet } from './Sheet';
 import { DropdownMenu } from './Anchored';
 import { ToastHost, toast } from './Toast';
 import { CommandPalette } from './CommandPalette';
@@ -36,6 +37,35 @@ export const DialogExample: Story = {
             </>
           }
         />
+      </>
+    );
+  },
+};
+
+export const SheetExample: Story = {
+  name: 'Sheet',
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Open sheet</Button>
+        <Sheet
+          open={open}
+          onClose={() => setOpen(false)}
+          side="right"
+          title="Settings"
+          desc="Slides in from the edge; traps focus until closed."
+          footer={
+            <>
+              <Button onClick={() => setOpen(false)}>Cancel</Button>
+              <Button variant="primary" onClick={() => setOpen(false)}>
+                Save
+              </Button>
+            </>
+          }
+        >
+          Drawer content goes here.
+        </Sheet>
       </>
     );
   },

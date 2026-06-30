@@ -12,6 +12,9 @@ dist/
 storybook-static/
 *storybook.log
 
+# angular build cache
+.angular/
+
 # logs
 *.log
 npm-debug.log*

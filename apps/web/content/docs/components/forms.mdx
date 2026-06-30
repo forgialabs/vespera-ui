@@ -15,7 +15,9 @@ their preview.
 
 ## Selects
 
-<Preview
+<FrameworkPreview
+  component="Forms/Select"
+  story="Select (auto-search ≥8)"
   code={`import { Select, Combobox, MultiSelect, Field } from '@vespera-ui/react';
 
 const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
@@ -28,7 +30,6 @@ const fruits = ['Apple', 'Banana', 'Cherry', /* … */];
 <Combobox options={fruits} value={b} invalid />
 <Combobox options={[]} value={null} loading />
 <Select options={fruits} value={a} disabled />`}
-  demo="select"
 />
 
 All three selects share the same state props — `disabled`, `invalid` (red border for

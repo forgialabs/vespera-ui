@@ -31,31 +31,31 @@ takes its data via props (with the sensible defaults shown here) and is fully in
 
 Tab filters, bulk selection, inline status, and a per-row action menu.
 
-<Preview code={`import { OrdersBlock } from '@vespera-ui/react';\n\n<OrdersBlock orders={orders} />`} demo="orders" />
+<FrameworkPreview component="Blocks" story="Orders" code={`import { OrdersBlock } from '@vespera-ui/react';\n\n<OrdersBlock orders={orders} />`} />
 
 ### Operations board (kanban)
 
 Drag a card to reorder it or move it between columns.
 
-<Preview code={`import { KanbanBlock } from '@vespera-ui/react';\n\n<KanbanBlock onChange={(cols) => save(cols)} />`} demo="kanban" />
+<FrameworkPreview component="Blocks" story="Operations Board" code={`import { KanbanBlock } from '@vespera-ui/react';\n\n<KanbanBlock onChange={(cols) => save(cols)} />`} />
 
 ### API keys
 
 Reveal, copy, and revoke credentials; secrets stay masked by default.
 
-<Preview code={`import { ApiKeysBlock } from '@vespera-ui/react';\n\n<ApiKeysBlock keys={keys} />`} demo="apikeys" />
+<FrameworkPreview component="Blocks" story="Api Keys" code={`import { ApiKeysBlock } from '@vespera-ui/react';\n\n<ApiKeysBlock keys={keys} />`} />
 
 ### Audit log
 
-<Preview code={`import { AuditLogBlock } from '@vespera-ui/react';\n\n<AuditLogBlock entries={entries} />`} demo="auditlog" />
+<FrameworkPreview component="Blocks" story="Audit Log" code={`import { AuditLogBlock } from '@vespera-ui/react';\n\n<AuditLogBlock entries={entries} />`} />
 
 ### System status
 
-<Preview code={`import { SystemStatusBlock } from '@vespera-ui/react';\n\n<SystemStatusBlock services={services} />`} demo="systemstatus" />
+<FrameworkPreview component="Blocks" story="System Status" code={`import { SystemStatusBlock } from '@vespera-ui/react';\n\n<SystemStatusBlock services={services} />`} />
 
 ### Team & roles
 
-<Preview code={`import { TeamRolesBlock } from '@vespera-ui/react';\n\n<TeamRolesBlock members={members} />`} demo="teamroles" />
+<FrameworkPreview component="Blocks" story="Team Roles" code={`import { TeamRolesBlock } from '@vespera-ui/react';\n\n<TeamRolesBlock members={members} />`} />
 
 ## See it running full-screen
 

@@ -17,7 +17,10 @@ describe('FrameworkPreview', () => {
 
   it('disables frameworks with no story and enables ones that have it', () => {
     render(<FrameworkPreview component="Primitives/Button" story="Variants" />);
+    // React and Angular both ship a Button story; Svelte/Vue don't yet.
     expect(screen.getByRole('tab', { name: 'React' })).toBeEnabled();
+    expect(screen.getByRole('tab', { name: 'Angular' })).toBeEnabled();
+    expect(screen.getByRole('tab', { name: 'Svelte' })).toBeDisabled();
     expect(screen.getByRole('tab', { name: 'Vue' })).toBeDisabled();
   });
 
@@ -29,11 +32,21 @@ describe('FrameworkPreview', () => {
     );
   });
 
-  it('shows a not-available message when the selected framework lacks the story', () => {
+  it('renders the Angular iframe when Angular is the selected framework', () => {
     render(
       <FrameworkPreview component="Primitives/Button" story="Variants" defaultFramework="angular" />,
     );
-    expect(screen.getByText(/not yet available in angular/i)).toBeInTheDocument();
-    expect(screen.queryByTitle('Primitives/Button — angular')).not.toBeInTheDocument();
+    const frame = screen.getByTitle('Primitives/Button — angular') as HTMLIFrameElement;
+    expect(frame.getAttribute('src')).toContain(
+      '/vespera-ui/sb/angular/iframe.html?id=primitives-button--variants',
+    );
+  });
+
+  it('shows a not-available message when the selected framework lacks the story', () => {
+    render(
+      <FrameworkPreview component="Primitives/Button" story="Variants" defaultFramework="vue" />,
+    );
+    expect(screen.getByText(/not yet available in vue/i)).toBeInTheDocument();
+    expect(screen.queryByTitle('Primitives/Button — vue')).not.toBeInTheDocument();
   });
 });

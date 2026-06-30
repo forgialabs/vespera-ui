@@ -17,5 +17,6 @@
     "strictTemplates": true,
     "compilationMode": "partial"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.stories.ts"]
 }
