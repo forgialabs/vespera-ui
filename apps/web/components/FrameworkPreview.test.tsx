@@ -8,20 +8,24 @@ beforeEach(() => {
 });
 
 describe('FrameworkPreview', () => {
-  it('renders a tab per framework', () => {
+  it('renders a tab for each selector framework (React, Angular only)', () => {
     render(<FrameworkPreview component="Primitives/Button" story="Variants" />);
-    for (const label of ['React', 'Angular', 'Svelte', 'Vue']) {
-      expect(screen.getByRole('tab', { name: label })).toBeInTheDocument();
-    }
+    expect(screen.getByRole('tab', { name: 'React' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Angular' })).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Svelte' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Vue' })).not.toBeInTheDocument();
   });
 
-  it('disables frameworks with no story and enables ones that have it', () => {
+  it('enables frameworks that ship the story — Button has React + Angular', () => {
     render(<FrameworkPreview component="Primitives/Button" story="Variants" />);
-    // React and Angular both ship a Button story; Svelte/Vue don't yet.
     expect(screen.getByRole('tab', { name: 'React' })).toBeEnabled();
     expect(screen.getByRole('tab', { name: 'Angular' })).toBeEnabled();
-    expect(screen.getByRole('tab', { name: 'Svelte' })).toBeDisabled();
-    expect(screen.getByRole('tab', { name: 'Vue' })).toBeDisabled();
+  });
+
+  it('disables a framework that lacks the story — Blocks/Orders has no Angular', () => {
+    render(<FrameworkPreview component="Blocks" story="Orders" />);
+    expect(screen.getByRole('tab', { name: 'React' })).toBeEnabled();
+    expect(screen.getByRole('tab', { name: 'Angular' })).toBeDisabled();
   });
 
   it('points the iframe at the React Storybook story by default', () => {
@@ -43,10 +47,8 @@ describe('FrameworkPreview', () => {
   });
 
   it('shows a not-available message when the selected framework lacks the story', () => {
-    render(
-      <FrameworkPreview component="Primitives/Button" story="Variants" defaultFramework="vue" />,
-    );
-    expect(screen.getByText(/not yet available in vue/i)).toBeInTheDocument();
-    expect(screen.queryByTitle('Primitives/Button — vue')).not.toBeInTheDocument();
+    render(<FrameworkPreview component="Blocks" story="Orders" defaultFramework="angular" />);
+    expect(screen.getByText(/not yet available in angular/i)).toBeInTheDocument();
+    expect(screen.queryByTitle('Blocks — angular')).not.toBeInTheDocument();
   });
 });

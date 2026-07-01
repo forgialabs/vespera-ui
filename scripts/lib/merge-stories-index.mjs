@@ -1,6 +1,8 @@
 // Pure merge of per-framework Storybook index.json files into the availability manifest.
 // Input: { [framework]: storybookIndexJson }. Output: { title: { exportName: { fw: id|null } } }.
-const FRAMEWORKS = ['react', 'angular', 'svelte', 'vue'];
+// Svelte/Vue are intentionally excluded from the selector (Storybook renderer can't build
+// under pnpm-strict here). See memory: svelte-vue-storybook-vite-conflict.
+const FRAMEWORKS = ['react', 'angular'];
 
 function emptyAvailability() {
   return Object.fromEntries(FRAMEWORKS.map((f) => [f, null]));
