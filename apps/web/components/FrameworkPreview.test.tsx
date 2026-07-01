@@ -22,8 +22,8 @@ describe('FrameworkPreview', () => {
     expect(screen.getByRole('tab', { name: 'Angular' })).toBeEnabled();
   });
 
-  it('disables a framework that lacks the story — Blocks/Orders has no Angular', () => {
-    render(<FrameworkPreview component="Blocks" story="Orders" />);
+  it('disables a framework that lacks the story — Charts is React-only', () => {
+    render(<FrameworkPreview component="Charts" story="Sparklines" />);
     expect(screen.getByRole('tab', { name: 'React' })).toBeEnabled();
     expect(screen.getByRole('tab', { name: 'Angular' })).toBeDisabled();
   });
@@ -47,8 +47,8 @@ describe('FrameworkPreview', () => {
   });
 
   it('shows a not-available message when the selected framework lacks the story', () => {
-    render(<FrameworkPreview component="Blocks" story="Orders" defaultFramework="angular" />);
+    render(<FrameworkPreview component="Charts" story="Sparklines" defaultFramework="angular" />);
     expect(screen.getByText(/not yet available in angular/i)).toBeInTheDocument();
-    expect(screen.queryByTitle('Blocks — angular')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('Charts — angular')).not.toBeInTheDocument();
   });
 });

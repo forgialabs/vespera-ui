@@ -22,27 +22,27 @@
   "Blocks": {
     "Orders": {
       "react": "blocks--orders",
-      "angular": null
+      "angular": "blocks--orders"
     },
     "Operations Board": {
       "react": "blocks--operations-board",
-      "angular": null
+      "angular": "blocks--operations-board"
     },
     "Api Keys": {
       "react": "blocks--api-keys",
-      "angular": null
+      "angular": "blocks--api-keys"
     },
     "Audit Log": {
       "react": "blocks--audit-log",
-      "angular": null
+      "angular": "blocks--audit-log"
     },
     "System Status": {
       "react": "blocks--system-status",
-      "angular": null
+      "angular": "blocks--system-status"
     },
     "Team Roles": {
       "react": "blocks--team-roles",
-      "angular": null
+      "angular": "blocks--team-roles"
     }
   },
   "Primitives/Button": {
@@ -110,17 +110,17 @@
   "Date/DatePicker": {
     "Single Date": {
       "react": "date-datepicker--single-date",
-      "angular": null
+      "angular": "date-datepicker--single-date"
     },
     "Range": {
       "react": "date-datepicker--range",
-      "angular": null
+      "angular": "date-datepicker--range"
     }
   },
   "Date/EventCalendar": {
     "Default": {
       "react": "date-eventcalendar--default",
-      "angular": null
+      "angular": "date-eventcalendar--default"
     },
     "Empty": {
       "react": "date-eventcalendar--empty",
@@ -152,17 +152,17 @@
     },
     "Sidebar": {
       "react": "primitives-nav--sidebar",
-      "angular": null
+      "angular": "primitives-nav--sidebar"
     }
   },
   "Overlays": {
     "Dialog": {
       "react": "overlays--dialog-example",
-      "angular": null
+      "angular": "overlays--dialog-example"
     },
     "Sheet": {
       "react": "overlays--sheet-example",
-      "angular": null
+      "angular": "overlays--sheet-example"
     },
     "Dropdown": {
       "react": "overlays--dropdown",
@@ -174,13 +174,13 @@
     },
     "Command palette": {
       "react": "overlays--command",
-      "angular": null
+      "angular": "overlays--command"
     }
   },
   "Forms/Select": {
     "Select (auto-search ≥8)": {
       "react": "forms-select--themed-select",
-      "angular": null
+      "angular": "forms-select--themed-select"
     },
     "Combobox": {
       "react": "forms-select--combobox-example",
