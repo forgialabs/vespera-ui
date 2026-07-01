@@ -27,8 +27,6 @@ test('merges one framework index keyed by title → export → framework', () =>
   assert.deepEqual(manifest['Primitives/Button'].Variants, {
     react: 'primitives-button--variants',
     angular: null,
-    svelte: null,
-    vue: null,
   });
   assert.equal(manifest['Primitives/Button'].Loading.react, 'primitives-button--loading');
 });
@@ -39,7 +37,7 @@ test('ignores non-story entries (docs)', () => {
 });
 
 test('overlays a second framework into the same title/export', () => {
-  const svelteIndex = {
+  const angularIndex = {
     entries: {
       'primitives-button--variants': {
         id: 'primitives-button--variants',
@@ -49,7 +47,9 @@ test('overlays a second framework into the same title/export', () => {
       },
     },
   };
-  const manifest = mergeStoriesIndex({ react: reactIndex, svelte: svelteIndex });
-  assert.equal(manifest['Primitives/Button'].Variants.svelte, 'primitives-button--variants');
-  assert.equal(manifest['Primitives/Button'].Variants.angular, null);
+  const manifest = mergeStoriesIndex({ react: reactIndex, angular: angularIndex });
+  assert.deepEqual(manifest['Primitives/Button'].Variants, {
+    react: 'primitives-button--variants',
+    angular: 'primitives-button--variants',
+  });
 });

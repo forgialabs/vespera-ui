@@ -8,13 +8,13 @@ import {
 
 const manifest: StoriesManifest = {
   'Primitives/Button': {
-    Variants: { react: 'primitives-button--variants', angular: null, svelte: null, vue: null },
+    Variants: { react: 'primitives-button--variants', angular: 'primitives-button--variants' },
   },
 };
 
 describe('FRAMEWORKS', () => {
-  it('lists the four supported frameworks in display order', () => {
-    expect(FRAMEWORKS.map((f) => f.id)).toEqual(['react', 'angular', 'svelte', 'vue']);
+  it('lists the frameworks shown in the selector, in display order', () => {
+    expect(FRAMEWORKS.map((f) => f.id)).toEqual(['react', 'angular']);
   });
 });
 
@@ -23,9 +23,7 @@ describe('frameworkAvailability', () => {
     const a = frameworkAvailability(manifest, 'Primitives/Button', 'Variants');
     expect(a).toEqual({
       react: 'primitives-button--variants',
-      angular: null,
-      svelte: null,
-      vue: null,
+      angular: 'primitives-button--variants',
     });
   });
 
@@ -33,8 +31,6 @@ describe('frameworkAvailability', () => {
     expect(frameworkAvailability(manifest, 'Nope/Missing', 'Variants')).toEqual({
       react: null,
       angular: null,
-      svelte: null,
-      vue: null,
     });
   });
 });
@@ -52,13 +48,13 @@ describe('buildEmbedSrc', () => {
   });
 
   it('works with an empty basePath', () => {
-    const src = buildEmbedSrc('', 'svelte', 'x--y', {
+    const src = buildEmbedSrc('', 'angular', 'x--y', {
       theme: 'light',
       density: 'compact',
       corners: 'sharp',
     });
     expect(src).toBe(
-      '/sb/svelte/iframe.html?id=x--y&viewMode=story&globals=theme:light;density:compact;corners:sharp',
+      '/sb/angular/iframe.html?id=x--y&viewMode=story&globals=theme:light;density:compact;corners:sharp',
     );
   });
 });

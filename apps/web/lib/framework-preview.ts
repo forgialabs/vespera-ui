@@ -1,9 +1,11 @@
-/** Supported framework wrappers, in selector display order. */
+// Framework wrappers shown in the docs live-preview selector, in display order.
+// Svelte and Vue ship as packages but are intentionally NOT in the selector: their
+// Storybook renderers (@storybook/svelte-vite) can't be built under this pnpm-strict
+// monorepo (vite-plugin-svelte won't compile @storybook/svelte's own components).
+// See memory: svelte-vue-storybook-vite-conflict.
 export const FRAMEWORKS = [
   { id: 'react', label: 'React' },
   { id: 'angular', label: 'Angular' },
-  { id: 'svelte', label: 'Svelte' },
-  { id: 'vue', label: 'Vue' },
 ] as const;
 
 export type FrameworkId = (typeof FRAMEWORKS)[number]['id'];
@@ -20,7 +22,7 @@ export interface ThemeState {
   corners: 'round' | 'sharp';
 }
 
-const EMPTY: StoryAvailability = { react: null, angular: null, svelte: null, vue: null };
+const EMPTY: StoryAvailability = { react: null, angular: null };
 
 export function frameworkAvailability(
   manifest: StoriesManifest,

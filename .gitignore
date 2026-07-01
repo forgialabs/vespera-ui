@@ -37,6 +37,9 @@ prototype/_original-zip/
 _preview-server.cjs
 .claude/launch.json
 
+# agent-local memory (not part of the project)
+.claude/projects/
+
 # ad-hoc temp files (CI polling, etc.)
 /_*.json
 

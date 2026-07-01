@@ -11,8 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SB_DIRS = {
   react: 'packages/react/storybook-static',
   angular: 'packages/angular/storybook-static',
-  svelte: 'packages/svelte/storybook-static',
-  vue: 'packages/vue/storybook-static',
+  // Svelte/Vue are excluded from the selector — see memory: svelte-vue-storybook-vite-conflict.
 };
 
 const indexes = {};
