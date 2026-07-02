@@ -70,41 +70,45 @@
   "Charts": {
     "Sparklines": {
       "react": "charts--sparklines",
-      "angular": null
+      "angular": "charts--sparklines"
     },
     "Area": {
       "react": "charts--area",
-      "angular": null
+      "angular": "charts--area"
     },
     "Bars": {
       "react": "charts--bars",
-      "angular": null
+      "angular": "charts--bars"
     },
     "Donut Chart": {
       "react": "charts--donut-chart",
-      "angular": null
+      "angular": "charts--donut-chart"
     },
     "Stat": {
       "react": "charts--stat",
-      "angular": null
+      "angular": "charts--stat"
     }
   },
   "Data display": {
+    "Avatars": {
+      "react": "data-display--avatars",
+      "angular": "data-display--avatars"
+    },
     "Stats": {
       "react": "data-display--stats",
-      "angular": null
+      "angular": "data-display--stats"
     },
     "Timelines": {
       "react": "data-display--timelines",
-      "angular": null
+      "angular": "data-display--timelines"
     },
     "Descriptions": {
       "react": "data-display--descriptions",
-      "angular": null
+      "angular": "data-display--descriptions"
     },
     "Circular": {
       "react": "data-display--circular",
-      "angular": null
+      "angular": "data-display--circular"
     }
   },
   "Date/DatePicker": {
@@ -128,6 +132,10 @@
     }
   },
   "Forms/Field": {
+    "Controls": {
+      "react": "forms-field--controls",
+      "angular": "forms-field--controls"
+    },
     "Basic": {
       "react": "forms-field--basic",
       "angular": null
@@ -137,18 +145,28 @@
       "angular": null
     }
   },
+  "Feedback/Messaging": {
+    "Banner & empty": {
+      "react": "feedback-messaging--banner-empty",
+      "angular": "feedback-messaging--banner-empty"
+    }
+  },
   "Primitives/Nav": {
     "Breadcrumbs": {
       "react": "primitives-nav--breadcrumbs",
-      "angular": null
+      "angular": "primitives-nav--breadcrumbs"
     },
     "Paginate": {
       "react": "primitives-nav--paginate",
-      "angular": null
+      "angular": "primitives-nav--paginate"
     },
     "Steps": {
       "react": "primitives-nav--steps",
-      "angular": null
+      "angular": "primitives-nav--steps"
+    },
+    "Tabs": {
+      "react": "primitives-nav--tabs",
+      "angular": "primitives-nav--tabs"
     },
     "Sidebar": {
       "react": "primitives-nav--sidebar",
@@ -195,22 +213,28 @@
       "angular": null
     }
   },
+  "Layout/Structure": {
+    "Accordion & tree": {
+      "react": "layout-structure--accordion-tree",
+      "angular": "layout-structure--accordion-tree"
+    }
+  },
   "Primitives/Toggle": {
     "Checkboxes": {
       "react": "primitives-toggle--checkboxes",
-      "angular": null
+      "angular": "primitives-toggle--checkboxes"
     },
     "Radios": {
       "react": "primitives-toggle--radios",
-      "angular": null
+      "angular": "primitives-toggle--radios"
     },
     "Switches": {
       "react": "primitives-toggle--switches",
-      "angular": null
+      "angular": "primitives-toggle--switches"
     },
     "Sliders": {
       "react": "primitives-toggle--sliders",
-      "angular": null
+      "angular": "primitives-toggle--sliders"
     }
   }
 }

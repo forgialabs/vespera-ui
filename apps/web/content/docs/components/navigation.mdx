@@ -3,16 +3,15 @@ title: Navigation
 description: Tabs, breadcrumbs, and pagination — live examples with the code to copy.
 ---
 
-import { TabsExample } from '@/components/examples';
-import { NavExample } from '@/components/examples-more';
-
 ## Installation
 
 <Install imports="Breadcrumb, Pagination, Tabs, VerticalTabs, NavItem, NavGroup, SettingRow" />
 
 ## Tabs
 
-<Preview
+<FrameworkPreview
+  component="Primitives/Nav"
+  story="Tabs"
   code={`import { Tabs } from '@vespera-ui/react';
 
 <Tabs
@@ -24,20 +23,18 @@ import { NavExample } from '@/components/examples-more';
   value={tab}
   onChange={setTab}
 />`}
->
-  <TabsExample />
-</Preview>
+/>
 
 ## Breadcrumb & pagination
 
-<Preview
+<FrameworkPreview
+  component="Primitives/Nav"
+  story="Breadcrumbs"
   code={`import { Breadcrumb, Pagination } from '@vespera-ui/react';
 
 <Breadcrumb items={['Home', 'Projects', 'Vespera']} />
 <Pagination page={page} pages={8} onPage={setPage} />`}
->
-  <NavExample />
-</Preview>
+/>
 
 ## Sidebar &amp; settings rail
 
