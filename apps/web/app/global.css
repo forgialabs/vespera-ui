@@ -414,3 +414,46 @@ body {
 .vsp-doc-prose pre.shiki {
   background: var(--surface-1);
 }
+
+/* Page-level framework switch for the /demo and /admin showcases. */
+.vsp-showcase-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-1);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.vsp-showcase-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.vsp-showcase-tabs {
+  display: flex;
+  gap: 4px;
+}
+.vsp-showcase-tabs button {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.vsp-showcase-tabs button[data-on='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.vsp-showcase-frame {
+  display: block;
+  width: 100%;
+  height: 720px;
+  border: 0;
+  background: var(--bg);
+}
