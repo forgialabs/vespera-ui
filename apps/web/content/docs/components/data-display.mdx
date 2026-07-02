@@ -3,16 +3,15 @@ title: Data display
 description: Badges, tags, stats, timelines, and avatars — live examples with the code to copy.
 ---
 
-import { BadgeExample, DataExample } from '@/components/examples';
-import { AvatarExample } from '@/components/examples-more';
-
 ## Installation
 
 <Install imports="AvatarGroup, Badge, Stat, Tag, Timeline" />
 
 ## Badges & tags
 
-<Preview
+<FrameworkPreview
+  component="Primitives/Badge"
+  story="Tones"
   code={`import { Badge, Tag } from '@vespera-ui/react';
 
 <Badge tone="pos" dot>Active</Badge>
@@ -21,13 +20,13 @@ import { AvatarExample } from '@/components/examples-more';
 <Badge tone="info" dot>Beta</Badge>
 <Badge tone="muted">Draft</Badge>
 <Tag onRemove={() => {}}>Removable</Tag>`}
->
-  <BadgeExample />
-</Preview>
+/>
 
 ## Stats & timeline
 
-<Preview
+<FrameworkPreview
+  component="Data display"
+  story="Stats"
   code={`import { Stat, Timeline } from '@vespera-ui/react';
 import { Icon } from '@vespera-ui/icons';
 
@@ -41,13 +40,13 @@ import { Icon } from '@vespera-ui/icons';
 <Timeline orientation="horizontal" items={[
   { title: 'Draft', tone: 'pos' }, { title: 'Review', active: true }, { title: 'Shipped' },
 ]} />`}
->
-  <DataExample />
-</Preview>
+/>
 
 ## Avatars
 
-<Preview
+<FrameworkPreview
+  component="Data display"
+  story="Avatars"
   code={`import { AvatarGroup } from '@vespera-ui/react';
 
 <AvatarGroup max={4} size={40} people={[
@@ -55,8 +54,6 @@ import { Icon } from '@vespera-ui/icons';
   { name: 'Alan Turing', hue: 160 },
   // …
 ]} />`}
->
-  <AvatarExample />
-</Preview>
+/>
 
 Full props: [Data display API](/docs/reference/data-display).

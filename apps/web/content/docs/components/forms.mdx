@@ -3,9 +3,6 @@ title: Forms & inputs
 description: Selects, toggles, and text/number controls — live examples with the code to copy.
 ---
 
-import { ToggleExample } from '@/components/examples';
-import { MoreFormsExample } from '@/components/examples-more';
-
 Interactive demos with overlays (the selects) run in an isolated frame, so dropdowns stay inside
 their preview.
 
@@ -38,27 +35,27 @@ validation), `loading` (shows a spinner while you fetch options), `emptyText`, p
 
 ## Toggles
 
-<Preview
+<FrameworkPreview
+  component="Primitives/Toggle"
+  story="Switches"
   code={`import { Checkbox, Switch, Slider } from '@vespera-ui/react';
 
 <Checkbox checked={check} onChange={setCheck} label="Email notifications" sub="Activity updates" />
 <Switch checked={on} onChange={setOn} aria-label="Two-factor" />
 <Slider value={vol} onChange={setVol} />`}
->
-  <ToggleExample />
-</Preview>
+/>
 
 ## More form controls
 
-<Preview
+<FrameworkPreview
+  component="Forms/Field"
+  story="Controls"
   code={`import { NumberStepper, InlineEdit, CopyButton, OTPInput } from '@vespera-ui/react';
 
 <NumberStepper value={qty} onChange={setQty} min={0} max={10} />
 <InlineEdit value={name} onSave={setName} />
 <CopyButton text="npm i @vespera-ui/react" label="Copy install" />
 <OTPInput value={otp} onChange={setOtp} length={6} />`}
->
-  <MoreFormsExample />
-</Preview>
+/>
 
 Full props: [Forms & inputs API](/docs/reference/forms).

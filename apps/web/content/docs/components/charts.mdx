@@ -3,13 +3,13 @@ title: Charts
 description: Area, bar, donut, and sparkline charts — live examples with the code to copy.
 ---
 
-import { ChartsExample } from '@/components/examples-more';
-
 ## Installation
 
 <Install imports="AreaChart, BarChart, Donut, Sparkline" />
 
-<Preview
+<FrameworkPreview
+  component="Charts"
+  story="Bars"
   code={`import { AreaChart, BarChart, Donut, Sparkline } from '@vespera-ui/react';
 
 <AreaChart series={[revenue]} labels={months} />
@@ -20,8 +20,6 @@ import { ChartsExample } from '@/components/examples-more';
   { label: 'Direct', value: 22, color: 'var(--success)' },
 ]} />
 <Sparkline data={revenue} />`}
->
-  <ChartsExample />
-</Preview>
+/>
 
 Full props: [Charts API](/docs/reference/charts).

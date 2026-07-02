@@ -3,8 +3,6 @@ title: Layout & structure
 description: Cards, accordions, and trees — live examples with the code to copy.
 ---
 
-import { StructureExample } from '@/components/examples-more';
-
 For the page-level frame (grids and the app shell), see
 [Foundations → Layout & grids](/docs/foundations/layout). These are the structural
 components.
@@ -15,7 +13,9 @@ components.
 
 ## Accordion & tree
 
-<Preview
+<FrameworkPreview
+  component="Layout/Structure"
+  story="Accordion & tree"
   code={`import { Accordion, Tree } from '@vespera-ui/react';
 
 <Accordion defaultOpen={[0]} items={[
@@ -26,8 +26,6 @@ components.
   { label: 'src', children: [{ label: 'index.ts', badge: 'ts' }] },
   { label: 'package.json' },
 ]} />`}
->
-  <StructureExample />
-</Preview>
+/>
 
 Full props: [Layout & structure API](/docs/reference/layout).

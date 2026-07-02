@@ -1,14 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Icon } from '@vespera-ui/icons';
 import { CircularProgress, DescriptionList, Stat, Timeline } from './DataDisplay';
+import { Avatar, AvatarGroup } from './Avatar';
 
 const meta = {
   title: 'Data display',
-  parameters: { layout: 'padded' },
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const Avatars: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Avatar name="Ada Lovelace" hue={210} status="online" />
+      <Avatar name="Alan Turing" hue={140} shape="square" />
+      <AvatarGroup
+        people={[
+          { name: 'Ada Lovelace', hue: 210 },
+          { name: 'Alan Turing', hue: 140 },
+          { name: 'Grace Hopper', hue: 20 },
+          { name: 'Katherine Johnson', hue: 300 },
+        ]}
+        max={3}
+      />
+    </div>
+  ),
+};
 
 export const Stats: Story = {
   render: () => (

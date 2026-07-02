@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Icon } from '@vespera-ui/icons';
 import { Breadcrumb, Pagination, Stepper } from './Nav';
 import { NavItem, NavGroup } from './SideNav';
+import { Tabs } from './Tabs';
 
 const meta = {
   title: 'Primitives/Nav',
@@ -24,6 +25,26 @@ export const Paginate: Story = {
 
 export const Steps: Story = {
   render: () => <Stepper steps={['Account', 'Profile', 'Billing', 'Done']} current={1} />,
+};
+
+export const Tabs_: Story = {
+  name: 'Tabs',
+  render: () => {
+    const [tab, setTab] = useState('overview');
+    return (
+      <div style={{ width: '100%', maxWidth: 420 }}>
+        <Tabs
+          tabs={[
+            { value: 'overview', label: 'Overview' },
+            { value: 'activity', label: 'Activity', count: 3 },
+            { value: 'settings', label: 'Settings' },
+          ]}
+          value={tab}
+          onChange={setTab}
+        />
+      </div>
+    );
+  },
 };
 
 export const Sidebar: Story = {
