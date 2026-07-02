@@ -236,5 +236,15 @@
       "react": "primitives-toggle--sliders",
       "angular": "primitives-toggle--sliders"
     }
+  },
+  "Showcase": {
+    "Playground": {
+      "react": null,
+      "angular": "showcase--playground"
+    },
+    "Admin": {
+      "react": null,
+      "angular": "showcase--admin"
+    }
   }
 }

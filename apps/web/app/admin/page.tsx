@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
 import { AdminConsole } from '@/components/AdminConsole';
+import { FrameworkShowcase } from '@/components/FrameworkShowcase';
 
 export const metadata: Metadata = {
   title: 'Admin console',
-  description: 'A complete admin console built entirely from @vespera-ui/react.',
+  description: 'A complete admin console — the React island, or its Angular equivalent.',
 };
 
-// AdminConsole owns its own .vsp-root (it manages theme/density/corners/accent live).
+// React = the live AdminConsole island; Angular = the equivalent Storybook showcase.
 export default function AdminPage() {
-  return <AdminConsole />;
+  return (
+    <FrameworkShowcase story="showcase--admin">
+      <AdminConsole />
+    </FrameworkShowcase>
+  );
 }
